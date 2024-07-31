@@ -92,15 +92,16 @@ CC=gcc
 .c.o :
 	$(CC) -c -o $@ $< $(CFLAGS)  $(INCS)
 
-../lua/utils_hdrs.lua : 
-	make -C ../utils/src/ utils_hdrs.lua
-	cp ../utils/src/utils_hdrs.lua ../lua/
+_stripped_cmem.h : ${CMEM_SRC_ROOT}/inc/cmem_struct.h 
+	luajit cli_for_cdef.lua ${CMEM_SRC_ROOT}/inc/cmem_struct.h _stripped_cmem.h
 
-../utils/src/cli_strip_upto :
-	make -C ../utils/
+_stripped_sclr.h : ${SCLR_SRC_ROOT}/inc/sclr_struct.h 
+	luajit cli_for_cdef.lua ${SCLR_SRC_ROOT}/inc/sclr_struct.h _stripped_sclr.h
 
 ../lua/qdf_hdrs.lua : \
 		${RSUTILS_SRC_ROOT}/inc/qtypes.h \
+		_stripped_cmem.h \
+		_stripped_sclr.h \
 		../inc/qdf_struct.h \
 		../inc/qdf_makers.h \
 		../inc/qdf_checkers.h \
@@ -148,6 +149,8 @@ CC=gcc
 		../inc/qdf_uq.h 
 	echo "return [["       > ../lua/qdf_hdrs.lua
 	grep -v "^#" ${RSUTILS_SRC_ROOT}/inc/qtypes.h >> ../lua/qdf_hdrs.lua
+	cat _stripped_cmem.h >> ../lua/qdf_hdrs.lua
+	cat _stripped_sclr.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_struct.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_makers.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_helpers.h >> ../lua/qdf_hdrs.lua
@@ -298,93 +301,6 @@ qdf_makers.o : CFLAGS += -Wno-conversion
 qdf_checkers.o : CFLAGS += -Wno-conversion
 qdf_concat.o : CFLAGS += -Wno-conversion
 qdf_helpers.o : CFLAGS += -Wno-conversion
-
-JNI_SRC := jni_init.c
-JNI_SRC += jni_fake.c
-JNI_SRC += jni_score.c
-JNI_SRC += jni_free.c
-JNI_SRC += dsid.c
-JNI_SRC += load_qdf.c
-JNI_SRC += send_qdf_to_R.c
-JNI_SRC += send_model_to_R.c
-JNI_SRC += fetch_dfe_out_from_R.c
-JNI_SRC += extract_name_value.c
-JNI_SRC += bridge_read_configs.c
-JNI_SRC += cells_to_vals.c
-JNI_SRC += hive_to_qdf.c
-JNI_SRC += mk_lua_state.c
-JNI_SRC += shrink.c
-JNI_SRC += Rproc.c
-JNI_SRC += init_hive.c
-JNI_SRC += updt_hive.c
-JNI_SRC += free_hive.c
-JNI_SRC += free_configs.c
-JNI_SRC += read_xconfigs.c
-JNI_SRC += free_xconfigs.c
-JNI_SRC += wrap_plp1.c
-JNI_SRC += bridge_plp1.c
-JNI_SRC += wrap_plp2.c
-JNI_SRC += bridge_plp2.c
-JNI_SRC += aux_R_prepper.c
-JNI_SRC += aux_R_caller.c
-JNI_SRC += R_online.c
-JNI_SRC += aux_R_online.c
-JNI_SRC += just_R.c
-JNI_SRC += dump_prep.c
-JNI_SRC += aux_R_worker.c
-JNI_SRC += aux_R_scorer.c
-JNI_SRC += make_empty_forecast.c
-JNI_SRC += qdf_makers.c
-JNI_SRC += qdf_helpers.c
-JNI_SRC += qdf_setters.c
-JNI_SRC += qdf_xhelpers.c
-JNI_SRC += qdf_checkers.c
-JNI_SRC += qdf_external.c
-JNI_SRC += qdf_named_vec.c
-JNI_SRC += qdf_pr.c
-JNI_SRC += write_to_disk.c
-JNI_SRC += ../utils/src/split_str.c 
-JNI_SRC += ../utils/src/auxil.c 
-JNI_SRC += ../utils/src/get_time_usec.c 
-JNI_SRC += ../utils/src/date_str_to_epoch.c 
-JNI_SRC += ../utils/src/tm2time.c 
-JNI_SRC += ../utils/src/isdir.c 
-JNI_SRC += ../utils/src/qtypes.c 
-JNI_SRC += ../utils/src/num_lines.c 
-JNI_SRC += ../utils/src/rs_mmap.c 
-JNI_SRC += ../utils/src/line_to_cells.c 
-JNI_SRC += ../utils/src/conv_for_R.c
-JNI_SRC += ../utils/src/sort1.c
-# should specify location of rclient better 
-JNI_OBJ = $(JNI_SRC:.c=.o)
-JNI_OBJ += ../../rclient/src/aux_rcli.o
-JNI_OBJ += ../../rclient/src/set_vec.o
-JNI_OBJ += ../../rclient/src/get_F8.o
-JNI_OBJ += ../../rclient/src/get_vec.o
-JNI_OBJ += ../../rclient/src/get_named_vec.o
-JNI_OBJ += ../../rclient/src/exists.o
-JNI_OBJ += ../../rclient/src/get_bool.o
-JNI_OBJ += ../../rclient/src/n_df.o
-JNI_OBJ += ../../rclient/src/chk_R_class.o
-
-../../rclient/src/aux_rcli.o : ../../rclient/src/aux_rcli.c
-	make -C ../../rclient/
-
-libxjni.so : ${JNI_OBJ} 
-	gcc ${CFLAGS} -fPIC -shared ${JNI_OBJ} \
-		${LUAJIT_SO} \
-		-o ~/qdf/JNI/FINAL/libxjni.so 
-
-libjni.so : ${JNI_OBJ} 
-	gcc ${CFLAGS} -fPIC -shared ${JNI_OBJ} \
-		-o libjni.so 
-
-ut_jni: ../src/ut_jni.c libjni.so 
-	gcc ${CFLAGS} $(INCS) \
-		../src/ut_jni.c libjni.so \
-		libqdf.so \
-		${LUAJIT_SO} \
-		-o ut_jni ${LIBS}
 
 ut_merge_df: ../test/ut_merge_df.c libqdf.so 
 	gcc ${CFLAGS} $(INCS) \

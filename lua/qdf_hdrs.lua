@@ -96,6 +96,43 @@ extern float
 F2_to_F4(
     bfloat16 x
     );
+
+
+
+typedef struct _cmem_rec_type {
+  void *data;
+  int64_t size;
+  qtype_t qtype;
+  char cell_name[15 +1];
+  bool is_foreign;
+  bool is_stealable;
+} CMEM_REC_TYPE;
+
+
+typedef struct _sclr_rec_type {
+  char name[15 +1];
+  union {
+    bool bl;
+
+    int8_t i1;
+    int16_t i2;
+    int32_t i4;
+    int64_t i8;
+
+    uint8_t ui1;
+    uint16_t ui2;
+    uint32_t ui4;
+    uint64_t ui8;
+
+    bfloat16 f2;
+    float f4;
+    double f8;
+    char *str;
+    tm_t tm1;
+  } val;
+  qtype_t qtype;
+
+} SCLR_REC_TYPE;
 // TODO: Keep in sync with lua/jtypes.lua
 typedef enum { 
   j_undef, 

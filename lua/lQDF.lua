@@ -1,7 +1,7 @@
 local ffi           = require 'ffi'
 local register_type = require 'register_type'
-local utils         = ffi.load("utils.so")
-local cQDF          = ffi.load("qdf.so")
+local utils         = ffi.load("librsutils.so")
+local cQDF          = ffi.load("libqdf.so")
 ffi.cdef([[
 extern size_t strlen(const char *s);
 extern void *malloc(size_t size);
@@ -18,9 +18,9 @@ typedef struct {
 ]])
 local QDF_hdrs = require 'qdf_hdrs' -- created by ../src/Makefile 
 ffi.cdef(QDF_hdrs)
-local utils_hdrs = require 'utils_hdrs' -- created by ../src/Makefile 
-local status = pcall(ffi.cdef, utils_hdrs)
-if ( not status ) then print("utils_hdrs already defined") end 
+-- local utils_hdrs = require 'utils_hdrs' -- created by ../src/Makefile 
+-- local status = pcall(ffi.cdef, utils_hdrs)
+-- if ( not status ) then print("utils_hdrs already defined") end 
 --================================
 local lqdfmem       = require 'lqdfmem'
 --================== 
@@ -45,7 +45,7 @@ local malloc_space_for_2d_array         = require 'malloc_space_for_2d_array'
 local widths           = require 'widths'
 local mk_c_qtypes      = require 'mk_c_qtypes'
 local trim_qtype       = require 'trim_qtype'
-local tbl_of_str_to_C_array = require 'tbl_of_str_to_C_array'
+local tbl_of_str_to_C_array = require 'RSUTILS/lua/tbl_of_str_to_C_array'
 local assemble_keys    = require 'assemble_keys'
 local sclr_as_lua_num  = require 'sclr_as_lua_num'
 local lua_num_as_sclr  = require 'lua_num_as_sclr'
@@ -232,8 +232,8 @@ function lQDF.pr(x)
   return ret_str
 end
 
-lQDF.__index = lqdf
-lQDF.__tostring = lqdf.pr
+lQDF.__index = lQDF
+lQDF.__tostring = lQDF.pr
 
 function lQDF:cmem_ptr()
   if ( not self._cmem ) then return ffi.NULL end 

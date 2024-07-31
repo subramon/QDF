@@ -12,5 +12,4 @@ X.F2 = ffi.sizeof("uint16_t")
 X.F4 = ffi.sizeof("float")
 X.F8 = ffi.sizeof("double")
 X.TM = ffi.sizeof("tm_t") 
-X.HL = ffi.sizeof("holiday_bmask_t") 
 return X

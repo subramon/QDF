@@ -14,8 +14,6 @@ $VG ut_cells_to_vals
 bash ut_concat.sh
 $VG ut_config mgcv
 bash ut_copy.sh
-# TODO P1 bash ut_date_to_hol.sh
-# bash ut_jni.sh
 $VG ut_line_to_cells
 $VG ut_logical_op
 $VG ut_rbc_makers
