@@ -1,0 +1,204 @@
+\documentclass[letterpaper,12pt]{article}
+\usepackage{helvet}
+\usepackage{fancyheadings}
+\usepackage{verbatim}
+\usepackage{hyperref}
+\pagestyle{fancy}
+\usepackage{graphicx}
+\setlength\textwidth{6.5in}
+\setlength\textheight{8.5in}
+\newtheorem{problem_statement}{Problem Statement}
+\newcommand{\TBC}{\framebox{\textbf{TO BE COMPLETED}}}
+\newtheorem{assumption}{Assumption}
+\newcommand{\be}{\begin{enumerate}}
+\newcommand{\ee}{\end{enumerate}}
+\newcommand{\bi}{\begin{itemize}}
+\newcommand{\ei}{\end{itemize}}
+\newtheorem{notation}{Notation}
+\newtheorem{definition}{Definition}
+\begin{document}
+\title{QDF --- a binary JSON format}
+\author{Ramesh Subramonian }
+\maketitle
+\thispagestyle{fancy}
+\lhead{}
+\chead{}
+\rhead{}
+% \lfoot{{\small Decision Sciences Team}}
+\cfoot{}
+\rfoot{{\small \thepage}}
+
+\abstract{This paper specifies the binary JSON grammar}
+
+\section{Grammar to parse binary data}
+
+A QDF must have one of the following types, called a {\tt jtype}
+\be
+\item null
+\item boolean
+\item number
+\item string
+\item array
+\item object (or map)
+  \ee
+
+Given the start of a QDF, one must be able to determine its length.
+\subsection{qtypes}
+\label{qtypes}
+\verbatiminput{qtypes}
+
+\subsection{Notations and Definitions}
+\begin{notation}
+poff = parent offset, currently unused \TBC
+\end{notation}
+
+\begin{notation}
+The term ``padding'' means increasing the width of a datum to be a multiple of 8,
+  with any additional bytes set to 0.
+\end{notation}
+\begin{notation}
+  \(mathrm{pad}(x)\) is the smallest number, \(y \geq x\), such that \(y\) isa
+  multiple of 8
+\end{notation}
+\begin{definition}
+An array is said to be ``uniform'' when all elements have the same qtype
+\end{definition}
+
+\section{null}
+\be
+\item Byte 0   contains jtype.
+\item Bytes 1 --- 3  unused
+\item Bytes 4 --- 7  contains poff
+\item rbc size is 8 bytes 
+  \ee
+
+\section{boolean}
+\be
+\item Byte 0  contains jtype.
+\item Bytes 1 contains qtype
+\item Bytes 2 contains value (0 or 1)
+\item Bytes 3  unused
+\item Bytes 4 --- 7  contains poff
+\item rbc size is 8 bytes 
+  \ee
+
+\section{number}
+\be
+\item Byte 0 contains jtype
+\item Byte 1 contains qtype
+\item Bytes 2 --- 3  unused
+\item Bytes 4 --- 7  contains poff
+\item Byte 8-15 contains value (number)
+\item rbc size is 16 bytes 
+  \ee
+\section{date}
+This is actually \verb+ typedef struct _tm_t+ specified in qtypes
+\be
+\item Byte 0 contains jtype
+\item Byte 1 contains qtype
+\item Bytes 2 --- 3  unused
+\item Bytes 4 --- 7  contains poff
+\item Byte 8-15 contains value (\verb+tm_t+)
+\item rbc size is 16 bytes 
+  \ee
+\section{string}
+\be
+\item Byte 0 contains jtype
+\item Byte 1 contains qtype, set to SC
+\item Bytes 2 --- 3  unused
+\item Bytes 4 --- 7  contains poff
+\item Byte 8-11 contains \verb+str_len\+ length of null-terminated string \(n\)
+\item Byte 12-15 contains \verb+str_size+, space allocated, \(s\)
+  \be
+\item \(s\) is a multiple of 8
+\item \(s \geq n+1\). 
+  \be
+\item The reason for the +1 is to have null characater termination
+\item The reason for allocationg more than we 
+need is to allow in-place updates without having to move things around.
+\ee
+\ee
+\item rbc size is 16 bytes plus \(s\)
+  \ee
+
+\section{array}
+\be
+\item Byte 0 contains jtype
+\item Byte 1 contains qtype
+\item Byte 2-3 contains width if uniform array; 0, otherwise
+\item Bytes 4 --- 7  contains poff
+
+
+\item Byte 8-11 contains \verb+arr_len+, number of elements resident \(n\)
+\item Byte 12-15 contains \verb+arr_size+, number of elements allocated, \(s\)
+
+\item Byte 16-19 contains size of RBC, \(l\)
+\item Byte 20-23 unused
+  \ee
+\subsection{uniform array}
+\be
+\item \(l = 24 + \mathrm{pad}(s \times w)\) bytes
+\ee
+\subsection{mixed array}
+\be
+\item \(n\) offsets stored as 4-byte integers, with padding applied. Call this
+  array \(O\). Then, \(O[i]\) tells us the location of the \(i\)th element of
+  the array as an offset from the start of this item.
+\item concatenation of the binary representation of each item. Since an item
+  must be a multiple of 8, this blob is also a multiple of 8.
+\ee
+\section{object}
+\be
+\item Byte 0 contains jtype
+\item Byte 1 contains qtype {\bf if} all items same type
+\item Byte 2 unused
+\item Byte 3 --- true => dataframe; else, false
+\item Bytes 4 --- 7  contains poff
+
+\item Byte 8-11 contains \verb+obj_len+, number of elements resident \(n\)
+\item Byte 12 --- 15 contains \verb+obj_arr_len+ if a dataframe; else, 0
+
+  Note that this can be 0 when a dataframe is being populated. But all columns
+  must have the same number of elements.
+
+\item Byte 16 --- 19 contains length of RBC, \(l\)
+\item Byte 20 --- 23 contains \verb+obj_arr_size+ if a dataframe; else, 0
+
+For a dataframe, 
+
+\item \(4 \times n\) bytes for key offsets, padded.
+\item \(4 \times n\) bytes for val offsets, padded 
+\item \(8 \times n\) bytes for (hash/idx), explained in
+  Section~\ref{fast_lookup}
+\item \(K\) bytes representing a concatenation of all keys, padded.
+  If the lengths of the keys are \(\{l_1, l_2, \ldots l_n\}\), then \(K =
+  n + \sum_{i=1}^{i=n} l_i \), with a null character between strings.
+\item the values 
+  \ee
+\subsection{Fast lookup of keys in object}
+\label{fast_lookup}
+To reduce the time to locate a key in an object, we store \(n\) hash/index
+pairs, each of which is a 64-bit unsigned integer. The top 48 bits represent a
+hash of the key and the bottom 16 bits represent the index of the key as stored.
+This limit the number of keys to 65536 --- we do not think this is an
+unreasonable limitation. Let us assume that an object has 3 keys, \(x, y, z\)
+stored in that order. Let us assume that \(h(x) = 30, h(y) = 10, h(z) = 20\). In
+that case, we store \(\{(10,1),(20,2),(30,3)\}\). Note that thee keys are
+storted in ascending order. 
+
+At run time, when we are given a key, we compute its hash. We perform a binary
+search on the hash/idx array and we have of 2 outcomes
+\be
+\item the hash does not exist and we inform the user accordingly
+\item the hash does exist. We pick up the index \(i\) and using the key
+  offset, compare the \(i^{\mathrm{th}}\) key withe one provided by the user.  Once again, we have 2 outcomes.
+  \be
+\item If we get a match, use the value offsets and \(i\) to return the
+  correesponding value.
+\item If not, we know that the hash/idx structure has failed us and we perform a
+  linear search of the keys until we either find what we want or report the key
+  to be missing
+  \ee
+  \ee
+
+\end{document}

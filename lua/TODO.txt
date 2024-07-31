@@ -1,0 +1,7 @@
+There should be a distinction between methods that modify in place
+and those that do not. This is IMPORTANT
+
+Write test_merge_df()
+
+Currently, numbers get loaded as F8. How do we allow user to specify qtype?
+

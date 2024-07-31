@@ -1,0 +1,40 @@
+Iterations = 1, Time per  13.050439
+Iterations = 1, Time per  29.937092
+Iterations = 1, Time per  29.288596
+Iterations = 1, Time per  24.074613
+Iterations = 1, Time per  47.833374
+Iterations = 1, Time per  10.972810
+Iterations = 1, Time per  25.402873
+Completed test/ut3.sh 1 ./data2/
+Iterations = 1, Time per  12.469472
+Iterations = 1, Time per  45.826327
+Iterations = 1, Time per  29.543570
+Iterations = 1, Time per  16.853043
+Iterations = 1, Time per  17.641427
+Iterations = 1, Time per  10.984859
+Iterations = 1, Time per  24.812923
+Completed test/ut3.sh 2 ./data2/
+Iterations = 1, Time per  11.857574
+Iterations = 1, Time per  37.405784
+Iterations = 1, Time per  20.656385
+Iterations = 1, Time per  32.468250
+Iterations = 1, Time per  17.478053
+Iterations = 1, Time per  35.299171
+Iterations = 1, Time per  42.091317
+Completed test/ut3.sh 3 ./data2/
+Iterations = 1, Time per  27.498420
+Iterations = 1, Time per  36.705856
+Iterations = 1, Time per  15.842156
+Iterations = 1, Time per  31.316685
+Iterations = 1, Time per  17.309479
+Iterations = 1, Time per  33.348114
+Iterations = 1, Time per  23.232183
+Completed test/ut3.sh 4 ./data2/
+Iterations = 1, Time per  26.290944
+Iterations = 1, Time per  13.560593
+Iterations = 1, Time per  13.769872
+Iterations = 1, Time per  39.021536
+Iterations = 1, Time per  13.476383
+Iterations = 1, Time per  10.753095
+Iterations = 1, Time per  12.264761
+Completed test/ut3.sh 5 ./data2/

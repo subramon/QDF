@@ -1,0 +1,15 @@
+1495443_2215_1.csv,Iters=1,Time_per=14.178342
+1495545_2215_1.csv,Iters=1,Time_per=33.053515
+1495665_2215_1.csv,Iters=1,Time_per=31.922895
+24163969_2215_1.csv,Iters=1,Time_per=24.717772
+3668050_2215_1.csv,Iters=1,Time_per=51.706374
+3668683_2215_1.csv,Iters=1,Time_per=12.150194
+4840523_2215_1.csv,Iters=1,Time_per=25.960704
+
+1495443_2215_2.csv,Iters=1,Time_per=13.676447
+1495545_2215_2.csv,Iters=1,Time_per=50.235739
+1495665_2215_2.csv,Iters=1,Time_per=31.372586
+24163969_2215_2.csv,Iters=1,Time_per=17.241923
+3668050_2215_2.csv,Iters=1,Time_per=19.576805
+3668683_2215_2.csv,Iters=1,Time_per=12.394681
+4840523_2215_2.csv,Iters=1,Time_per=26.809060

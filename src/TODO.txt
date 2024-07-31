@@ -1,0 +1,70 @@
+Check t_assign everywhere 
+
+Rrecv_info needs  to be coded and verified in R_caller and R_writer
+
+All allocations in rbc_*.c that survive the call should
+be posix_memaligned
+
+
+Problems in lua headers because of QDF_REC_TYPE in configs.h
+Make changes to formulas in mgcv similar to sray
+
+
+Feb 15 2023
+
+Resurrect scorer. Need to understand where multi-threading should be applied
+e.g., do we multi-thread R prepper and scorer and even forecast writer (instead
+of model writer)?
+Check with Mahdi as to whether plp2 needs to be done for scoring.
+
+
+Write tests for j_date type 
+Test null string
+Test empty array
+Test empty object
+Deal with printing SV in rbc.c
+Use is_read_only flag in QDF_REC_TYPE lrbcmem more aggressively
+
+Feb 1 2022
+
+========================================
+
+make sure you do not access soemthing in array (object?) if offset is 0 
+
+get_arr_val needs to be checked for when object rerturned
+
+Make_XX_array and make_object and ... should allocate more space than needed
+
+Don't terminate/spawn workers while Reload in progress
+
+Make sure that data produced is correct in
+curl -s  --url "localhost:8080/TaskInfo?mdse_item_i=45797&dist_loc_i=210&mode=data"
+
+
+
+How to keep TM size in widths.lua in sync with read_csv
+
+==================DONE DONE DONE========================
+March 29, 2023
+DONE: When a server fails in the middle i.e., it was good and 
+then went bad, we call check_Rserve which updates the Rserve data 
+structure and then signals main thread to re-assign the threads to 
+available servers
+
+Feb 28, 2023
+DONE In ut_jni.c, implement API that just does the preparation
+
+March 2 2023
+Handle case when bad value is supplied to SetRserve?
+
+Feb 27, 2022
+DONE 
+
+Add meta data to model before writing it out
+major version
+minor version
+date created
+tcin
+dist_loc_i
+anything else?
+

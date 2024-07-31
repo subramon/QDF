@@ -1,0 +1,71 @@
+-- Document how to use Docker
+colima stop
+colima start 
+
+docker images
+
+REPOSITORY          TAG                 IMAGE ID            
+rbc_lightr          latest              83e57cfbeb34        
+
+docker create 83e57cfbeb34
+docker ps
+
+CONTAINER ID        IMAGE               COMMAND                  
+4fb8a1d83c08        rbc_lightr          "/bin/sh -c 'tail -f…"   
+
+docker start 4fb8a1d83c08
+docker exec -it 4fb8a1d83c08 /bin/bash
+
+  553  brew install colima
+  554  ddev poweroff
+  555  colima stop
+  556  rm -r -f .colima/
+
+docker run -d  -it --mount type=bind,source=/Users/z003zfg/WORK/RBC/,target=/xyz/ 83e57cfbeb34
+
+
+
+
+Test compression
+Test incremental and solidify with a lightR_merge incr 
+Test model scoring
+HTTP interface for model scoring 
+  input is data, output is scoring, model assumed to exist
+  input is data and model, output is scoring
+
+Need to clean up UI with Utpal.
+
+Get access to test data for all components from Mahdi 
+Get access to Hive and scp the data
+
+Do real run of mode 2
+Drop PLP from checker
+
+Correctness!!!
+Finish rclient compressed data frame and share with Simon
+
+Mahdi feedback on decision tree paper
+
+
+Make sure that all ut* are represented in run_all.sh
+
+Test return of table of formulas for DFE
+
+Test length and width in lRBC
+
+Need to handle fact that I need a comma at the end of the header line
+to count the number of columns
+
+In read_csv, handle strptime case as below
+    /* In case the whole  input string  is consumed, the return value 
+       points to the null byte at the end of the string. */
+    // TODO: P3 This seg faults if ( *rslt == '\0' ) { go_BYE(-1); }
+  }
+
+Need to escape strings (see cmem.str_val)
+==========================================================
+Q: Are we using SIMDJSON?
+A: Yes, but lRBC.lua does not care about it. It accepts a table. It is 
+the responsibility of the caller to convert JSON to table using simdjson 
+and then passing the table to lRBC.lua
+  
