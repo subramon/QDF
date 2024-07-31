@@ -1,17 +1,17 @@
-local lrbcmem = require 'lrbcmem'
+local lqdfmem = require 'lqdfmem'
 local ffi = require 'ffi'
 
 for i = 1, 100 do
   local size = 10
-  local x = lrbcmem(size);
-  assert(type(x) == "lrbcmem")
+  local x = lqdfmem(size);
+  assert(type(x) == "lqdfmem")
   assert(x:size() == size)
 end
 for i = 1, 100 do
   local size = 16
   local name = "name_" .. tostring(i)
-  local x = lrbcmem({ size = size, name = name })
-  assert(type(x) == "lrbcmem")
+  local x = lqdfmem({ size = size, name = name })
+  assert(type(x) == "lqdfmem")
   assert(x:name() == name)
   assert(x:size() == size)
   x:nop()
@@ -19,16 +19,16 @@ end
 for i = 1, 100 do
   local size = 16
   local name = "name_" .. tostring(i)
-  local x = lrbcmem({ size = size, name = name })
+  local x = lqdfmem({ size = size, name = name })
   local d = assert(x:ptr())
-  d = ffi.cast("RBC_REC_TYPE *", d)
+  d = ffi.cast("qdf_REC_TYPE *", d)
   assert(d ~= ffi.NULL)
   assert(name == ffi.string(d[0].name))
 end
--- okay to create an empty lrbcmem
+-- okay to create an empty lqdfmem
 for i = 1, 100 do
-  local x = lrbcmem(0);
-  assert(type(x) == "lrbcmem")
+  local x = lqdfmem(0);
+  assert(type(x) == "lqdfmem")
   local d = assert(x:ptr())
   assert(d ~= ffi.NULL)
   assert(x:name() == nil)
@@ -38,11 +38,11 @@ end
 for i = 1, 100 do
   local size = 16
   local name = "name_" .. tostring(i)
-  local x = lrbcmem({ size = size, name = name })
+  local x = lqdfmem({ size = size, name = name })
   local y = x:clone()
-  assert(type(y) == "lrbcmem")
+  assert(type(y) == "lqdfmem")
   local d = assert(y:ptr())
-  d = ffi.cast("RBC_REC_TYPE *", d)
+  d = ffi.cast("qdf_REC_TYPE *", d)
   assert(d ~= ffi.NULL)
   assert(name == ffi.string(d[0].name))
   local p1 = x:ptr()
@@ -54,11 +54,11 @@ end
 for i = 1, 100 do
   local size = 16
   local name = "name_" .. tostring(i)
-  local x = lrbcmem({ size = size, name = name })
+  local x = lqdfmem({ size = size, name = name })
   local y = x:dupe()
-  assert(type(y) == "lrbcmem")
+  assert(type(y) == "lqdfmem")
   local d = assert(y:ptr())
-  d = ffi.cast("RBC_REC_TYPE *", d)
+  d = ffi.cast("qdf_REC_TYPE *", d)
   assert(d ~= ffi.NULL)
   assert(name == ffi.string(d[0].name))
   local p1 = x:ptr()

@@ -14,6 +14,7 @@ typedef enum {
   I2,
   I4,
   I8,
+  I16,
 
   F2,
   F4,
@@ -23,6 +24,7 @@ typedef enum {
   UI2,
   UI4,
   UI8,
+  UI16,
 
   SC,  // constant length strings
   SV,  // variable length strings
@@ -95,6 +97,10 @@ F4_to_F2(
 extern float
 F2_to_F4(
     bfloat16 x
+    );
+extern char *
+qtypes_as_lua_tbl(
+    void
     );
 
 

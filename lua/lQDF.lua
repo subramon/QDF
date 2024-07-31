@@ -189,7 +189,7 @@ local function trim(s)
 end
 --====================================
 local lQDF = {}
-lQDF__index = lqdf
+lQDF.__index = lQDF
 
 setmetatable(lQDF, {
    __call = function (cls, ...)
@@ -197,7 +197,7 @@ setmetatable(lQDF, {
    end,
 })
 
-register_type(lQDF, "lqdf")
+register_type(lQDF, "lQDF")
 
 
 local function get_data_ptr(x, cast_as)
@@ -529,7 +529,7 @@ function lQDF:get(idx, in_mode)
   local bak_out_qdf   = out_qdf -- IMPORTANT. Search for bak_ below
   local out_qdf_ptr   = ffi.cast("QDF_REC_TYPE *", out_qdf._qdfmem)
 
-  local out_sclr = ffi.new("QDF_SCLR_TYPE[?]", 1)
+  local out_sclr = ffi.new("SCLR_REC_TYPE[?]", 1)
 
   local status
   if ( type(idx) == "string") then 
@@ -544,6 +544,7 @@ function lQDF:get(idx, in_mode)
   end 
 
   local out_qtype =  tonumber(out_sclr[0].qtype)
+  -- print("out_qtype = ", rev_qtypes[out_qtype])
   if ( out_qtype > 0 ) then 
     -- we got back a scalar => we have a primitive type to return 
     if ( mode == "raw" ) then
@@ -683,7 +684,7 @@ function lQDF:keys()
   local n_keys = cQDF.x_get_arr_len(key_qdf)
   if ( n_keys <= 0 ) then return nil end  
   for kidx = 1, n_keys do 
-    local sclr = ffi.new("QDF_SCLR_TYPE[?]", 1)
+    local sclr = ffi.new("SCLR_REC_TYPE[?]", 1)
     local status = cQDF.get_arr_val(key_qdf[0].data, kidx-1, sclr, out_qdf)
     assert(status == 0)
     keys[kidx] = assert(ffi.string(sclr[0].val.str))
@@ -714,7 +715,7 @@ function lQDF:get_by_idx(idx)
   assert(type(idx) == "number")
   assert(idx >= 0)
 
-  local rslt = ffi.new("QDF_SCLR_TYPE[?]", 1)
+  local rslt = ffi.new("SCLR_REC_TYPE[?]", 1)
   local status = cQDF.qdf_get_by_idx(self:cmem_ptr(), idx, rslt)
   if ( status ~= 0 ) then return nil end 
   local x = sclr_as_lua_num(rslt)
@@ -726,7 +727,7 @@ lQDF.f_to_s = function(x, op, optargs)
   assert(type(x) == "lQDF")
   assert(x:jtype() == "j_array")
   assert(type(op) == "string")
-  local in_sclr  = ffi.new("QDF_SCLR_TYPE[?]", 1)
+  local in_sclr  = ffi.new("SCLR_REC_TYPE[?]", 1)
   -- handle special case for standard deviation
   if ( op == "sd" ) then
     assert(type(optargs) == "table")
@@ -737,9 +738,9 @@ lQDF.f_to_s = function(x, op, optargs)
     assert(type(optargs) == "nil")
   end
   --=================================
-  local out_sclr = ffi.new("QDF_SCLR_TYPE[?]", 1)
+  local out_sclr = ffi.new("SCLR_REC_TYPE[?]", 1)
   -- num_sclr returns number of values used to create out_sclr
-  local num_sclr  = ffi.new("QDF_SCLR_TYPE[?]", 1)
+  local num_sclr  = ffi.new("SCLR_REC_TYPE[?]", 1)
   if ( x:has_nn() ) then 
     local status = cQDF.f_to_s_nn(x:cmem_ptr(), x:get_nn():cmem_ptr(),
       op, in_sclr, out_sclr, num_sclr);
@@ -1482,7 +1483,7 @@ function lQDF.ifxthenyelsez(x, y, z)
     status = cQDF.ifxthenyelsez( xptr, yptr, zptr, cqdf_ptr)
   elseif ( type(z) == "number" ) then 
     local sclr = lua_num_as_sclr(z, y:qtype())
-    sclr = ffi.cast("QDF_SCLR_TYPE *", sclr)
+    sclr = ffi.cast("SCLR_REC_TYPE *", sclr)
     status = cQDF.ifxthenyelsez_sclr( xptr, yptr, sclr, cqdf_ptr)
   else
     error("")

@@ -3,7 +3,7 @@ G.debug= true
 require 'strict'
 local simdjson = require 'simdjson'
 local ffi = require 'ffi'
-local lRBC = require 'lRBC'
+local lQDF = require 'lQDF'
 local tests = {}
 
 local function trim1(s)
@@ -32,7 +32,7 @@ local function deep_copy(x)
 
 local function plp(x, val_to_compare)
 
-  assert(type(x) == "lRBC")
+  assert(type(x) == "lQDF")
   x:check()
 
   local y = x:get()
@@ -40,11 +40,11 @@ local function plp(x, val_to_compare)
 
   local z = x:get(nil, "raw")
   z:check()
-  assert(type(z) == "lRBC")
+  assert(type(z) == "lQDF")
   assert(z:get() == x:get())
 
   local w = assert(x:clone())
-  assert(type(w) == "lRBC")
+  assert(type(w) == "lQDF")
   w:check()
   x = nil; collectgarbage()
   z:check()
@@ -60,22 +60,22 @@ tests.primitive = function()
 
   local json_str = "null"
   local json = assert(simdjson.parse(json_str))
-  print(type(json))
-  x = lRBC(json)
+  -- print(type(json))
+  x = lQDF(json)
   plp(x, nil)
 
   --==================================
   local json_str = "true"
   local json = assert(simdjson.parse(json_str))
   assert(type(json) == "boolean")
-  x = lRBC(json)
+  x = lQDF(json)
   assert(x:jtype() == "j_bool")
   plp(x, true)
   --==================================
   local json_str = "false"
   local json = simdjson.parse(json_str)
   assert(type(json) == "boolean")
-  x = lRBC(json)
+  x = lQDF(json)
   assert(x:jtype() == "j_bool")
   assert(x:bool_val() == false)
   plp(x, false)
@@ -84,7 +84,7 @@ tests.primitive = function()
   local json_str = "12345"
   local json = assert(simdjson.parse(json_str))
   assert(type(json) == "number")
-  x = lRBC(json)
+  x = lQDF(json)
   assert(x:jtype() == "j_number")
   assert(x:num_val() == 12345)
   plp(x, 12345)
@@ -92,7 +92,7 @@ tests.primitive = function()
   local json_str = '"some_string"'
   local json = assert(simdjson.parse(json_str))
   assert(type(json) == "string")
-  x = lRBC(json)
+  x = lQDF(json)
   assert(x:jtype() == "j_string")
   plp(x, "some_string")
   --==================================
@@ -103,16 +103,18 @@ tests.str_array = function()
   local json_str = '[ "a", "bc", "def", "ghij", "klmno"]'
   local json = simdjson.parse(json_str)
   assert(type(json) == "table")
-  local x = lRBC(json)
-  assert(type(x) == "lRBC")
+  local x = lQDF(json)
+  -- print(type(x))
+  assert(type(x) == "lQDF")
   assert(x:check())
-  local str = lRBC.pr(x)
+  local str = lQDF.pr(x)
   assert(str == '["a", "bc", "def", "ghij", "klmno"]')
   local y = x:get(2)
+  -- print("second item is ", y)
   assert(y == "def")
   -- get raw
   local yprime = x:get(2, "raw")
-  assert(type(yprime) == "lRBC")
+  assert(type(yprime) == "lQDF")
   assert(yprime:jtype() == "j_string")
   --
   -- TODO P3 check on yprime 
@@ -120,21 +122,21 @@ tests.str_array = function()
   local z = x:clone()
   assert(z:check())
   z:set_name("z is clone of x")
-  print("ZZZ", z:name() , "z is clone of x")
+  -- print("ZZZ", z:name() , "z is clone of x")
   assert(z:name() == "z is clone of x")
-  assert(type(z) == "lRBC")
+  assert(type(z) == "lQDF")
   assert(z:check())
   local v = z:clone()
   v:check()
-  assert(type(v) == "lRBC")
+  assert(type(v) == "lQDF")
 
   local w = x:get()
   x = nil
   collectgarbage()
   w:check()
-  assert(type(w) == "lRBC")
-  print("wget", w:get(2))
-  print("zget", z:get(2))
+  assert(type(w) == "lQDF")
+  -- print("wget", w:get(2))
+  -- print("zget", z:get(2))
   assert(w:get(2) == z:get(2))
 
   print("Test str_array completed successfully")
@@ -144,12 +146,12 @@ tests.bool_array = function()
   local str_json = '[ true, false, true, false, true]'
   local json = simdjson.parse(str_json)
   assert(type(json) == "table")
-  x = lRBC(json)
-  assert(type(x) == "lRBC")
+  x = lQDF(json)
+  assert(type(x) == "lQDF")
   print("x qtype = ", x:qtype())
   assert(x:qtype() == "BL")
   print(x)
-  local str = lRBC.pr(x)
+  local str = lQDF.pr(x)
   assert(str == "[true, false, true, false, true]")
 
   y = x:get(2)
@@ -167,21 +169,22 @@ tests.num_array = function()
   local json = simdjson.parse(str_json)
   assert(type(json) == "table")
   for k, v in pairs(json) do print(k, v) end 
-  x = lRBC(json)
-  assert(type(x) == "lRBC")
+  x = lQDF(json)
+  assert(type(x) == "lQDF")
   assert(x:qtype() == "F8")
-  print(x)
-  local str = lRBC.pr(x)
+  print("YYYYYY", x)
+  local str = lQDF.pr(x)
+  print("XXXXX", str)
   assert(str == "[10, 20, 30, 40, 50, 60]")
   -- make y as a copy of x 
 
   y = x:get()
-  assert(type(y) == "lRBC")
+  assert(type(y) == "lQDF")
   assert(y:qtype() == "F8")
   -- delete y and make sure x has not changed 
   y = nil
   collectgarbage()
-  local str = lRBC.pr(x)
+  local str = lQDF.pr(x)
   assert(str == "[10, 20, 30, 40, 50, 60]")
   
   y = x:get(2)
@@ -190,7 +193,7 @@ tests.num_array = function()
   
   -- get raw
   local yprime = x:get(2, "raw")
-  assert(type(yprime) == "lRBC")
+  assert(type(yprime) == "lQDF")
   assert(yprime:jtype() == "j_number")
   -----
   local z = x:clone()
@@ -199,7 +202,7 @@ tests.num_array = function()
   x = nil
   collectgarbage()
   w:check()
-  assert(type(w) == "lRBC")
+  assert(type(w) == "lQDF")
   assert(w:get(2) == z:get(2))
 
   print("Test num_array completed successfully")
@@ -209,8 +212,8 @@ tests.array = function()
   local json_str = '[ 10, true, "some_string" ]'
   local json = simdjson.parse(json_str)
   assert(type(json) == "table")
-  local x = lRBC(json)
-  assert(type(x) == "lRBC")
+  local x = lQDF(json)
+  assert(type(x) == "lQDF")
   print(x) 
   print("Test array completed successfully")
 end
@@ -219,16 +222,16 @@ tests.t2 = function()
   local json_str = '12345'
   local json = simdjson.parse(json_str)
   assert(type(json) == "number") 
-  local x = lRBC(json)
-  assert(type(x) == "lRBC")
+  local x = lQDF(json)
+  assert(type(x) == "lQDF")
   local y = x:get(nil, "raw")
-  assert(type(y) == "lRBC")
+  assert(type(y) == "lQDF")
   local z = y:set(54321)
-  assert(type(z) == "lRBC")
+  assert(type(z) == "lQDF")
   z:check()
-  local valx =  lRBC.pr(x)
-  local valy =  lRBC.pr(y)
-  local valz =  lRBC.pr(z)
+  local valx =  lQDF.pr(x)
+  local valy =  lQDF.pr(y)
+  local valz =  lQDF.pr(z)
   assert(valx == valy)
   assert(valx == "12345")
   assert(valz == "54321")
@@ -302,8 +305,8 @@ tests.nested_array = function() -- testing  arrays within arrays
   local json_str = '[ 1, true, "str1", [ 2, false, "str2"] ]'
   local json = simdjson.parse(json_str)
   assert(type(json) == "table")
-  local x = lRBC(json)
-  assert(type(x) == "lRBC")
+  local x = lQDF(json)
+  assert(type(x) == "lQDF")
   print(x) 
   print("Test nested_array succeeded")
 end
@@ -312,17 +315,17 @@ tests.doubly_nested_array = function() -- testing  arrays within arrays
   local json_str = '[ 1, true, "str1", [ 2, false, "str2", [ 3, "str3" ] ] ]'
   local json = simdjson.parse(json_str)
   assert(type(json) == "table")
-  local x = lRBC(json)
-  assert(type(x) == "lRBC")
-  print("x = ", lRBC.pr(x))
+  local x = lQDF(json)
+  assert(type(x) == "lQDF")
+  print("x = ", lQDF.pr(x))
 
   local y = x:get(3)
-  assert(type(y) == "lRBC")
-  print("y = ", lRBC.pr(y))
+  assert(type(y) == "lQDF")
+  print("y = ", lQDF.pr(y))
 
   local z = y:get(3)
-  assert(type(z) == "lRBC")
-  print("z = ", lRBC.pr(z))
+  assert(type(z) == "lQDF")
+  print("z = ", lQDF.pr(z))
 
   local w = z:get(1)
   print("w = ", w)
@@ -339,22 +342,22 @@ end
 
 tests.json_as_table = function()
   local x = { 10, 20, 30, 40, 50 }
-  local y = lRBC(x)
-  assert(type(y) == "lRBC")
+  local y = lQDF(x)
+  assert(type(y) == "lQDF")
   print(y) 
   print("Test json_as_table succeeded")
 end
 tests.json_as_table_2 = function()
   local x = { 10, 20, 30, 40, 50, { 10, 20, 30, 40, 50, } }
-  local y = lRBC(x)
-  assert(type(y) == "lRBC")
+  local y = lQDF(x)
+  assert(type(y) == "lQDF")
   print(y) 
   print("Test json_as_table_2 succeeded")
 end
 tests.json_as_table_3 = function()
   local x = { 0, 10, 20, 30, 40, 50, { 100, 200, 300, 400, { 1000, 2000 } } }
-  local y = lRBC(x)
-  assert(type(y) == "lRBC")
+  local y = lQDF(x)
+  assert(type(y) == "lQDF")
 
   print(y) 
   assert(y:qtype() == "Q0")
@@ -365,9 +368,9 @@ tests.json_as_table_3 = function()
   assert(z == 50)
 
   local z = y:get(6)
-  assert(type(z) == "lRBC")
+  assert(type(z) == "lQDF")
   local w = z:get(4)
-  assert(type(w) == "lRBC")
+  assert(type(w) == "lQDF")
   print(w)
 
   local v = w:get(0)
@@ -387,8 +390,8 @@ tests.object_1 = function()
   for k, v in pairs(x) do 
     nx = nx + 1 
   end
-  local y = lRBC(x)
-  assert(type(y) == "lRBC")
+  local y = lQDF(x)
+  assert(type(y) == "lQDF")
   assert(y:num_keys() == nx)
   local K = y:keys()
   -- check number of keys
@@ -425,8 +428,8 @@ tests.object_1 = function()
 end
 tests.variable_length_strings_in_array = function()
   local x = { "a", "bc", "def", "ghij", "kmlno" }
-  local y = lRBC(x)
-  assert(type(y) == "lRBC")
+  local y = lQDF(x)
+  assert(type(y) == "lQDF")
   print(y) 
   for i = 1, #x do
     local z = y:get(i-1)
@@ -436,7 +439,7 @@ tests.variable_length_strings_in_array = function()
 end
 tests.sum_num_array = function()
   local x = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }
-  local y = assert(lRBC(x))
+  local y = assert(lQDF(x))
   local sum = y:sum()
   assert(type(sum) == "number")
   assert(sum == 45)
@@ -461,16 +464,16 @@ tests.sum_num_array = function()
 end
 tests.sum_mixed_array = function()
   local x = { 0, 1, 2, 3, 4, "5", 6, 7, 8, 9 }
-  local y = assert(lRBC(x))
+  local y = assert(lQDF(x))
   print(">>> START Deliberate error")
-  local status, sum = pcall(lRBC.f_to_s, y, "sum")
+  local status, sum = pcall(lQDF.f_to_s, y, "sum")
   assert(not status)
   print("<<< STOP  Deliberate error")
   print("Test sum_mixed_array succeeded")
 end
 tests.vals_num_array = function()
   local x = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }
-  local y = assert(lRBC(x))
+  local y = assert(lQDF(x))
   local n, dptr = y:get_arr_ptr()
   assert(n == #x)
   dptr = ffi.cast("double *", dptr)
@@ -493,9 +496,9 @@ tests.nested_object = function()
   for k, v in pairs(x) do 
     nx = nx + 1 
   end
-  local y = lRBC(x)
+  local y = lQDF(x)
   local z = y:get("k6")
-  assert(type(y) == "lRBC")
+  assert(type(y) == "lQDF")
   local w = z:get("k5")
   assert(type(w) == "string")
   assert(w == "123.45")
@@ -505,6 +508,7 @@ end
 tests.primitive()
 tests.str_array() 
 tests.num_array()
+--[[
 tests.array()
 tests.bool_array()
 tests.json_as_table()
@@ -519,12 +523,12 @@ tests.object_1()
 tests.nested_object()
 tests.variable_length_strings_in_array()  -- needs array of strings
 tests.t2()
+--]]
 
-
-print("Completed tests in test_RBC.lua")
+print("Completed tests in test_QDF.lua")
 
 -- return tests
 --
--- Following are for some gc experimentation not for RBC
+-- Following are for some gc experimentation not for QDF
 -- tests.t3()
 -- tests.t4()

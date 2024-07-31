@@ -144,7 +144,7 @@ qdf_cmem_dupe(
   QDF_REC_TYPE *x = NULL;
   status = posix_memalign(&z, 16, sizeof(QDF_REC_TYPE));
   x = (QDF_REC_TYPE *)z;
-  printf("size = %u \n", y->size); 
+  // printf("size = %u \n", y->size); 
   if ( status != 0 ) { WHEREAMI; return NULL; } 
   memcpy(x, y, sizeof(QDF_REC_TYPE));
   x->is_foreign = true; // IMPORTANT 

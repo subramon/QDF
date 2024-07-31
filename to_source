@@ -4,5 +4,5 @@ export SCLR_SRC_ROOT=$HOME/SCLR/
 export C2R_SRC_ROOT=$HOME/C2R/
 export QDF_SRC_ROOT=$HOME/QDF/
 export LUA_PATH="$HOME/?.lua;$QDF_SRC_ROOT/lua/?.lua;;"
-export LUA_CPATH="$RSUTILS_SRC_ROOT/src/?.so;$QDF_SRC_ROOT/src/?.so;;"
+export LUA_CPATH="$RSUTILS_SRC_ROOT/binding/src/?.so;$QDF_SRC_ROOT/src/?.so;;"
 export LD_LIBRARY_PATH="$QDF_SRC_ROOT/src/:$QDF_SRC_ROOT/src/gen/:$RSUTILS_SRC_ROOT/src/:$LD_LIBRARY_PATH"
