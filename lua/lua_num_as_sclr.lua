@@ -5,8 +5,8 @@ local function lua_num_as_sclr(num, qtype)
   if ( qtype == nil ) then qtype = "F8" end
   assert(type(qtype) == "string")
   --=========================================
-  local sclr = ffi.new("QDF_SCLR_TYPE[?]", 1)
-  sclr = ffi.cast("QDF_SCLR_TYPE *", sclr)
+  local sclr = ffi.new("SCLR_REC_TYPE[?]", 1)
+  sclr = ffi.cast("SCLR_REC_TYPE *", sclr)
   sclr[0].qtype = assert(qtypes[qtype])
 
   if ( qtype == "I1" ) then 
@@ -17,6 +17,14 @@ local function lua_num_as_sclr(num, qtype)
     sclr[0].val.i4 = num
   elseif ( qtype == "I8" ) then 
     sclr[0].val.i8 = num
+  elseif ( qtype == "UI1" ) then 
+    sclr[0].val.ui1 = num
+  elseif ( qtype == "UI2" ) then 
+    sclr[0].val.ui2 = num
+  elseif ( qtype == "UI4" ) then 
+    sclr[0].val.ui4 = num
+  elseif ( qtype == "UI8" ) then 
+    sclr[0].val.ui8 = num
   elseif ( qtype == "F4" ) then 
     sclr[0].val.f4 = num
   elseif ( qtype == "F8" ) then 

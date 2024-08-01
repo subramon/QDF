@@ -1,6 +1,7 @@
 local ffi           = require 'ffi'
 local register_type = require 'register_type'
-local utils         = ffi.load("librsutils.so")
+local cutils        = require 'libcutils'
+local rsutils       = ffi.load("librsutils.so") -- for read_csv()
 local cQDF          = ffi.load("libqdf.so")
 ffi.cdef([[
 extern size_t strlen(const char *s);
@@ -18,9 +19,9 @@ typedef struct {
 ]])
 local QDF_hdrs = require 'qdf_hdrs' -- created by ../src/Makefile 
 ffi.cdef(QDF_hdrs)
--- local utils_hdrs = require 'utils_hdrs' -- created by ../src/Makefile 
--- local status = pcall(ffi.cdef, utils_hdrs)
--- if ( not status ) then print("utils_hdrs already defined") end 
+local hfile = cutils.file_as_str(os.getenv("RSUTILS_SRC_ROOT") 
+  .. "/inc/read_csv.h")
+ffi.cdef(hfile) -- for read_csv()
 --================================
 local lqdfmem       = require 'lqdfmem'
 --================== 
@@ -32,7 +33,6 @@ local rev_jtypes     = require 'rev_jtypes'
 local pr_jtype       = require 'pr_jtype'
 local is_primitive   = require 'is_primitive'
 local is_numeric     = require 'is_numeric'
-local make_num_val   = require 'make_num_val'
 local is_complex     = require 'is_complex'
 local chk_tbl        = require 'chk_tbl'
 local numeric_types  = require 'numeric_types'
@@ -55,7 +55,10 @@ local unary_operators  = require 'unary_operators'
 local make_json -- NOTE: forward declaration
 
 local is_debug = false
-if ( G and G.debug ) then is_debug = true end 
+if ( G and G.debug ) then 
+  print("Debugging turned on in lQDF"); is_debug = true 
+end 
+
 
 --=================================
 local make_array_or_object = function(J, cqdf)
@@ -105,7 +108,7 @@ local make_array_or_object = function(J, cqdf)
         -- create a char ** vals array 
         local T, chk_nT = tbl_of_str_to_C_array(J)
         assert(chk_nT == nT)
-        print("max_len = ", max_len)
+        -- print("XX max_len = ", max_len)
         status = cQDF.make_SC_array(T, ffi.NULL, max_len, nT, 0, cqdf_ptr)
         assert(status == 0)
       else
@@ -222,6 +225,7 @@ function lQDF.pr(x)
   local n_used = ffi.new("int[?]", 1)
   -- NOTE: ffi.new() zero-fills the array by default
   local status = cQDF.pr_json(jptr, outbuf, n_used, ffi.NULL);
+  assert(status == 0)
   local cptr = ffi.cast("char *", outbuf[0].data)
   local str_len = ffi.C.strlen(cptr)
   assert(str_len > 0)
@@ -552,7 +556,7 @@ function lQDF:get(idx, in_mode)
       if ( out_qtype == qtypes.BL ) then
         status = cQDF.make_boolean(out_sclr[0].bval, out_qdf_ptr)
       elseif ( is_numeric(out_qtype) ) then
-        local num_val = make_num_val(out_sclr[0], out_qtype)
+        local num_val = sclr_as_lua_num(out_sclr[0], out_qtype)
         status = cQDF.make_number(num_val, out_qdf_ptr)
       elseif ( out_qtype == qtypes.SC ) then 
         local str_val = tostring(out_sclr[0].val.str)
@@ -566,7 +570,7 @@ function lQDF:get(idx, in_mode)
       return qdf
     else -- ( mode == "simplified" ) 
       if ( out_qtype == qtypes.BL ) then 
-        if ( out_sclr[0].val.bval ) then 
+        if ( out_sclr[0].val.bl ) then 
           return true
         else
           return false
@@ -920,10 +924,10 @@ function lQDF.read_csv(col_names, in_qtypes, csv_file, optargs)
   end
   assert(fld_sep ~= fld_delim)
   ---------------------------------
-  local nrows = utils.num_lines(csv_file)
+  local nrows = cutils.num_lines(csv_file)
   assert(nrows >= 1)
   if ( is_hdr ) then nrows = nrows - 1 end
-  local chk_ncols = utils.num_cols(csv_file)
+  local chk_ncols = cutils.num_cols(csv_file)
   assert(ncols == chk_ncols)
   ---------------------------------
   local c_qtypes = mk_c_qtypes(in_qtypes)
@@ -947,7 +951,7 @@ function lQDF.read_csv(col_names, in_qtypes, csv_file, optargs)
   local out = assert(malloc_space_for_2d_array(m, ncols, l_widths))
   out = ffi.cast("void ** const", out)
   local widths = ffi.NULL -- will need ot set this properly to support SC
-  local status = utils.read_csv(csv_file, c_qtypes, out, widths,
+  local status = rsutils.read_csv(csv_file, c_qtypes, out, widths,
     nrows, ncols, ",", '"', "\n", is_hdr)
   assert(status == 0)
   ---------------------------------

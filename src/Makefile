@@ -73,6 +73,7 @@ UNIT_TESTS += ut_unique
 UNIT_TESTS += ut_raw_to_csv
 
 LUA_HDRS := ../lua/qdf_hdrs.lua 
+UTIL_HDRS := ../lua/util_hdrs.lua 
 
 CLI += cli_get_dataset 
 CLI += cli_get_stats 
@@ -81,7 +82,7 @@ CLI += cli_pr_df
 CLI += cli_csv_to_qdf 
 CLI += cli_check 
 
-all: libqdf.so  ${GEN_LIBS} ${LUA_HDRS} # TODO  ${UNIT_TESTS} 
+all: libqdf.so  ${GEN_LIBS} ${LUA_HDRS} ${UTIL_HDRS} # TODO  ${UNIT_TESTS} 
 
 CC=gcc
 # Use clang as an extra compile time check
@@ -97,6 +98,9 @@ _stripped_cmem.h : ${CMEM_SRC_ROOT}/inc/cmem_struct.h
 
 _stripped_sclr.h : ${SCLR_SRC_ROOT}/inc/sclr_struct.h 
 	luajit cli_for_cdef.lua ${SCLR_SRC_ROOT}/inc/sclr_struct.h _stripped_sclr.h
+
+../lua/util_hdrs.lua :  ${RSUTILS_SRC_ROOT}/inc/read_csv.h 
+	cat ${RSUTILS_SRC_ROOT}/inc/read_csv.h > ../lua/util_hdrs.lua 
 
 ../lua/qdf_hdrs.lua : \
 		${RSUTILS_SRC_ROOT}/inc/qtypes.h \

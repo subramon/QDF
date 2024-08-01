@@ -21,7 +21,7 @@ chk_qtype(
 
     case UI1 : case UI2 : case UI4 : case UI8 : 
 
-    case SC : case SV : case TM : 
+    case SC : case SV : case TM1 : 
       break;
     default : 
       go_BYE(-1);
@@ -65,7 +65,7 @@ chk_jtype(
         }
       break;
     case j_date : 
-      if ( qtype != TM ) { go_BYE(-1); } 
+      if ( qtype != TM1 ) { go_BYE(-1); } 
       break;
     case j_string : 
       if ( qtype != SC ) { go_BYE(-1); } 
@@ -84,7 +84,7 @@ chk_jtype(
           case  UI1 : case  UI2 : case  UI4 : case  UI8 : 
           case  SC : 
           case  SV : 
-          case  TM : 
+          case  TM1 : 
             /* all is well */
             break;
           default : 
@@ -225,7 +225,7 @@ chk_date(
   if ( x == NULL ) { go_BYE(-1); }
   qdf_date_hdr_t *xp = (qdf_date_hdr_t *)x;
   if ( xp->jtype != j_date ) { go_BYE(-1); }
-  if ( xp->qtype != TM )     { go_BYE(-1); }
+  if ( xp->qtype != TM1 )     { go_BYE(-1); }
   if ( xp->unused1 != 0 )    { go_BYE(-1); }
   if ( xp->unused2 != 0 )    { go_BYE(-1); }
   if ( xp->poff != 0 )       { go_BYE(-1); }
@@ -407,7 +407,7 @@ chk_uniform_array(
     case SV : 
       go_BYE(-1); // TODO 
       break;
-    case TM : 
+    case TM1 : 
       if ( arr_width != sizeof(tm_t) ) { go_BYE(-1); } 
       break;
     default : 

@@ -19,10 +19,6 @@ flatten_sawtooth(
     case I2 : flatten_sawtooth_I2(src, n, dst); cBYE(status); break;
     case I4 : flatten_sawtooth_I4(src, n, dst); cBYE(status); break;
     case I8 : flatten_sawtooth_I8(src, n, dst); cBYE(status); break;
-//    case Q0 : case BL : 
-//    case F2 : case F4 : case F8 : 
-//    case UI1 : case UI2 : case UI4 : case UI8 : 
-//    case SC: case SV : case TM : case HL :  
     default : go_BYE(-1); 
   }
 BYE:

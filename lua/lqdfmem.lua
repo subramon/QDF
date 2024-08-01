@@ -1,3 +1,6 @@
+-- I should have documented why I created this capability
+-- I believe it was because I was running into trouble
+-- when using JNI
 local ffi               = require 'ffi'
 local register_type	= require 'register_type'
 --[==[

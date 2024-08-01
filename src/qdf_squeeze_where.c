@@ -163,7 +163,7 @@ squeeze_where(
         }
         memcpy((char *)valptr + (num_good * cwidth), buf, num_null * cwidth);
         break;
-      case TM : 
+      case TM1 : 
         for ( uint32_t j = 0; j < cn; j++ ) { 
           if ( wptr[j] == 1 ) { 
             ((tm_t *)valptr)[outidx++] = ((tm_t *)valptr)[j];

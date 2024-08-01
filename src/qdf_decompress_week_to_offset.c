@@ -30,8 +30,8 @@ decompress_week_to_offset(
 
   const void * const s1ptr = get_arr_ptr(s1x); 
 
-  status = make_num_array(NULL, s1n, 0, TM,  dst); cBYE(status);
-  tm_t *TMdst = get_arr_ptr(dst->data); 
+  status = make_num_array(NULL, s1n, 0, TM1,  dst); cBYE(status);
+  tm_t *TM1dst = get_arr_ptr(dst->data); 
 
   struct tm t1;
   tm_t basetm; status = x_get_date_val(s2, &basetm); cBYE(status);
@@ -51,7 +51,7 @@ decompress_week_to_offset(
       case UI2 : offset = ((const uint16_t * const)s1ptr)[i]; break;
       default : go_BYE(-1); break;
     }
-    TMdst[i] = H[baseidx+offset].mytm;
+    TM1dst[i] = H[baseidx+offset].mytm;
     // convert ltime to tm_t 
   }
 BYE:

@@ -11,5 +11,5 @@ X.UI8 = ffi.sizeof("uint64_t")
 X.F2 = ffi.sizeof("uint16_t")
 X.F4 = ffi.sizeof("float")
 X.F8 = ffi.sizeof("double")
-X.TM = ffi.sizeof("tm_t") 
+X.TM1 = ffi.sizeof("tm_t") 
 return X

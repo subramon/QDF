@@ -2,7 +2,7 @@ local ffi = require 'ffi'
 local qtypes = require 'qtypes'
 local function sclr_as_lua_num(x)
   assert(x)
-  x =  ffi.cast("QDF_SCLR_TYPE * ", x)
+  x =  ffi.cast("SCLR_REC_TYPE * ", x)
   if ( x[0].qtype == qtypes.I1 ) then
     return tonumber(x[0].val.i1)
   elseif ( x[0].qtype == qtypes.UI1 ) then

@@ -46,6 +46,50 @@ vseq_I8(
 #include "qtypes.h"
 // y := x op sclr 
 extern void
+vseq_UI1(
+    uint8_t *x,
+    uint8_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vseq_UI2(
+    uint16_t *x,
+    uint16_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vseq_UI4(
+    uint32_t *x,
+    uint32_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vseq_UI8(
+    uint64_t *x,
+    uint64_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
 vseq_F4(
     float *x,
     float sclr,
@@ -104,6 +148,50 @@ extern void
 vsneq_I8(
     int64_t *x,
     int64_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vsneq_UI1(
+    uint8_t *x,
+    uint8_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vsneq_UI2(
+    uint16_t *x,
+    uint16_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vsneq_UI4(
+    uint32_t *x,
+    uint32_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vsneq_UI8(
+    uint64_t *x,
+    uint64_t sclr,
     uint32_t n,
     int8_t *y
     );
@@ -178,6 +266,50 @@ vslt_I8(
 #include "qtypes.h"
 // y := x op sclr 
 extern void
+vslt_UI1(
+    uint8_t *x,
+    uint8_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vslt_UI2(
+    uint16_t *x,
+    uint16_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vslt_UI4(
+    uint32_t *x,
+    uint32_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vslt_UI8(
+    uint64_t *x,
+    uint64_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
 vslt_F4(
     float *x,
     float sclr,
@@ -236,6 +368,50 @@ extern void
 vsleq_I8(
     int64_t *x,
     int64_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vsleq_UI1(
+    uint8_t *x,
+    uint8_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vsleq_UI2(
+    uint16_t *x,
+    uint16_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vsleq_UI4(
+    uint32_t *x,
+    uint32_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vsleq_UI8(
+    uint64_t *x,
+    uint64_t sclr,
     uint32_t n,
     int8_t *y
     );
@@ -310,6 +486,50 @@ vsgt_I8(
 #include "qtypes.h"
 // y := x op sclr 
 extern void
+vsgt_UI1(
+    uint8_t *x,
+    uint8_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vsgt_UI2(
+    uint16_t *x,
+    uint16_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vsgt_UI4(
+    uint32_t *x,
+    uint32_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vsgt_UI8(
+    uint64_t *x,
+    uint64_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
 vsgt_F4(
     float *x,
     float sclr,
@@ -368,6 +588,50 @@ extern void
 vsgeq_I8(
     int64_t *x,
     int64_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vsgeq_UI1(
+    uint8_t *x,
+    uint8_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vsgeq_UI2(
+    uint16_t *x,
+    uint16_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vsgeq_UI4(
+    uint32_t *x,
+    uint32_t sclr,
+    uint32_t n,
+    int8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vsgeq_UI8(
+    uint64_t *x,
+    uint64_t sclr,
     uint32_t n,
     int8_t *y
     );
@@ -442,6 +706,50 @@ vsrem_I8(
 #include "qtypes.h"
 // y := x op sclr 
 extern void
+vsrem_UI1(
+    uint8_t *x,
+    uint8_t sclr,
+    uint32_t n,
+    uint8_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vsrem_UI2(
+    uint16_t *x,
+    uint16_t sclr,
+    uint32_t n,
+    uint16_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vsrem_UI4(
+    uint32_t *x,
+    uint32_t sclr,
+    uint32_t n,
+    uint32_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
+vsrem_UI8(
+    uint64_t *x,
+    uint64_t sclr,
+    uint32_t n,
+    uint64_t *y
+    );
+    
+#include "incs.h"
+#include "qtypes.h"
+// y := x op sclr 
+extern void
 vsbitwise_and_I1(
     uint8_t *x,
     uint8_t sclr,
@@ -476,270 +784,6 @@ vsbitwise_and_I4(
 // y := x op sclr 
 extern void
 vsbitwise_and_I8(
-    uint64_t *x,
-    uint64_t sclr,
-    uint32_t n,
-    uint64_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vsbitwise_or_I1(
-    uint8_t *x,
-    uint8_t sclr,
-    uint32_t n,
-    uint8_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vsbitwise_or_I2(
-    uint16_t *x,
-    uint16_t sclr,
-    uint32_t n,
-    uint16_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vsbitwise_or_I4(
-    uint32_t *x,
-    uint32_t sclr,
-    uint32_t n,
-    uint32_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vsbitwise_or_I8(
-    uint64_t *x,
-    uint64_t sclr,
-    uint32_t n,
-    uint64_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vsbitwise_xor_I1(
-    uint8_t *x,
-    uint8_t sclr,
-    uint32_t n,
-    uint8_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vsbitwise_xor_I2(
-    uint16_t *x,
-    uint16_t sclr,
-    uint32_t n,
-    uint16_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vsbitwise_xor_I4(
-    uint32_t *x,
-    uint32_t sclr,
-    uint32_t n,
-    uint32_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vsbitwise_xor_I8(
-    uint64_t *x,
-    uint64_t sclr,
-    uint32_t n,
-    uint64_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vslogical_and_I1(
-    uint8_t *x,
-    uint8_t sclr,
-    uint32_t n,
-    uint8_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vslogical_and_I2(
-    uint16_t *x,
-    uint16_t sclr,
-    uint32_t n,
-    uint16_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vslogical_and_I4(
-    uint32_t *x,
-    uint32_t sclr,
-    uint32_t n,
-    uint32_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vslogical_and_I8(
-    uint64_t *x,
-    uint64_t sclr,
-    uint32_t n,
-    uint64_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vslogical_or_I1(
-    uint8_t *x,
-    uint8_t sclr,
-    uint32_t n,
-    uint8_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vslogical_or_I2(
-    uint16_t *x,
-    uint16_t sclr,
-    uint32_t n,
-    uint16_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vslogical_or_I4(
-    uint32_t *x,
-    uint32_t sclr,
-    uint32_t n,
-    uint32_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vslogical_or_I8(
-    uint64_t *x,
-    uint64_t sclr,
-    uint32_t n,
-    uint64_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vsshift_left_I1(
-    uint8_t *x,
-    uint8_t sclr,
-    uint32_t n,
-    uint8_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vsshift_left_I2(
-    uint16_t *x,
-    uint16_t sclr,
-    uint32_t n,
-    uint16_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vsshift_left_I4(
-    uint32_t *x,
-    uint32_t sclr,
-    uint32_t n,
-    uint32_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vsshift_left_I8(
-    uint64_t *x,
-    uint64_t sclr,
-    uint32_t n,
-    uint64_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vsshift_right_I1(
-    uint8_t *x,
-    uint8_t sclr,
-    uint32_t n,
-    uint8_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vsshift_right_I2(
-    uint16_t *x,
-    uint16_t sclr,
-    uint32_t n,
-    uint16_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vsshift_right_I4(
-    uint32_t *x,
-    uint32_t sclr,
-    uint32_t n,
-    uint32_t *y
-    );
-    
-#include "incs.h"
-#include "qtypes.h"
-// y := x op sclr 
-extern void
-vsshift_right_I8(
     uint64_t *x,
     uint64_t sclr,
     uint32_t n,

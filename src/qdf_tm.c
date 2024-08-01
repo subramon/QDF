@@ -19,7 +19,7 @@ tm_extract(
   mcr_chk_null(ptr_dst, -1); 
   char *sx = ptr_src->data;
   jtype_t sjtype = get_jtype(sx); if ( sjtype != j_array ) { go_BYE(-1); }
-  qtype_t sqtype = get_qtype(sx); if ( sqtype != TM ) { go_BYE(-1); }
+  qtype_t sqtype = get_qtype(sx); if ( sqtype != TM1 ) { go_BYE(-1); }
   uint32_t sn    = get_arr_len(sx);  
   uint32_t ssz   = get_arr_size(sx);  
 
@@ -91,7 +91,7 @@ x_time_band(
   mcr_chk_null(ptr_out_qdf, -1); 
   char *x = ptr_in_qdf->data;
   jtype_t jtype = get_jtype(x); if ( jtype != j_array ) { go_BYE(-1); }
-  qtype_t qtype = get_qtype(x); if ( qtype != TM ) { go_BYE(-1); }
+  qtype_t qtype = get_qtype(x); if ( qtype != TM1 ) { go_BYE(-1); }
   uint32_t n    = get_arr_len(x); 
 
   status = make_num_array(NULL, n, 0, I1, ptr_out_qdf); cBYE(status);
@@ -149,7 +149,7 @@ qdf_mktime(
   mcr_chk_null(ptr_dst, -1); 
   char *sx = ptr_src->data;
   jtype_t sjtype = get_jtype(sx); if ( sjtype != j_array ) { go_BYE(-1); }
-  qtype_t sqtype = get_qtype(sx); if ( sqtype != TM ) { go_BYE(-1); }
+  qtype_t sqtype = get_qtype(sx); if ( sqtype != TM1 ) { go_BYE(-1); }
   uint32_t sn    = get_arr_len(sx); 
   uint32_t ssz   = get_arr_size(sx);  
 

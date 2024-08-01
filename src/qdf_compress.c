@@ -28,7 +28,7 @@ compress(
   uint32_t srcn = get_arr_len(srcx); if ( srcn == 0 ) { go_BYE(-1); } 
   const void * const srcptr = get_arr_ptr(srcx); 
   //------------------------------------------------------
-  if ( src_qtype != TM ) { 
+  if ( src_qtype != TM1 ) { 
     status = num_unique(srcptr, NULL, srcn, src_qtype, &n_uq); cBYE(status);
   }
   //------------------------------------------------------
@@ -55,7 +55,7 @@ compress(
         *ptr_compress_mode = c_F4_to_F2;
       }
       break;
-    case TM : 
+    case TM1 : 
         *ptr_compress_mode = c_week_to_offset;
         break;
     default : 
@@ -327,7 +327,7 @@ compress_week_to_offset(
 
   char *srcx = src->data;
   const void * const srcptr = get_arr_ptr(srcx); 
-  const tm_t * const TMsrc = (const tm_t * const)srcptr;
+  const tm_t * const TM1src = (const tm_t * const)srcptr;
   uint32_t srcn = get_arr_len(srcx); 
   tm_t min_tm;
 
@@ -336,9 +336,9 @@ compress_week_to_offset(
   time_t diff1 = (time_t)3072 * (time_t)7 * (time_t)86400;
   for ( uint32_t i = 0; i < srcn; i++ ) {
     struct tm t1;
-    t_assign(&t1, TMsrc+i);
+    t_assign(&t1, TM1src+i);
     this_t = tm2time(&t1);
-    if ( this_t < min_t ) { min_t = this_t; min_tm = TMsrc[i]; }
+    if ( this_t < min_t ) { min_t = this_t; min_tm = TM1src[i]; }
     if ( this_t > max_t ) { max_t = this_t; }
   }
   //-------------------------------------------------
@@ -348,7 +348,7 @@ compress_week_to_offset(
     uint8_t  *UI1dst1 = (uint8_t *)dst1ptr;
     for ( uint32_t i = 0; i < srcn; i++ )  {
       struct tm t1;
-      t_assign(&t1, TMsrc+i);
+      t_assign(&t1, TM1src+i);
       this_t = tm2time(&t1);
       time_t tmp =  (this_t - min_t) / (7 * 86400);
       if ( tmp > (time_t)UINT_MAX ) { go_BYE(-1); } 
@@ -361,7 +361,7 @@ compress_week_to_offset(
     uint16_t  *UI2dst1 = (uint16_t *)dst1ptr;
     for ( uint32_t i = 0; i < srcn; i++ )  {
       struct tm t1;
-      t_assign(&t1, TMsrc+i);
+      t_assign(&t1, TM1src+i);
       this_t = tm2time(&t1);
       time_t tmp =  (this_t - min_t) / (7 * 86400);
       if ( tmp > (time_t)USHRT_MAX ) { go_BYE(-1); } 

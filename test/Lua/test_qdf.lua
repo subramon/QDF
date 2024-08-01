@@ -1,5 +1,5 @@
 G = {}
-G.debug= true
+G.debug = true
 require 'strict'
 local simdjson = require 'simdjson'
 local ffi = require 'ffi'
@@ -168,13 +168,11 @@ tests.num_array = function()
   local str_json = '[ 10, 20, 30, 40, 50, 60]'
   local json = simdjson.parse(str_json)
   assert(type(json) == "table")
-  for k, v in pairs(json) do print(k, v) end 
+  -- for k, v in pairs(json) do print(k, v) end 
   x = lQDF(json)
   assert(type(x) == "lQDF")
   assert(x:qtype() == "F8")
-  print("YYYYYY", x)
   local str = lQDF.pr(x)
-  print("XXXXX", str)
   assert(str == "[10, 20, 30, 40, 50, 60]")
   -- make y as a copy of x 
 
@@ -214,6 +212,8 @@ tests.array = function()
   assert(type(json) == "table")
   local x = lQDF(json)
   assert(type(x) == "lQDF")
+  x:nop()
+  assert(x:check())
   print(x) 
   print("Test array completed successfully")
 end
@@ -508,7 +508,6 @@ end
 tests.primitive()
 tests.str_array() 
 tests.num_array()
---[[
 tests.array()
 tests.bool_array()
 tests.json_as_table()
@@ -523,7 +522,6 @@ tests.object_1()
 tests.nested_object()
 tests.variable_length_strings_in_array()  -- needs array of strings
 tests.t2()
---]]
 
 print("Completed tests in test_QDF.lua")
 

@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e
+luajit test_qdf.lua
 luajit test_append.lua
 # TODO NEED TO CREATE A NEW 0.rbc file luajit test_binld.lua
-luajit test_calc_offset.lua
-luajit test_chk1.lua
 luajit test_clamp.lua
+echo "PREMATURE"; exit 1
 luajit test_clone.lua
 luajit test_coalesce.lua
 # TODO luajit test_compress.lua

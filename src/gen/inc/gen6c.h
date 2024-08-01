@@ -4,6 +4,10 @@
 #include "vsrem_I2.h" 
 #include "vsrem_I4.h" 
 #include "vsrem_I8.h" 
+#include "vsrem_UI1.h" 
+#include "vsrem_UI2.h" 
+#include "vsrem_UI4.h" 
+#include "vsrem_UI8.h" 
 /*
 #include "vsrem_F4.h" 
 #include "vsrem_F8.h" 
@@ -22,6 +26,10 @@ vsrem(
 #include "vsmin_I2.h" 
 #include "vsmin_I4.h" 
 #include "vsmin_I8.h" 
+#include "vsmin_UI1.h" 
+#include "vsmin_UI2.h" 
+#include "vsmin_UI4.h" 
+#include "vsmin_UI8.h" 
 #include "vsmin_F4.h" 
 #include "vsmin_F8.h" 
 extern int
@@ -38,6 +46,10 @@ vsmin(
 #include "vsmax_I2.h" 
 #include "vsmax_I4.h" 
 #include "vsmax_I8.h" 
+#include "vsmax_UI1.h" 
+#include "vsmax_UI2.h" 
+#include "vsmax_UI4.h" 
+#include "vsmax_UI8.h" 
 #include "vsmax_F4.h" 
 #include "vsmax_F8.h" 
 extern int

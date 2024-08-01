@@ -98,7 +98,7 @@ make_date(
 
   qdf_date_hdr_t *xp = (qdf_date_hdr_t *)x;
   xp->jtype = j_date; 
-  xp->qtype = TM;
+  xp->qtype = TM1;
   xp->tm_val = tm_val;
 
   ptr_qdf->size = qdf_size;

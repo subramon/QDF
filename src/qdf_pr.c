@@ -1,4 +1,5 @@
 #include "incs.h"
+#include "cat_to_buf.h"
 #include "qdf_struct.h"
 #include "qdf_helpers.h"
 #include "qdf_xhelpers.h"
@@ -117,9 +118,9 @@ pr_json(
     )
 {
   int status = 0;
-  char valbuf[1024]; // make big enough to fit all types, incl. TM, 
-  uint32_t vblen = sizeof(valbuf);
-  double dval; int64_t ival; bool bval;
+  char valbuf[1024]; // make big enough to fit all types, incl. TM1, 
+  uint32_t vblen = sizeof(valbuf); 
+  double dval; int64_t valI8; bool bval;
   QDF_REC_TYPE qdf_keys, qdf_val; 
 
   mcr_chk_non_null(ptr_qdf, -1); 
@@ -165,8 +166,8 @@ pr_json(
       dval = get_num_val(x); 
       memset(valbuf, 0, vblen);
       if ( trunc(dval) == dval ) {
-        ival = (int64_t)dval;
-        snprintf(valbuf, vblen-1, "%" PRIi64, ival);
+        valI8 = (int64_t)dval;
+        snprintf(valbuf, vblen-1, "%" PRIi64, valI8);
       }
       else {
         snprintf(valbuf, vblen-1, "%lf", dval);
@@ -193,11 +194,10 @@ pr_json(
       break;
     case j_string : 
       {
-      uint32_t str_len = get_str_len(x); 
-      if ( str_len == 0 ) { go_BYE(-1); }  // TODO P2 Overkill?
       char * cptr = get_str_val(x); 
       mcr_pr_dquote();
-      status = cat_to_buf(&buf, &bufsz, ptr_len, cptr,str_len);cBYE(status);
+      status = cat_to_buf(&buf, &bufsz, ptr_len, cptr, 0);
+      cBYE(status);
       mcr_pr_dquote();
       }
       break;
@@ -220,23 +220,142 @@ pr_json(
 
         case F4 : 
         case F8 : 
-        case TM : 
+        case TM1 : 
+          {
+          const char * const valptr = get_arr_ptr(x); 
+          switch ( qtype ) {
+            case BL : 
+              for ( uint32_t i = 0; i < n_elem; i++ ) { 
+                mcr_pr_comma();
+                snprintf(valbuf, vblen-1, "%s", 
+                    ((const int8_t * const )valptr)[i] ? "true" : "false");
+                status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
+                cBYE(status);
+              }
+              break;
+            case I1 : 
+              for ( uint32_t i = 0; i < n_elem; i++ ) { 
+                mcr_pr_comma();
+                snprintf(valbuf, vblen-1, "%d", ((const int8_t *)valptr)[i]);
+                status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
+                cBYE(status);
+              }
+              break;
+            case UI1 : 
+              for ( uint32_t i = 0; i < n_elem; i++ ) { 
+                mcr_pr_comma();
+                snprintf(valbuf, vblen-1, "%d", ((const uint8_t *)valptr)[i]);
+                status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
+                cBYE(status);
+              }
+              break;
+            case I2 : 
+              for ( uint32_t i = 0; i < n_elem; i++ ) { 
+                mcr_pr_comma();
+                snprintf(valbuf, vblen-1, "%d", ((const int16_t *)valptr)[i]);
+                status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
+                cBYE(status);
+              }
+              break;
+            case UI2 : 
+              for ( uint32_t i = 0; i < n_elem; i++ ) { 
+                mcr_pr_comma();
+                snprintf(valbuf, vblen-1, "%u", ((const uint16_t *)valptr)[i]);
+                status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
+                cBYE(status);
+              }
+              break;
+            case I4 : 
+              for ( uint32_t i = 0; i < n_elem; i++ ) { 
+                mcr_pr_comma();
+                snprintf(valbuf, vblen-1, "%d", ((const int32_t *)valptr)[i]);
+                status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
+                cBYE(status);
+              }
+              break;
+            case I8 : 
+              for ( uint32_t i = 0; i < n_elem; i++ ) { 
+                mcr_pr_comma();
+                snprintf(valbuf, vblen-1, "%" PRIi64 "", ((const int64_t *)valptr)[i]);
+                status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
+                cBYE(status);
+              }
+              break;
+            case F4 : 
+              {
+              const float * const F4ptr = (const float * const )valptr;
+              for ( uint32_t i = 0; i < n_elem; i++ ) { 
+                mcr_pr_comma();
+                if ( ceil(F4ptr[i]) == floor(F4ptr[i]) ) { 
+                  valI8 = (int64_t)F4ptr[i];
+                  snprintf(valbuf, vblen-1, "%" PRIi64 "", valI8);
+                }
+                else {
+                  snprintf(valbuf, vblen-1, "%lf", F4ptr[i]);
+                }
+                status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
+                cBYE(status);
+              }
+              }
+              break;
+            case F8 : 
+              {
+              const double * const F8ptr = (const double * const)valptr;
+              for ( uint32_t i = 0; i < n_elem; i++ ) { 
+                mcr_pr_comma();
+                if ( trunc(F8ptr[i]) == F8ptr[i] ) { 
+                  valI8 = (int64_t)F8ptr[i];
+                  snprintf(valbuf, vblen-1, "%" PRIi64 "", valI8);
+                }
+                else {
+                  snprintf(valbuf, vblen-1, "%lf", F8ptr[i]);
+                }
+                status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
+                cBYE(status);
+              }
+              }
+              break;
+            case TM1 : 
+              {
+              const tm_t * const tptr = (const tm_t * const )valptr;
+              for ( uint32_t i = 0; i < n_elem; i++ ) { 
+                mcr_pr_comma();
+                snprintf(valbuf, vblen-1, "\"%d:%02d:%02d:%d:%d:%d\"", 
+                    tptr[i].tm_year + 1900,
+                    tptr[i].tm_mon + 1,
+                    tptr[i].tm_mday,
+                    tptr[i].tm_hour,
+                    tptr[i].tm_wday,
+                    // tptr[i].tm_min,
+                    // tptr[i].tm_sec,
+                    tptr[i].tm_yday);
+                status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
+                cBYE(status);
+              }
+              }
+              break;
+            default : 
+              go_BYE(-1);
+              break;
+          }
+          break;
+          }
         case SC :
           {
-          const char * cptr = get_arr_ptr(x); 
-          for ( uint32_t i = 0; i < n_elem; i++ ) { 
-            mcr_pr_comma();
-            mcr_pr_dquote();
-            status = cat_to_buf(&buf, &bufsz, ptr_len, cptr, 0);
-            cBYE(status);
-            mcr_pr_dquote();
-            cptr += width;
-          }
+            const char * cptr = get_arr_ptr(x); 
+            for ( uint32_t i = 0; i < n_elem; i++ ) { 
+              mcr_pr_comma();
+              mcr_pr_dquote();
+              status = cat_to_buf(&buf, &bufsz, ptr_len, cptr, 0);
+              cBYE(status);
+              mcr_pr_dquote();
+              cptr += width;
+            }
           }
           break;
         case Q0 : 
           {
-            void * ox = get_offsets_in_obj(x); 
+            void * ox = get_offsets_in_arr(x); 
             if ( ox == NULL ) { go_BYE(-1); }
             qdf_array_hdr_t *oxp = (qdf_array_hdr_t *)ox;
             if ( oxp->jtype != j_array ) { go_BYE(-1); }
@@ -368,7 +487,7 @@ pr_1(
       }
       break;
       //-------------------
-    case TM :
+    case TM1 :
       {
       const tm_t * const tmptr = (const tm_t * const )valptr;
       fprintf(fp, "%d-%02d-%02d", 
