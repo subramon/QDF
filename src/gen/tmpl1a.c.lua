@@ -1,6 +1,6 @@
 -- Template is used for rem, bitwise_and, bitwise_or, bitwise_xor
 -- z := x op y 
-return require 'Q/UTILS/lua/code_gen' { 
+return require 'RSUTILS/lua/code_gen' { 
   declaration = [[
 #include "incs.h"
 #include "qtypes.h"

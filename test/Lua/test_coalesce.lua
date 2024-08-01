@@ -2,7 +2,7 @@ G = {} -- to circumvent strict
 G.debug= true
 require 'strict'
 require 'strict'
-local lRBC = require 'lRBC'
+local lQDF = require 'lQDF'
 local tests = {}
 
 tests.coalesce = function ()
@@ -12,14 +12,14 @@ tests.coalesce = function ()
   assert(#qtypes == #col_names)
   local infile = "data_coalesce.csv"
   local optargs = { is_hdr = true }
-  local x = assert(lRBC.read_csv(col_names, qtypes, infile, optargs))
-  assert(type(x) == "lRBC")
+  local x = assert(lQDF.read_csv(col_names, qtypes, infile, optargs))
+  assert(type(x) == "lQDF")
   
   -- print(x)
   local f1 = x:get("f1"); f1:set_nn(x:get("nn_f1"))
   local f2 = x:get("f2"); f2:set_nn(x:get("nn_f2"))
 
-  local f3, num_nulls = lRBC.coalesce(f1, f2)
+  local f3, num_nulls = lQDF.coalesce(f1, f2)
   if ( num_nulls > 0 ) then
     assert(f3:has_nn())
   else

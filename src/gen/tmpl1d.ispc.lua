@@ -1,6 +1,6 @@
 -- Template is used for add, sub, mul, div for ispc 
 -- z := x + y 
-return require 'Q/UTILS/lua/code_gen' { 
+return require 'RSUTILS/lua/code_gen' { 
   declaration = [[
 extern  void
 ${fn}(

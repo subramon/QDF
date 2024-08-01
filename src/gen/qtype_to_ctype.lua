@@ -12,6 +12,7 @@ local function qtype_to_ctype(qtype)
   if ( qtype == "F4" ) then return "float" end 
   if ( qtype == "F8" ) then return "double" end 
   if ( qtype == "TM" ) then return "tm_t" end 
+  print("qtype = ", qtype)
   return nil
 end
 return qtype_to_ctype

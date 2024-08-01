@@ -1006,3 +1006,731 @@ vsbitwise_and_I8(
   }
 }
     
+#include "vsbitwise_and_UI1.h" 
+void
+vsbitwise_and_UI1(
+    uint8_t *x,
+    uint8_t sclr,
+    uint32_t n,
+    uint8_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint8_t)(x[i] & sclr); 
+  }
+}
+    
+#include "vsbitwise_and_UI2.h" 
+void
+vsbitwise_and_UI2(
+    uint16_t *x,
+    uint16_t sclr,
+    uint32_t n,
+    uint16_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint16_t)(x[i] & sclr); 
+  }
+}
+    
+#include "vsbitwise_and_UI4.h" 
+void
+vsbitwise_and_UI4(
+    uint32_t *x,
+    uint32_t sclr,
+    uint32_t n,
+    uint32_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint32_t)(x[i] & sclr); 
+  }
+}
+    
+#include "vsbitwise_and_UI8.h" 
+void
+vsbitwise_and_UI8(
+    uint64_t *x,
+    uint64_t sclr,
+    uint32_t n,
+    uint64_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint64_t)(x[i] & sclr); 
+  }
+}
+    
+#include "vsbitwise_or_I1.h" 
+void
+vsbitwise_or_I1(
+    uint8_t *x,
+    uint8_t sclr,
+    uint32_t n,
+    uint8_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint8_t)(x[i] | sclr); 
+  }
+}
+    
+#include "vsbitwise_or_I2.h" 
+void
+vsbitwise_or_I2(
+    uint16_t *x,
+    uint16_t sclr,
+    uint32_t n,
+    uint16_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint16_t)(x[i] | sclr); 
+  }
+}
+    
+#include "vsbitwise_or_I4.h" 
+void
+vsbitwise_or_I4(
+    uint32_t *x,
+    uint32_t sclr,
+    uint32_t n,
+    uint32_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint32_t)(x[i] | sclr); 
+  }
+}
+    
+#include "vsbitwise_or_I8.h" 
+void
+vsbitwise_or_I8(
+    uint64_t *x,
+    uint64_t sclr,
+    uint32_t n,
+    uint64_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint64_t)(x[i] | sclr); 
+  }
+}
+    
+#include "vsbitwise_or_UI1.h" 
+void
+vsbitwise_or_UI1(
+    uint8_t *x,
+    uint8_t sclr,
+    uint32_t n,
+    uint8_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint8_t)(x[i] | sclr); 
+  }
+}
+    
+#include "vsbitwise_or_UI2.h" 
+void
+vsbitwise_or_UI2(
+    uint16_t *x,
+    uint16_t sclr,
+    uint32_t n,
+    uint16_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint16_t)(x[i] | sclr); 
+  }
+}
+    
+#include "vsbitwise_or_UI4.h" 
+void
+vsbitwise_or_UI4(
+    uint32_t *x,
+    uint32_t sclr,
+    uint32_t n,
+    uint32_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint32_t)(x[i] | sclr); 
+  }
+}
+    
+#include "vsbitwise_or_UI8.h" 
+void
+vsbitwise_or_UI8(
+    uint64_t *x,
+    uint64_t sclr,
+    uint32_t n,
+    uint64_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint64_t)(x[i] | sclr); 
+  }
+}
+    
+#include "vsbitwise_xor_I1.h" 
+void
+vsbitwise_xor_I1(
+    uint8_t *x,
+    uint8_t sclr,
+    uint32_t n,
+    uint8_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint8_t)(x[i] ^ sclr); 
+  }
+}
+    
+#include "vsbitwise_xor_I2.h" 
+void
+vsbitwise_xor_I2(
+    uint16_t *x,
+    uint16_t sclr,
+    uint32_t n,
+    uint16_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint16_t)(x[i] ^ sclr); 
+  }
+}
+    
+#include "vsbitwise_xor_I4.h" 
+void
+vsbitwise_xor_I4(
+    uint32_t *x,
+    uint32_t sclr,
+    uint32_t n,
+    uint32_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint32_t)(x[i] ^ sclr); 
+  }
+}
+    
+#include "vsbitwise_xor_I8.h" 
+void
+vsbitwise_xor_I8(
+    uint64_t *x,
+    uint64_t sclr,
+    uint32_t n,
+    uint64_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint64_t)(x[i] ^ sclr); 
+  }
+}
+    
+#include "vsbitwise_xor_UI1.h" 
+void
+vsbitwise_xor_UI1(
+    uint8_t *x,
+    uint8_t sclr,
+    uint32_t n,
+    uint8_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint8_t)(x[i] ^ sclr); 
+  }
+}
+    
+#include "vsbitwise_xor_UI2.h" 
+void
+vsbitwise_xor_UI2(
+    uint16_t *x,
+    uint16_t sclr,
+    uint32_t n,
+    uint16_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint16_t)(x[i] ^ sclr); 
+  }
+}
+    
+#include "vsbitwise_xor_UI4.h" 
+void
+vsbitwise_xor_UI4(
+    uint32_t *x,
+    uint32_t sclr,
+    uint32_t n,
+    uint32_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint32_t)(x[i] ^ sclr); 
+  }
+}
+    
+#include "vsbitwise_xor_UI8.h" 
+void
+vsbitwise_xor_UI8(
+    uint64_t *x,
+    uint64_t sclr,
+    uint32_t n,
+    uint64_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint64_t)(x[i] ^ sclr); 
+  }
+}
+    
+#include "vslogical_and_I1.h" 
+void
+vslogical_and_I1(
+    uint8_t *x,
+    uint8_t sclr,
+    uint32_t n,
+    uint8_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint8_t)(x[i] && sclr); 
+  }
+}
+    
+#include "vslogical_and_I2.h" 
+void
+vslogical_and_I2(
+    uint16_t *x,
+    uint16_t sclr,
+    uint32_t n,
+    uint16_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint16_t)(x[i] && sclr); 
+  }
+}
+    
+#include "vslogical_and_I4.h" 
+void
+vslogical_and_I4(
+    uint32_t *x,
+    uint32_t sclr,
+    uint32_t n,
+    uint32_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint32_t)(x[i] && sclr); 
+  }
+}
+    
+#include "vslogical_and_I8.h" 
+void
+vslogical_and_I8(
+    uint64_t *x,
+    uint64_t sclr,
+    uint32_t n,
+    uint64_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint64_t)(x[i] && sclr); 
+  }
+}
+    
+#include "vslogical_and_UI1.h" 
+void
+vslogical_and_UI1(
+    uint8_t *x,
+    uint8_t sclr,
+    uint32_t n,
+    uint8_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint8_t)(x[i] && sclr); 
+  }
+}
+    
+#include "vslogical_and_UI2.h" 
+void
+vslogical_and_UI2(
+    uint16_t *x,
+    uint16_t sclr,
+    uint32_t n,
+    uint16_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint16_t)(x[i] && sclr); 
+  }
+}
+    
+#include "vslogical_and_UI4.h" 
+void
+vslogical_and_UI4(
+    uint32_t *x,
+    uint32_t sclr,
+    uint32_t n,
+    uint32_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint32_t)(x[i] && sclr); 
+  }
+}
+    
+#include "vslogical_and_UI8.h" 
+void
+vslogical_and_UI8(
+    uint64_t *x,
+    uint64_t sclr,
+    uint32_t n,
+    uint64_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint64_t)(x[i] && sclr); 
+  }
+}
+    
+#include "vslogical_or_I1.h" 
+void
+vslogical_or_I1(
+    uint8_t *x,
+    uint8_t sclr,
+    uint32_t n,
+    uint8_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint8_t)(x[i] || sclr); 
+  }
+}
+    
+#include "vslogical_or_I2.h" 
+void
+vslogical_or_I2(
+    uint16_t *x,
+    uint16_t sclr,
+    uint32_t n,
+    uint16_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint16_t)(x[i] || sclr); 
+  }
+}
+    
+#include "vslogical_or_I4.h" 
+void
+vslogical_or_I4(
+    uint32_t *x,
+    uint32_t sclr,
+    uint32_t n,
+    uint32_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint32_t)(x[i] || sclr); 
+  }
+}
+    
+#include "vslogical_or_I8.h" 
+void
+vslogical_or_I8(
+    uint64_t *x,
+    uint64_t sclr,
+    uint32_t n,
+    uint64_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint64_t)(x[i] || sclr); 
+  }
+}
+    
+#include "vslogical_or_UI1.h" 
+void
+vslogical_or_UI1(
+    uint8_t *x,
+    uint8_t sclr,
+    uint32_t n,
+    uint8_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint8_t)(x[i] || sclr); 
+  }
+}
+    
+#include "vslogical_or_UI2.h" 
+void
+vslogical_or_UI2(
+    uint16_t *x,
+    uint16_t sclr,
+    uint32_t n,
+    uint16_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint16_t)(x[i] || sclr); 
+  }
+}
+    
+#include "vslogical_or_UI4.h" 
+void
+vslogical_or_UI4(
+    uint32_t *x,
+    uint32_t sclr,
+    uint32_t n,
+    uint32_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint32_t)(x[i] || sclr); 
+  }
+}
+    
+#include "vslogical_or_UI8.h" 
+void
+vslogical_or_UI8(
+    uint64_t *x,
+    uint64_t sclr,
+    uint32_t n,
+    uint64_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint64_t)(x[i] || sclr); 
+  }
+}
+    
+#include "vsshift_left_I1.h" 
+void
+vsshift_left_I1(
+    uint8_t *x,
+    uint8_t sclr,
+    uint32_t n,
+    uint8_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint8_t)(x[i] << sclr); 
+  }
+}
+    
+#include "vsshift_left_I2.h" 
+void
+vsshift_left_I2(
+    uint16_t *x,
+    uint16_t sclr,
+    uint32_t n,
+    uint16_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint16_t)(x[i] << sclr); 
+  }
+}
+    
+#include "vsshift_left_I4.h" 
+void
+vsshift_left_I4(
+    uint32_t *x,
+    uint32_t sclr,
+    uint32_t n,
+    uint32_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint32_t)(x[i] << sclr); 
+  }
+}
+    
+#include "vsshift_left_I8.h" 
+void
+vsshift_left_I8(
+    uint64_t *x,
+    uint64_t sclr,
+    uint32_t n,
+    uint64_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint64_t)(x[i] << sclr); 
+  }
+}
+    
+#include "vsshift_left_UI1.h" 
+void
+vsshift_left_UI1(
+    uint8_t *x,
+    uint8_t sclr,
+    uint32_t n,
+    uint8_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint8_t)(x[i] << sclr); 
+  }
+}
+    
+#include "vsshift_left_UI2.h" 
+void
+vsshift_left_UI2(
+    uint16_t *x,
+    uint16_t sclr,
+    uint32_t n,
+    uint16_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint16_t)(x[i] << sclr); 
+  }
+}
+    
+#include "vsshift_left_UI4.h" 
+void
+vsshift_left_UI4(
+    uint32_t *x,
+    uint32_t sclr,
+    uint32_t n,
+    uint32_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint32_t)(x[i] << sclr); 
+  }
+}
+    
+#include "vsshift_left_UI8.h" 
+void
+vsshift_left_UI8(
+    uint64_t *x,
+    uint64_t sclr,
+    uint32_t n,
+    uint64_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint64_t)(x[i] << sclr); 
+  }
+}
+    
+#include "vsshift_right_I1.h" 
+void
+vsshift_right_I1(
+    uint8_t *x,
+    uint8_t sclr,
+    uint32_t n,
+    uint8_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint8_t)(x[i] >> sclr); 
+  }
+}
+    
+#include "vsshift_right_I2.h" 
+void
+vsshift_right_I2(
+    uint16_t *x,
+    uint16_t sclr,
+    uint32_t n,
+    uint16_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint16_t)(x[i] >> sclr); 
+  }
+}
+    
+#include "vsshift_right_I4.h" 
+void
+vsshift_right_I4(
+    uint32_t *x,
+    uint32_t sclr,
+    uint32_t n,
+    uint32_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint32_t)(x[i] >> sclr); 
+  }
+}
+    
+#include "vsshift_right_I8.h" 
+void
+vsshift_right_I8(
+    uint64_t *x,
+    uint64_t sclr,
+    uint32_t n,
+    uint64_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint64_t)(x[i] >> sclr); 
+  }
+}
+    
+#include "vsshift_right_UI1.h" 
+void
+vsshift_right_UI1(
+    uint8_t *x,
+    uint8_t sclr,
+    uint32_t n,
+    uint8_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint8_t)(x[i] >> sclr); 
+  }
+}
+    
+#include "vsshift_right_UI2.h" 
+void
+vsshift_right_UI2(
+    uint16_t *x,
+    uint16_t sclr,
+    uint32_t n,
+    uint16_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint16_t)(x[i] >> sclr); 
+  }
+}
+    
+#include "vsshift_right_UI4.h" 
+void
+vsshift_right_UI4(
+    uint32_t *x,
+    uint32_t sclr,
+    uint32_t n,
+    uint32_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint32_t)(x[i] >> sclr); 
+  }
+}
+    
+#include "vsshift_right_UI8.h" 
+void
+vsshift_right_UI8(
+    uint64_t *x,
+    uint64_t sclr,
+    uint32_t n,
+    uint64_t *y
+    )
+{
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    y[i] = (uint64_t)(x[i] >> sclr); 
+  }
+}
+    

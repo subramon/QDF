@@ -8,8 +8,8 @@ local qtype_to_ctype = require 'qtype_to_ctype'
 local unsigned_qtype = require 'unsigned_qtype'
 local is_in          = require 'RSUTILS/lua/is_in'
 local gen_code       = require 'RSUTILS/lua/gen_code'
-local QDF_ROOT = assert(os.getenv("QDF_ROOT"))
-local prefix = QDF_ROOT .. "/src/gen/"
+local QDF_SRC_ROOT = assert(os.getenv("QDF_SRC_ROOT"))
+local prefix = QDF_SRC_ROOT .. "/src/gen/"
 --==================================================
 local cat_src_file = prefix .. "src/gen7a.c"
 local cat_inc_file = prefix .. "inc/gen7a.h"
@@ -24,7 +24,7 @@ local ifp = io.open(cat_inc_file, "w")
 local comparators     = { ">", "<", }
 local operator_names  = { "min", "max", }
 assert(#comparators == #operator_names)
-local qtypes = { "I1", "I2", "I4", "I8", "F4", "F8", }
+local qtypes = { "I1", "I2", "I4", "I8", "UI1", "UI2", "UI4", "UI8", "F4", "F8", }
 local subs = {}
 subs.tmpl = prefix .. "tmpl7a.c.lua"
 subs.incdir = prefix .. "inc/"

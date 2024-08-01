@@ -1,5 +1,5 @@
 -- Template is used for seq
-return require 'Q/UTILS/lua/code_gen' { 
+return require 'RSUTILS/lua/code_gen' { 
   declaration = [[
 #include "incs.h"
 #include "qtypes.h"

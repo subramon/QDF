@@ -70,6 +70,7 @@ for j, op in ipairs(operator_names) do
     name          = operator_names[j]
     subs.operator = operators[j]
     subs.fn = "vs" .. name .. "_" .. qtype
+    print(subs.fn)
     --=================================
     if ( is_in(name, bitwise_ops ) ) then 
       subs.xqtype = unsigned_qtype(qtype)

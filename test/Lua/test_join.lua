@@ -1,7 +1,7 @@
 G = {} -- to avoid strict's complaints
 G.debug= true
 require 'strict'
-local lRBC = require 'lRBC'
+local lQDF = require 'lQDF'
 
 local tests = {}
 tests.t1  = function(
@@ -15,13 +15,13 @@ tests.t1  = function(
   local infile  = dstfile
   local optargs = { is_hdr = true }
   print("READING ", infile)
-  local dst = assert(lRBC.read_csv(cols, qtypes, infile, optargs))
+  local dst = assert(lQDF.read_csv(cols, qtypes, infile, optargs))
   local K = assert(dst:keys())
   assert(type(K) == "table")
   assert(dst:num_keys() == #cols)
   for i, k in ipairs(K) do 
     local x      = dst:get(k)
-    assert(type(x) == "lRBC")
+    assert(type(x) == "lQDF")
     assert(x:jtype() == "j_array")
     print("Verified " .. k)
   end
@@ -34,14 +34,14 @@ tests.t1  = function(
   local infile  = srcfile
   local optargs = { is_hdr = true }
   print("READING ", infile)
-  local src = assert(lRBC.read_csv(cols, qtypes, infile, optargs))
+  local src = assert(lQDF.read_csv(cols, qtypes, infile, optargs))
 
   -- extract fields of interest
   local src_key = src:get("key")
   local src_idx = src:get("idx")
   local src_val = src:get("val")
   -- do the join
-  local dst_val, nn_dst_val = lRBC.left_join(
+  local dst_val, nn_dst_val = lQDF.left_join(
      src_key, src_idx, src_val, dst_key, dst_idx)
   -- read correct result
   local qtypes  =  { "I4", "I1",  }
@@ -49,7 +49,7 @@ tests.t1  = function(
   local infile  = rsltsfile
   local optargs = { is_hdr = true }
   print("READING ", infile)
-  local rslt = assert(lRBC.read_csv(cols, qtypes, infile, optargs))
+  local rslt = assert(lQDF.read_csv(cols, qtypes, infile, optargs))
   -- compare rslt with dst_val
   local chk_val = rslt:get("val")
   assert(chk_val:num_elements() == dst_val:num_elements())

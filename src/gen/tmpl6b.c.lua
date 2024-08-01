@@ -1,5 +1,5 @@
 -- Template is used for vsadd, vssub, vsmul, vsdiv 
-return require 'Q/UTILS/lua/code_gen' {
+return require 'RSUTILS/lua/code_gen' {
   declaration = [[
 #include "incs.h"
 #include "qdf_struct.h"

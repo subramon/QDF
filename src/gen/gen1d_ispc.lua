@@ -10,9 +10,9 @@ local plpath = require 'pl.path'
 local qtype_to_ispctype = require 'qtype_to_ispctype'
 local qtype_to_ctype = require 'qtype_to_ctype'
 
-local gen_code = require 'Q/UTILS/lua/gen_code'
-local QDF_ROOT = assert(os.getenv("QDF_ROOT"))
-local prefix = QDF_ROOT .. "/src/gen/"
+local gen_code = require 'RSUTILS/lua/gen_code'
+local QDF_SRC_ROOT = assert(os.getenv("QDF_SRC_ROOT"))
+local prefix = QDF_SRC_ROOT .. "/src/gen/"
 local ops = { "add", "sub", "mul", "div", }
 --==================================================
 local cat_src_file = prefix .. "ispc/gen1d.ispc"

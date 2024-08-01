@@ -1,19 +1,19 @@
 G = {} 
 G.debug= true
 require 'strict'
-local lRBC = require 'lRBC'
+local lQDF = require 'lQDF'
 local tests = {}
 
 tests.t1 = function ()
   local in_x = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100,  } 
-  local x = lRBC(in_x)
-  assert(type(x) == "lRBC")
+  local x = lQDF(in_x)
+  assert(type(x) == "lQDF")
   assert(x:jtype() == "j_array")
   assert(x:qtype() == "F8")
 
   local y = x:convert("F4")
 
-  assert(type(y) == "lRBC")
+  assert(type(y) == "lQDF")
   assert(y:jtype() == "j_array")
   assert(y:qtype() == "F4")
 
@@ -22,7 +22,7 @@ tests.t1 = function ()
 
   local z = y:convert("I4")
 
-  assert(type(z) == "lRBC")
+  assert(type(z) == "lQDF")
   assert(z:jtype() == "j_array")
   assert(z:qtype() == "I4")
 
@@ -31,7 +31,7 @@ tests.t1 = function ()
 
   local w = z:convert("F4")
 
-  assert(type(w) == "lRBC")
+  assert(type(w) == "lQDF")
   assert(w:jtype() == "j_array")
   assert(w:qtype() == "F4")
 

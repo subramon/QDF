@@ -1,6 +1,6 @@
 -- -- Template is used for eq, neq, lt, leq, gt, geq
 -- // z := x + y 
-return require 'Q/UTILS/lua/code_gen' {
+return require 'RSUTILS/lua/code_gen' {
   declaration = [[
 #include "incs.h"
 #include "qtypes.h"

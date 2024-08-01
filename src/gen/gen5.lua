@@ -9,9 +9,9 @@
 local plfile = require 'pl.file'
 local plpath = require 'pl.path'
 local qtype_to_ctype = require 'qtype_to_ctype'
-local gen_code = require 'Q/UTILS/lua/gen_code'
-local QDF_ROOT = assert(os.getenv("QDF_ROOT"))
-local prefix = QDF_ROOT .. "/src/gen/"
+local gen_code = require 'RSUTILS/lua/gen_code'
+local QDF_SRC_ROOT = assert(os.getenv("QDF_SRC_ROOT"))
+local prefix = QDF_SRC_ROOT .. "/src/gen/"
 --==================================================
 local cat_src_file = prefix .. "src/gen5.c"
 local cat_inc_file = prefix .. "inc/gen5.h"
