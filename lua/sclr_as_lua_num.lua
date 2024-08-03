@@ -25,8 +25,6 @@ local function sclr_as_lua_num(x)
     return tonumber(x[0].val.f4)
   elseif ( x[0].qtype == qtypes.F8 ) then
     return tonumber(x[0].val.f8)
-  elseif ( x[0].qtype == qtypes.HL ) then
-    return tonumber(x[0].val.hl)
   else
     print("bad sclr_as_lua_num ")
     return nil

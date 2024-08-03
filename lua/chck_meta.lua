@@ -13,7 +13,7 @@ local function chck_meta(M)
     assert(#name1 > 0)
     qtype = trim_qtype(qtype)
     assert(qtypes[qtype])
-    if ( qtype == "TM" ) then 
+    if ( qtype == "TM1" ) then 
       local fmt = time_format_from_qtype(m.qtype)
       if ( fmt ) then 
         assert(( fmt == "%Y-%m-%d") or (fmt == "%m/%d/%Y"))

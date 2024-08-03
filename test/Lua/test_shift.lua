@@ -1,4 +1,4 @@
-local lRBC = require 'lRBC'
+local lQDF = require 'lQDF'
 local simdjson = require 'simdjson'
 local tests = {}
 
@@ -7,8 +7,8 @@ tests.shift = function()
   local str_json = '[ 10, 20, 30, 40, 50, 60]'
   local tbl_json = simdjson.parse(str_json)
   assert(type(tbl_json) == "table")
-  x = lRBC(tbl_json)
-  assert(type(x) == "lRBC")
+  x = lQDF(tbl_json)
+  assert(type(x) == "lQDF")
   assert(x:qtype() == "F8")
 
   local nx = x:num_elements()

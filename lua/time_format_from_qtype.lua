@@ -16,6 +16,6 @@ local function time_format_from_qtype(x)
   --]]
 end
 return time_format_from_qtype
--- local x = "TM:%Y-%m-%d"
+-- local x = "TM1:%Y-%m-%d"
 -- local y = time_format_from_qtype(x)
 -- print(x, y)

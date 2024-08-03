@@ -44,33 +44,30 @@ INCS += -I${C2R_SRC_ROOT}/rincs/
 INCS += -I${RSUTILS_SRC_ROOT}/inc/ 
 INCS += -I/usr/include/lua5.1/ # for lua.h
 
-GEN_LIBS = libgen.so libispc.so # when ispc is installed
 GEN_LIBS = libgen.so            # when ispc is NOT installed
-LCL_LIBS = ${GEN_LIBS} libqdf.so 
+GEN_LIBS = libgen.so libispc.so # when ispc is installed
+LCL_LIBS = libqdf.so librsutils.so ${GEN_LIBS}
 LUAJIT_SO := /usr/lib/x86_64-linux-gnu/libluajit-5.1.so.2
 #LUAJIT_SO := /usr/local/lib/libluajit-5.1.so
 LIBS := -lm 
 LIBS += -lpthread 
 LIBS += -ljansson
 LIBS += -levent 
-LIBS += ${LUAJIT_SO}
+# DO WE NEED THIS? LIBS += ${LUAJIT_SO}
 
-# TODO ALL UNIT TESTS 
-UNIT_TESTS := ut_concat 
-UNIT_TESTS += ut_copy 
-UNIT_TESTS += ut_jni 
-UNIT_TESTS += ut_line_to_cells
-UNIT_TESTS += ut_logical_op 
-UNIT_TESTS += ut_qdf_makers 
-UNIT_TESTS += ut_mixed 
-UNIT_TESTS += ut_pr 
-UNIT_TESTS += ut_qdf_named_vec
-UNIT_TESTS += ut_read_csv 
-UNIT_TESTS += ut_squeeze 
-UNIT_TESTS += ut_tm 
-UNIT_TESTS += ut_unique 
-#--------
-UNIT_TESTS += ut_raw_to_csv
+UNIT_TESTS := ut_read_csv 
+# TODO UNIT_TESTS += ut_concat 
+# TODO UNIT_TESTS += ut_copy 
+# TODO UNIT_TESTS += ut_line_to_cells
+#TODO UNIT_TESTS += ut_logical_op 
+#TODO UNIT_TESTS += ut_qdf_makers 
+#TODO UNIT_TESTS += ut_mixed 
+#TODO UNIT_TESTS += ut_pr 
+#TODO UNIT_TESTS += ut_qdf_named_vec
+#TODO UNIT_TESTS += ut_squeeze 
+#TODO UNIT_TESTS += ut_tm 
+#TODO UNIT_TESTS += ut_unique 
+#TODO UNIT_TESTS += ut_raw_to_csv
 
 LUA_HDRS := ../lua/qdf_hdrs.lua 
 UTIL_HDRS := ../lua/util_hdrs.lua 
@@ -82,7 +79,7 @@ CLI += cli_pr_df
 CLI += cli_csv_to_qdf 
 CLI += cli_check 
 
-all: libqdf.so  ${GEN_LIBS} ${LUA_HDRS} ${UTIL_HDRS} # TODO  ${UNIT_TESTS} 
+all: libqdf.so  ${GEN_LIBS} ${LUA_HDRS} ${UTIL_HDRS} ${UNIT_TESTS} 
 
 CC=gcc
 # Use clang as an extra compile time check
@@ -327,9 +324,10 @@ SRCS_UT_READ_CSV += logical_op.c
 SRCS_UT_READ_CSV += sum.c 
 SRCS_UT_READ_CSV += squeeze_where.c 
 
-ut_read_csv: ../test/ut_read_csv.c  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/ut_read_csv.c   \
-		-o ut_read_csv libqdf.so ${LIBS}
+ut_read_csv: ../test/C/ut_read_csv.c  libqdf.so 
+	gcc ${CFLAGS} $(INCS) ../test/C/ut_read_csv.c   \
+		-o ut_read_csv libqdf.so \
+		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
 ut_logical_op: ../test/ut_logical_op.o  libqdf.so 
 	gcc ${CFLAGS} $(INCS) ../test/ut_logical_op.o   \

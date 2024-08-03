@@ -2,24 +2,24 @@ G = {} -- to suppress strict
 G.debug= true
 require 'strict'
 require 'strict'
-local lRBC = require 'lRBC'
+local lQDF = require 'lQDF'
 local ffi  = require 'ffi'
 
 local tests = {}
 tests.t1 = function ()
   local col_names =  { "date1", "num1" }
-  local qtypes    =  { "TM:%Y-%m-%d", "F8" }
-  local infile    = "../../data/in2.csv"
+  local qtypes    =  { "TM1:%Y-%m-%d", "F8" }
+  local infile    = "../data/in2.csv"
   local optargs   = { is_hdr = true }
 
-  local x = assert(lRBC.read_csv(col_names, qtypes, infile, optargs))
-  assert(type(x) == "lRBC")
+  local x = assert(lQDF.read_csv(col_names, qtypes, infile, optargs))
+  assert(type(x) == "lQDF")
   assert(x:jtype() == "j_object")
   -- print(x)
 
   local y = x:get("date1")
   assert(y:jtype() == "j_array")
-  assert(y:qtype() == "TM")
+  assert(y:qtype() == "TM1")
 
   local n, tptr = y:get_arr_ptr()
   tptr = ffi.cast("tm_t *", tptr)
@@ -29,7 +29,7 @@ tests.t1 = function ()
   --=== time band 
   local recency = 4 
   local  tb = y:time_band(recency)
-  assert(type(tb) == "lRBC")
+  assert(type(tb) == "lQDF")
   assert(tb:jtype() == "j_array")
   assert(tb:qtype() == "I1")
   print(tb)

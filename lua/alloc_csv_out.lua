@@ -9,7 +9,7 @@ local function alloc_csv_out(qtypes, nrows, ncols)
   out = ffi.cast("void **", out)
   for i = 1, ncols do 
     local qtype = trim_qtype(qtypes[i])
-    local width = assert(widths[qtype])
+    local width = assert(widths[qtype], "Invalid qtype = " .. qtype)
     local sz = nrows * width
     local x = ffi.gc(ffi.C.malloc(sz), ffi.C.free)
     ffi.fill(x, sz)

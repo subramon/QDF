@@ -2,13 +2,17 @@
 VG="valgrind --leak-check=full --show-leak-kinds=all " 
 VG=" "
 set -e
-# pushd .
-# cd ..
-# source to_source
-# cd src/
-# make  clean
-# make 
-# cd ../test/
+pushd .
+cd ..
+source to_source
+cd src/
+make clean && make 
+popd 
+
+cd C/
+bash ut_read_csv.sh
+echo "PREMATURE $0 in $PWD "
+exit 1 
 
 $VG ut_cells_to_vals
 bash ut_concat.sh
@@ -21,7 +25,6 @@ $VG ut_mixed
 $VG ut_pr
 bash ut_raw_to_csv.sh
 $VG ut_rbc_named_vec
-bash ut_read_csv.sh
 bash ut_tcin_to_cluster.sh
 $VG ut_squeeze
 bash ut_tm.sh

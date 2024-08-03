@@ -1,4 +1,4 @@
-local lRBC = require 'lRBC'
+local lQDF = require 'lQDF'
 
 local tests = {}
 
@@ -10,8 +10,8 @@ tests.smear = function(infile, outfile)
   local in_col_names =  { "x1", "off1", }
   local in_qtypes = { "I4", "I4",  }
   local optargs = { is_hdr = true }
-  local indf = assert(lRBC.read_csv(in_col_names, in_qtypes, infile, optargs))
-  assert(type(indf) == "lRBC")
+  local indf = assert(lQDF.read_csv(in_col_names, in_qtypes, infile, optargs))
+  assert(type(indf) == "lQDF")
   local x = indf:get("x1")
   local o = indf:get("off1")
   local y = x:smear(o)

@@ -1,7 +1,7 @@
 G = {} -- to circumvent strict 
 G.debug= true
 require 'strict'
-local lRBC = require 'lRBC'
+local lQDF = require 'lQDF'
 local tests = {}
 tests.pr_csv = function()
   local T = {}
@@ -9,8 +9,8 @@ tests.pr_csv = function()
   for i = 1, n do 
     T[#T+1] = i
   end
-  local x = lRBC(T)
-  assert(type(x) == "lRBC")
+  local x = lQDF(T)
+  assert(type(x) == "lQDF")
   print(x)
   x:pr_csv("/tmp/_x")
   print("Test pr_csv completed ")

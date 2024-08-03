@@ -2,7 +2,7 @@ G = {} -- to bypass strict
 G.debug= true
 local plfile = require 'pl.file'
 require 'strict'
-local lRBC = require 'lRBC'
+local lQDF = require 'lQDF'
 local tests = {}
 
 --===============================
@@ -10,15 +10,15 @@ local cols =  { "i4", "i8", "f4", "val", "nn_val", }
 local qtypes = { "I4", "I8", "F4", "F4", "I1",  }
 local optargs = { is_hdr = true }
 local infile = "data_mk_sort_idx_2.csv"
-local indf = assert(lRBC.read_csv(cols, qtypes, infile, optargs))
+local indf = assert(lQDF.read_csv(cols, qtypes, infile, optargs))
 --===============================
 tests.mk_sort_idx_2 = function ()
   local src1 = indf:get("i4")
   local src2 = indf:get("i8")
-  assert(type(src2) == "lRBC")
+  assert(type(src2) == "lQDF")
 
-  local idx = lRBC.mk_sort_idx_2(src1, src2)
-  assert(type(idx) == "lRBC")
+  local idx = lQDF.mk_sort_idx_2(src1, src2)
+  assert(type(idx) == "lQDF")
   assert(idx:jtype() == "j_array")
   assert(idx:qtype() == "I4")
   -- check that sort order is good 
@@ -50,9 +50,9 @@ tests.empty_df = function ()
   local qtypes = { "I4", "I8", "F4", "F4", "I1",  }
 
   local sz = indf:obj_arr_len()
-  local outdf = lRBC.make_empty_data_frame(cols, qtypes, sz)
-  assert(type(outdf) == "lRBC")
-  local idx = lRBC.seq(0, 1, "I4", sz, 0)
+  local outdf = lQDF.make_empty_data_frame(cols, qtypes, sz)
+  assert(type(outdf) == "lQDF")
+  local idx = lQDF.seq(0, 1, "I4", sz, 0)
 
   for k, col in ipairs(cols) do
     outdf:get(col):set(indf:get(col):permute(idx))
@@ -71,7 +71,7 @@ tests.empty_df = function ()
   print("Test empty_df completed successfully")
 end
 tests.srt_grp_cnt_0 = function()
-  local x = lRBC({4, 4, 7, 7, 7, 9, 9, 9, 9, })
+  local x = lQDF({4, 4, 7, 7, 7, 9, 9, 9, 9, })
   local y = x:convert("I4")
   local z = y:srt_grp_cnt()
   local str = tostring(z)
@@ -89,7 +89,7 @@ tests.fill = function()
   local infill = outdf:get("val")
   infill:set_nn(outdf:get("nn_val"))
   local outfill = infill:fill(grp)
-  assert(type(outfill) == "lRBC")
+  assert(type(outfill) == "lQDF")
   assert(outfill:jtype() == "j_array")
   assert(outfill:qtype() == "F4")
   print(infill)

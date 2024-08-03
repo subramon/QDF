@@ -1,6 +1,6 @@
 local simdjson = require 'simdjson'
 local ffi = require 'ffi'
-local lRBC = require 'lRBC'
+local lQDF = require 'lQDF'
 local tests = {}
 
 tests.set = function()
@@ -9,16 +9,16 @@ tests.set = function()
   local str_json = '[ 10, 20, 30, 40, 50, 60, 10, 20, 30, 40, 50, 60]'
   local json = simdjson.parse(str_json)
   assert(type(json) == "table")
-  local x = lRBC(json)
-  assert(type(x) == "lRBC")
+  local x = lQDF(json)
+  assert(type(x) == "lQDF")
   print(x)
 
   -- create y
   local str_json = '[ 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6]'
   local json = simdjson.parse(str_json)
   assert(type(json) == "table")
-  local y = lRBC(json)
-  assert(type(y) == "lRBC")
+  local y = lQDF(json)
+  assert(type(y) == "lQDF")
 
   x:set(y)
   print(x)

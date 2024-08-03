@@ -1,4 +1,4 @@
-local lRBC = require 'lRBC'
+local lQDF = require 'lQDF'
 local tests = {}
 
 tests.squeeze = function ()
@@ -8,11 +8,11 @@ tests.squeeze = function ()
   assert(#qtypes == #col_names)
   local infile = "../squeeze1.csv"
   local optargs = { is_hdr = true }
-  local x = assert(lRBC.read_csv(col_names, qtypes, infile, optargs))
-  assert(type(x) == "lRBC")
+  local x = assert(lQDF.read_csv(col_names, qtypes, infile, optargs))
+  assert(type(x) == "lQDF")
   assert(x:jtype() == "j_object")
   local y = x:get("f1")
-  assert(type(y) == "lRBC")
+  assert(type(y) == "lQDF")
   assert(y:jtype() == "j_array")
   assert(y:qtype() == "I4")
   assert(y:num_elements() == 4)
@@ -22,13 +22,13 @@ tests.squeeze = function ()
   local n = x:squeeze_where(w)
   assert(n == 2)
   local y = x:get("f2")
-  assert(type(y) == "lRBC")
+  assert(type(y) == "lQDF")
   assert(y:check())
   assert(y:jtype() == "j_array")
   assert(y:qtype() == "F8")
   assert(y:arr_size() == 4) -- note no change
   assert(y:arr_len() == 2) -- note change
-  local s = lRBC.pr(y)
+  local s = lQDF.pr(y)
   print(s)
   assert(s == "[10, 30]")
   local nuq = y:num_unique()

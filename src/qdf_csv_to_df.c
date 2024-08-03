@@ -1,4 +1,5 @@
 #include "incs.h"
+#include "multiple.h"
 #include "qdf_struct.h"
 #include "cat_to_buf.h"
 #include "qdf_helpers.h"
@@ -9,6 +10,25 @@
 #include "qdf_makers.h"
 #include "qdf_csv_to_df.h"
 
+static uint32_t
+extract_width_SC(
+    char * const str_qtype
+    )
+{
+  int status = 0;
+  if ( str_qtype == NULL ) { go_BYE(-1); }
+  if ( strlen(str_qtype) < 4 ) { go_BYE(-1); } 
+  char *cptr = str_qtype + strlen("SC:");
+  if ( *cptr == '\0' ) { go_BYE(-1); } 
+  for ( char *xptr = cptr; *xptr != '\0'; xptr++ ) { 
+    if ( !isdigit(*xptr) ) { go_BYE(-1); }
+  }
+  int itmp = atoi(cptr); if ( itmp < 2 ) { go_BYE(-1); }
+  // need width of 1+1 for nullc
+  uint32_t w = (uint32_t)itmp;
+BYE:
+  if ( status < 0 ) { return 0; } else { return w; }
+}
 // TODO P2 Add is_load to read_csv and to this function 
 // input is a CSV file, output is a QDF dataframe
 int
@@ -62,7 +82,7 @@ qdf_csv_to_df(
       width = extract_width_SC(str_qtypes[i]);
       if ( width == 0 ) { go_BYE(-1); }
       // width needs to be multiple of 8
-      width = multiple8((uint32_t)width);
+      width = multiple_n((uint32_t)width, 8);
     }
     else { 
       qtype = get_c_qtype(str_qtypes[i]);

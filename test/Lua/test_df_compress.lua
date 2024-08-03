@@ -9,7 +9,7 @@ local df_decompress         = require 'df_decompress'
 local mk_week_start_date    = require 'mk_week_start_date'
 --===================
 local cols = { "co_loc_i", "sls_unit_q", "week_start_date"}
-local qtypes = { "I2",  "F4", "TM:%Y-%m-%d"}
+local qtypes = { "I2",  "F4", "TM1:%Y-%m-%d"}
 local optargs = { is_hdr = true }
 
 -- TODO P2 This function is also in lRBC. Bad idea to duplicate code

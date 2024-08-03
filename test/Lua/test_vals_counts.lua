@@ -1,10 +1,10 @@
 G = {} -- to suprpess strict
 G.debug= true
 require 'strict'
-local ffi = require 'ffi'
-local cqtypes = require 'cqtypes'
+local ffi      = require 'ffi'
+local cutils   = require 'libcutils'
 local simdjson = require 'simdjson'
-local lRBC = require 'lRBC'
+local lQDF     = require 'lQDF'
 
 local tests = {}
 tests.t1  = function()
@@ -16,7 +16,7 @@ tests.t1  = function()
     local str_json = '[ 1, 2, 3, 4, 2, 3, 4, 3, 4, 4 ] '
     local json = simdjson.parse(str_json)
     assert(type(json) == "table")
-    local x = lRBC(json):convert(qtype)
+    local x = lQDF(json):convert(qtype)
 
     local y, z = x:vals_counts()
     assert(y:num_elements() == 4)
@@ -25,8 +25,8 @@ tests.t1  = function()
     assert(z:qtype() == "I4")
     assert(y:jtype() == "j_array")
     assert(z:jtype() == "j_array")
-    local yctype = cqtypes[y:qtype()]
-    local zctype = cqtypes[z:qtype()]
+    local yctype = cutils.str_qtype_to_str_ctype(y:qtype())
+    local zctype = cutils.str_qtype_to_str_ctype(z:qtype())
     print("yctype = ", yctype)
     print("zctype = ", zctype)
     local ny, yptr = y:get_arr_ptr()

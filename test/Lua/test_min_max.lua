@@ -1,14 +1,14 @@
 G = {} -- to circumvent strict 
 G.debug= true
 require 'strict'
-local lRBC = require 'lRBC'
+local lQDF = require 'lQDF'
 local tests = {}
 
 tests.min_max = function ()
   local in_x = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100,  } 
-  local x = lRBC(in_x)
+  local x = lQDF(in_x)
   local in_y = { 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, }
-  local y = lRBC(in_y)
+  local y = lQDF(in_y)
   print(x)
   print(y)
   --=================

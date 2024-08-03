@@ -2,7 +2,7 @@ lRBC = require 'lRBC'
 ffi  = require 'ffi'
 
 col_names =  { "date1", "num1" }
-qtypes    =  { "TM:%Y-%m-%d", "F8" }
+qtypes    =  { "TM1:%Y-%m-%d", "F8" }
 infile    = "../test/in2.csv"
 optargs   = { is_hdr = true }
 

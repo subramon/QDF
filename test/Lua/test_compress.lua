@@ -124,7 +124,7 @@ tests.compress_I2_I4 = function ()
 end
 tests.compress_date = function ()
   local col_names =  { "x",  }
-  local qtypes = { "TM:%Y-%m-%d", }
+  local qtypes = { "TM1:%Y-%m-%d", }
   local infile = "data_compress_date.csv"
   local optargs = { is_hdr = true }
   local df = assert(lRBC.read_csv(col_names, qtypes, infile, optargs))
@@ -161,7 +161,7 @@ tests.compress_date = function ()
   w._cmem = crbc
   assert(type(w) == "lRBC")
   assert(w:jtype() == "j_array")
-  assert(w:qtype() == "TM")
+  assert(w:qtype() == "TM1")
   assert(w:num_elements() == x:num_elements())
   print(w)
 

@@ -29,8 +29,6 @@ local function lua_num_as_sclr(num, qtype)
     sclr[0].val.f4 = num
   elseif ( qtype == "F8" ) then 
     sclr[0].val.f8 = num
-  elseif ( qtype == "HL" ) then 
-    sclr[0].val.hl = num
   else
     print("ERROR in lua_num_as_sclr")
     return nil

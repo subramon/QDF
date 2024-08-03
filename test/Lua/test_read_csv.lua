@@ -1,35 +1,21 @@
-local ffi = require 'ffi'
-ffi.cdef([[
-extern void *malloc(size_t);
-extern void free(void *);
-typedef struct {
-   char *fpos;
-   void *base;
-   unsigned short handle;
-   short flags;
-   short unget;
-   unsigned long alloc;
-   unsigned short buffincrement;
-} FILE;
-    ]])
+G = {}
 local plpath = require 'pl.path'
 require 'strict' -- put this after penlight because of problem in penlight
-local utils = ffi.load("utils")
-local RBC_hdrs = require 'RBC_hdrs' -- created by ../src/Makefile 
-ffi.cdef(RBC_hdrs)
-local utils_hdrs = require 'utils_hdrs' -- created by ../src/Makefile 
-ffi.cdef(utils_hdrs)
+local ffi    = require 'ffi'
+local lQDF   = require 'lQDF'
+local cutils = require 'libcutils'
 local mk_c_qtypes = require 'mk_c_qtypes'
 local alloc_csv_out = require 'alloc_csv_out'
+local rsutils = ffi.load("librsutils.so")
 
 local tests = {}
 tests.read_csv_1 = function ()
   local infile = "in1.csv"
   assert(plpath.isfile(infile))
   local is_hdr = true
-  local nrows = utils.num_lines(infile)
+  local nrows = cutils.num_lines(infile)
   assert(nrows >= 1)
-  local ncols = utils.num_cols(infile)
+  local ncols = cutils.num_cols(infile)
   assert(ncols >= 1)
   -- get qtypes and set up for C 
   local qtypes = require 'qtypes1'
@@ -76,7 +62,7 @@ tests.read_csv_1 = function ()
     out[i-1] = ffi.gc(ffi.C.malloc(sz), ffi.C.free)
   end
   
-  local status = utils.read_csv(infile, c_qtypes, out, ffi.NULL,
+  local status = rsutils.read_csv(infile, c_qtypes, out, ffi.NULL,
     nrows, ncols, ",", '"', "\n", is_hdr)
   assert(status == 0)
   -- spot checking the output
@@ -95,13 +81,13 @@ tests.read_csv_1 = function ()
   print("Test read_csv_1 completed successfully\n");
 end
 tests.read_csv_2 = function ()
-  local infile = "../../data/in2.csv"
+  local infile = "../data/in2.csv"
   assert(plpath.isfile(infile))
   local is_hdr = true
-  local nrows = utils.num_lines(infile)
+  local nrows = cutils.num_lines(infile)
   if ( is_hdr ) then nrows = nrows - 1 end
   assert(nrows >= 1)
-  local ncols = utils.num_cols(infile)
+  local ncols = cutils.num_cols(infile)
   assert(ncols >= 1)
   -- get qtypes and set up for C 
   local qtypes = require 'qtypes2'
@@ -111,7 +97,7 @@ tests.read_csv_2 = function ()
   local out = assert(alloc_csv_out(qtypes, nrows, ncols))
   out = ffi.cast("void ** const ", out)
   -- read in file  
-  local status = utils.read_csv(infile, c_qtypes, out, ffi.NULL, 
+  local status = rsutils.read_csv(infile, c_qtypes, out, ffi.NULL, 
     nrows, ncols, ",", '"', "\n", is_hdr)
   assert(status == 0)
   -- spot checking the output

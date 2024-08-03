@@ -160,6 +160,7 @@ libgen.so: libispc.so \
 	${GEN7A_SRC} \
 	${GEN7B_SRC} \
 	${GEN8_SRC} \
+	libispc.so \
 	-lm
 
 #----------------------------------

@@ -628,7 +628,7 @@ function lQDF:get(idx, in_mode)
       local x = cQDF.x_get_str_val(out_qdf_ptr)
       return ffi.string(x)
     end
-    if ( qtype == qtypes.TM ) then 
+    if ( qtype == qtypes.TM1 ) then 
       error("TODO")
     end
     error("control should not come here")
@@ -700,7 +700,7 @@ function lQDF:time_band(n_recent)
   assert(type(n_recent) == "number")
   assert(n_recent >= 0)
   assert(self:jtype() == "j_array")
-  assert(self:qtype() == "TM")
+  assert(self:qtype() == "TM1")
   local num_elements = cQDF.x_get_arr_len(self:cmem_ptr())
   assert(num_elements >= 0)
 
@@ -1015,7 +1015,7 @@ end
 function lQDF:tm_extract(fld)
   assert(type(fld)    == "string")
   assert(self:jtype() == "j_array")
-  assert(self:qtype()  == "TM")
+  assert(self:qtype()  == "TM1")
   local cqdf = lqdfmem(0)
   local cqdf_ptr = assert(ffi.cast("QDF_REC_TYPE *", cqdf._qdfmem))
   local status = cQDF.tm_extract(self:cmem_ptr(), fld, cqdf_ptr)
@@ -1068,25 +1068,6 @@ function lQDF:num_unique()
   assert(n > 0)
   return n
 end
-
-function lQDF:holiday_extract(fld)
-  assert(type(fld) == "string")
-  assert(self:jtype() == "j_array")
-  assert(self:qtype() == "HL") 
-  local cqdf = lqdfmem(0)
-  local cqdf_ptr = assert(ffi.cast("QDF_REC_TYPE *", cqdf._qdfmem))
-  local status = cQDF.holiday_extract(cqdf_ptr, self:cmem_ptr(), fld)
-  assert(status == 0)
-
-  local newqdf = setmetatable({}, lQDF)
-  newqdf._cmem        = cqdf
-  if ( is_debug ) then 
-    assert(newqdf:qtype() == "I1")
-    assert(newqdf:jtype() == "j_array")
-  end
-  return newqdf
-end
-
 function lQDF:set_lags(lag_start, lag_stop, lag_prefix, grpby, val, tim)
   assert(type(lag_start) == "number")
   assert(type(lag_stop) == "number")
@@ -1233,7 +1214,7 @@ end
 
 function lQDF:mktime()
   assert(self:jtype() == "j_array")
-  assert(self:qtype() == "TM")
+  assert(self:qtype() == "TM1")
   local cqdf = lqdfmem(0)
   local cqdf_ptr = assert(ffi.cast("QDF_REC_TYPE *", cqdf._qdfmem))
   local status = cQDF.qdf_mktime(self:cmem_ptr(), cqdf_ptr)
@@ -1645,23 +1626,6 @@ function lQDF:place_in_data_frame(key, col)
   assert(status == 0)
   if ( is_debug ) then assert(self:check()) end 
   return self
-end
---==========================================================
-function lQDF:t_epoch_to_hol(H)
-  local n  = cQDF.x_get_arr_len(self:cmem_ptr())
-  if ( n <= 0 ) then return nil end 
-  local sz = cQDF.x_get_arr_size(self:cmem_ptr())
-  if ( sz < n ) then return nil end 
-  local cqdf = lqdfmem(0)
-  local cqdf_ptr = assert(ffi.cast("QDF_REC_TYPE *", cqdf._qdfmem))
-  local status = cQDF.make_num_array(ffi.NULL, n, sz, qtypes.HL, cqdf_ptr)
-  if ( status ~= 0 ) then return nil end 
-  status = cQDF.t_epoch_to_hol(self:cmem_ptr(), H, cqdf_ptr)
-  if ( status ~= 0 ) then return nil end 
-  local newqdf = setmetatable({}, lQDF)
-  newqdf._cmem = cqdf
-  if ( is_debug ) then assert(newqdf:check()) end 
-  return newqdf
 end
 --==========================================================
 -- Given 2 columns, create an index field which indicates order

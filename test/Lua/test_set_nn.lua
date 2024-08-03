@@ -1,7 +1,7 @@
 G = {} -- to circumvent strict 
 G.debug= true
 require 'strict'
-local lRBC = require 'lRBC'
+local lQDF = require 'lQDF'
 local tests = {}
 
 tests.set_nn = function ()
@@ -9,8 +9,8 @@ tests.set_nn = function ()
   local qtypes = { "F4", "I1", }
   local infile = "data_set_nn.csv"
   local optargs = { is_hdr = true }
-  local x = assert(lRBC.read_csv(col_names, qtypes, infile, optargs))
-  assert(type(x) == "lRBC")
+  local x = assert(lQDF.read_csv(col_names, qtypes, infile, optargs))
+  assert(type(x) == "lQDF")
   local f1 = x:get("f1")
   local nn_f1 = x:get("nn_f1")
   f1:set_nn(nn_f1)
