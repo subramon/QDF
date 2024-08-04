@@ -1,4 +1,5 @@
 #include "incs.h"
+#include "free_2d_array.h"
 #include "multiple.h"
 #include "qdf_struct.h"
 #include "cat_to_buf.h"
@@ -82,7 +83,7 @@ qdf_csv_to_df(
       width = extract_width_SC(str_qtypes[i]);
       if ( width == 0 ) { go_BYE(-1); }
       // width needs to be multiple of 8
-      width = multiple_n((uint32_t)width, 8);
+      width = (uint32_t)multiple_n((uint32_t)width, 8);
     }
     else { 
       qtype = get_c_qtype(str_qtypes[i]);
@@ -100,7 +101,7 @@ qdf_csv_to_df(
     c_qtypes[i] = qtype;
     widths[i] = width;
   }
-  status = read_csv(infile, (const char **const)str_qtypes, 
+  status = read_csv(infile, str_qtypes, 
       (void **const)vals, widths, n_rows, n_cols, str_fld_sep, 
       str_fld_delim, str_rec_sep, is_hdr);
   cBYE(status);
@@ -116,7 +117,7 @@ qdf_csv_to_df(
     default : go_BYE(-1); break;
   }
 
-  status = make_data_frame((const char **const)cols, n_cols, widths, 
+  status = make_data_frame(cols, n_cols, widths, 
       (const void **)vals, n_rows, sz, c_qtypes, ptr_qdf);
   cBYE(status);
 

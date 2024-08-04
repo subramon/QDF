@@ -140,7 +140,7 @@ BYE:
 //--------------------------------------------------------------
 int
 make_SC_array(
-    const char ** const svals, // [n_svals][..] 
+    char ** const svals, // [n_svals][..] 
     const char * const concat_svals, // null separated svals 
     uint32_t in_width, // space (including nullc) to be allocated per entry
     uint32_t arr_len,
@@ -338,10 +338,10 @@ BYE:
 //--------------------------------------------------------------
 int
 make_data_frame(
-    const char ** const cols, // names of columns 
+    char ** const cols, // names of columns 
     uint32_t n_cols, // number of columns 
     const uint32_t * const widths, // widths of columns 
-    const void **vals, // [n_cols][arr_size]
+    void **vals, // [n_cols][arr_size]
     uint32_t arr_len,
     uint32_t arr_size,  // 0 <= arr_len <= arr_size
     const qtype_t *const qtypes, // [n_cols]
@@ -476,7 +476,7 @@ BYE:
 int
 make_mixed_array_or_object(
     const QDF_REC_TYPE * const qdf_vals, // [n_qdfs]
-    const char ** const keys, // [n_qdfs]
+    char ** const keys, // [n_qdfs]
     uint32_t n_qdfs,
     QDF_REC_TYPE *ptr_out_qdf
     )
@@ -673,7 +673,7 @@ BYE:
 
 int
 make_empty_data_frame(
-    const char ** const cols, // [n_cols]
+    char ** const cols, // [n_cols]
     uint32_t n_cols,
     const char ** const str_qtypes, // [n_cols]
     uint32_t sz_rows,

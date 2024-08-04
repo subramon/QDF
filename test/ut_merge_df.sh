@@ -1,4 +1,5 @@
 #!/bin/bash
+# TODO 
 set -e
 infiles="./data/merge11.bin:./data/merge12.bin:./data/merge13.bin:./data/merge14.bin:./data/merge15.bin"
 cols="sls_unit_q,co_loc_i,baseprice_lift,promo_lift,promo_price_lift,columbusday,goodfriday,easter,fathersday.minus,fathersday,laborday.minus,laborday,mardigras,memorialday.minus,memorialday,mlkday,mothersday.minus,mothersday,presidentsday,superbowl.minus,superbowl,thanksgiving.minus,thanksgiving,cyber.monday,valentines.minus,valentines,stpatricks,cincodemayo,julyfourth.minus,julyfourth,halloween.minus,halloween,veteransday,christmas.minus,christmas,newyearsday.minus,newyearsday,t_o_y,n_week,n_ind,some_date,holidays"

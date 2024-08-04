@@ -27,7 +27,7 @@ make_string(
     );
 extern int
 make_SC_array(
-    const char ** svals, // [n_svals][..] 
+    char ** svals, // [n_svals][..] 
     const char * concat_svals, // null separated svals
     uint32_t width, // space (including nullc) to be allocated per entry
     uint32_t arr_len,
@@ -51,10 +51,10 @@ make_num_array(
     );
 extern int
 make_data_frame(
-    const char ** const cols,
+    char ** const cols,
     uint32_t n_cols,
     const uint32_t * const widths, // widths of columns 
-    const void **vals, // [n_cols][sz_rows]
+    void **vals, // [n_cols][sz_rows]
     uint32_t n_rows,
     uint32_t sz_rows,
     const qtype_t *const qtypes, // [n_svals]
@@ -63,7 +63,7 @@ make_data_frame(
 extern int
 make_mixed_array_or_object(
     const QDF_REC_TYPE * const qdf_vals, // [n_qdfs]
-    const char ** const keys, // [n_qdfs]
+    char ** const keys, // [n_qdfs]
     uint32_t n_qdfs,
     QDF_REC_TYPE *ptr_out_qdf
     );
@@ -74,7 +74,7 @@ append_mixed_array_or_object(
     );
 extern int
 make_empty_data_frame(
-    const char **const cols, // [n_cols]
+    char **const cols, // [n_cols]
     uint32_t n_cols,
     const char **const qtypes, // [n_cols]
     uint32_t sz_rows,

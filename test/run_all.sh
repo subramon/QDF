@@ -11,21 +11,25 @@ popd
 
 cd C/
 bash ut_read_csv.sh
+bash ut_concat.sh
+bash ut_pr.sh
+bash ut_qdf_makers.sh
+bash ut_copy.sh
+bash ut_mixed_array.sh
+bash ut_logical_op.sh
+bash ut_named_vec.sh
+
+# TODO bash ut_merge_df.sh
 echo "PREMATURE $0 in $PWD "
 exit 1 
 
 $VG ut_cells_to_vals
 bash ut_concat.sh
-$VG ut_config mgcv
 bash ut_copy.sh
 $VG ut_line_to_cells
 $VG ut_logical_op
-$VG ut_rbc_makers
-$VG ut_mixed
-$VG ut_pr
 bash ut_raw_to_csv.sh
 $VG ut_rbc_named_vec
-bash ut_tcin_to_cluster.sh
 $VG ut_squeeze
 bash ut_tm.sh
 $VG ut_unique

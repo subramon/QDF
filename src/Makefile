@@ -56,14 +56,14 @@ LIBS += -levent
 # DO WE NEED THIS? LIBS += ${LUAJIT_SO}
 
 UNIT_TESTS := ut_read_csv 
-# TODO UNIT_TESTS += ut_concat 
-# TODO UNIT_TESTS += ut_copy 
+UNIT_TESTS += ut_copy 
+UNIT_TESTS += ut_pr 
+UNIT_TESTS += ut_qdf_makers 
+UNIT_TESTS += ut_concat 
+UNIT_TESTS += ut_mixed_array 
+UNIT_TESTS += ut_logical_op 
+UNIT_TESTS += ut_named_vec
 # TODO UNIT_TESTS += ut_line_to_cells
-#TODO UNIT_TESTS += ut_logical_op 
-#TODO UNIT_TESTS += ut_qdf_makers 
-#TODO UNIT_TESTS += ut_mixed 
-#TODO UNIT_TESTS += ut_pr 
-#TODO UNIT_TESTS += ut_qdf_named_vec
 #TODO UNIT_TESTS += ut_squeeze 
 #TODO UNIT_TESTS += ut_tm 
 #TODO UNIT_TESTS += ut_unique 
@@ -310,9 +310,10 @@ ut_merge_df: ../test/ut_merge_df.c libqdf.so
 		/usr/local/lib/libluajit-5.1.so \
 		-o ut_merge_df 
 
-ut_qdf_makers: libqdf.so ../test/ut_qdf_makers.c 
-	gcc ${CFLAGS} $(INCS)  ../test/ut_qdf_makers.c  \
-		-o ut_qdf_makers libqdf.so ${LIBS}
+ut_qdf_makers: libqdf.so ../test/C/ut_qdf_makers.c 
+	gcc ${CFLAGS} $(INCS)  ../test/C/ut_qdf_makers.c  \
+		-o ut_qdf_makers libqdf.so \
+		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
 SRCS_UT_READ_CSV += qdf_helpers.c 
 SRCS_UT_READ_CSV += qdf_checkers.c 
@@ -329,13 +330,15 @@ ut_read_csv: ../test/C/ut_read_csv.c  libqdf.so
 		-o ut_read_csv libqdf.so \
 		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
-ut_logical_op: ../test/ut_logical_op.o  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/ut_logical_op.o   \
-		-o ut_logical_op libqdf.so ${LIBS}
+ut_logical_op: ../test/C/ut_logical_op.c  libqdf.so 
+	gcc ${CFLAGS} $(INCS) ../test/C/ut_logical_op.c   \
+		-o ut_logical_op libqdf.so \
+		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
-ut_qdf_named_vec: ../test/ut_qdf_named_vec.c  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/ut_qdf_named_vec.c   \
-		-o ut_qdf_named_vec libqdf.so ${LIBS}
+ut_named_vec: ../test/C/ut_named_vec.c  libqdf.so 
+	gcc ${CFLAGS} $(INCS) ../test/C/ut_named_vec.c   \
+		-o ut_named_vec libqdf.so \
+		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
 ut_unique:  ../test/ut_unique.c  libqdf.so 
 	gcc ${CFLAGS} $(INCS) ../test/ut_unique.c   \
@@ -349,22 +352,24 @@ ut_tm:  ../test/ut_tm.c  libqdf.so
 	gcc ${CFLAGS} $(INCS) ../test/ut_tm.c   \
 		-o ut_tm libqdf.so  ${LIBS}
 
-ut_copy:  ../test/ut_copy.c  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/ut_copy.c   \
-		-o ut_copy libqdf.so  ${LIBS}
+ut_copy:  ../test/C/ut_copy.c  libqdf.so 
+	gcc ${CFLAGS} $(INCS) ../test/C/ut_copy.c   \
+		-o ut_copy libqdf.so  \
 
-ut_concat:  ../test/ut_concat.c  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/ut_concat.c   \
-		-o ut_concat \
-		libqdf.so  ${GEN_LIBS} ${LIBS}
+ut_concat:  ../test/C/ut_concat.c  libqdf.so 
+	gcc ${CFLAGS} $(INCS) ../test/C/ut_concat.c   \
+		-o ut_concat libqdf.so \
+		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
-ut_pr:  ../test/ut_pr.c  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/ut_pr.c   \
-		-o ut_pr libqdf.so  ${LIBS}
+ut_pr:  ../test/C/ut_pr.c  libqdf.so 
+	gcc ${CFLAGS} $(INCS) ../test/C/ut_pr.c   \
+		-o ut_pr libqdf.so \
+		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
-ut_mixed:  ../test/ut_mixed_array.c  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/ut_mixed_array.c   \
-		-o ut_mixed libqdf.so  ${LIBS}
+ut_mixed_array:  ../test/C/ut_mixed_array.c  libqdf.so 
+	gcc ${CFLAGS} $(INCS) ../test/C/ut_mixed_array.c   \
+		-o ut_mixed_array libqdf.so  \
+		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
 ut_line_to_cells:  ../test/ut_line_to_cells.c 
 	gcc ${CFLAGS} $(INCS) ../test/ut_line_to_cells.c   \
