@@ -22,7 +22,6 @@ main(
   // read first data frame that is to be squeezed
   RBC_SCLR_TYPE sclr; memset(&sclr, 0, sizeof(sclr));
   RBC_REC_TYPE rbc_a, rbc_b, rbc_u, rbc_v, rbc_w, rbc_x, rbc_op;
-  const char * const infile_a = "../test/test_squeeze_1a.csv";
   char * cols_a = strdup("x,y");
   char * qtypes_a = strdup("F4,F8");
   bool is_hdr = true;
@@ -37,7 +36,10 @@ main(
   memset(&rbc_x, 0, sizeof(RBC_REC_TYPE));
   memset(&rbc_op, 0, sizeof(RBC_REC_TYPE));
   BUF_SPEC_TYPE buf_spec; memset(&buf_spec, 0, sizeof(BUF_SPEC_TYPE));
-  if ( argc != 1 ) { go_BYE(-1); } 
+  if ( argc != 3 ) { go_BYE(-1); } 
+
+  const char * const infile_a = argv[1] // "../data/test_squeeze_1a.csv";
+  const char * const infile_b = argv[2] // "../data/test_squeeze_1b.csv";
 
   status = rbc_csv_to_df(infile_a, cols_a, qtypes_a,
       ",", "\"", "\n", is_hdr, &buf_spec, &rbc_a); 
@@ -73,7 +75,6 @@ main(
   if ( max_sclr.val.f4 != 10 ) { go_BYE(-1); } 
 
   // read second data frame that is to be used for squeezing
-  const char * const infile_b = "../test/test_squeeze_1b.csv";
   cols_b = strdup("w,v,u,x");
   qtypes_b = strdup("I1,I1,I1,I4");
 
