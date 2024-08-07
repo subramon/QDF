@@ -1,4 +1,0 @@
-
-
-SELECT * FROM z003z4q_gamm.item_dist_for_ramesh_hist ORDER BY mdse_item_i, co_loc_i, week_start_date ASC;
-

@@ -6,3 +6,5 @@ ut_mixed_array
 ut_named_vec
 ut_pr
 ut_qdf_makers
+ut_tm
+ut_unique

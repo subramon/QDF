@@ -55,19 +55,19 @@ LIBS += -ljansson
 LIBS += -levent 
 # DO WE NEED THIS? LIBS += ${LUAJIT_SO}
 
-UNIT_TESTS := ut_read_csv 
-UNIT_TESTS += ut_copy 
+UNIT_TESTS := ut_copy 
+UNIT_TESTS += ut_concat 
+UNIT_TESTS += ut_logical_op 
+UNIT_TESTS += ut_mixed_array 
+UNIT_TESTS += ut_named_vec
 UNIT_TESTS += ut_pr 
 UNIT_TESTS += ut_qdf_makers 
-UNIT_TESTS += ut_concat 
-UNIT_TESTS += ut_mixed_array 
-UNIT_TESTS += ut_logical_op 
-UNIT_TESTS += ut_named_vec
+UNIT_TESTS += ut_raw_to_csv
+UNIT_TESTS := ut_read_csv 
+UNIT_TESTS += ut_squeeze 
+UNIT_TESTS += ut_unique 
+UNIT_TESTS += ut_tm 
 # TODO UNIT_TESTS += ut_line_to_cells
-#TODO UNIT_TESTS += ut_squeeze 
-#TODO UNIT_TESTS += ut_tm 
-#TODO UNIT_TESTS += ut_unique 
-#TODO UNIT_TESTS += ut_raw_to_csv
 
 LUA_HDRS := ../lua/qdf_hdrs.lua 
 UTIL_HDRS := ../lua/util_hdrs.lua 
@@ -303,13 +303,6 @@ qdf_checkers.o : CFLAGS += -Wno-conversion
 qdf_concat.o : CFLAGS += -Wno-conversion
 qdf_helpers.o : CFLAGS += -Wno-conversion
 
-ut_merge_df: ../test/ut_merge_df.c libqdf.so 
-	gcc ${CFLAGS} $(INCS) \
-		../test/ut_merge_df.c \
-		libqdf.so librcli.so \
-		/usr/local/lib/libluajit-5.1.so \
-		-o ut_merge_df 
-
 ut_qdf_makers: libqdf.so ../test/C/ut_qdf_makers.c 
 	gcc ${CFLAGS} $(INCS)  ../test/C/ut_qdf_makers.c  \
 		-o ut_qdf_makers libqdf.so \
@@ -340,17 +333,20 @@ ut_named_vec: ../test/C/ut_named_vec.c  libqdf.so
 		-o ut_named_vec libqdf.so \
 		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
-ut_unique:  ../test/ut_unique.c  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/ut_unique.c   \
-		-o ut_unique libqdf.so  ${LIBS}
+ut_unique:  ../test/C/ut_unique.c  libqdf.so 
+	gcc ${CFLAGS} $(INCS) ../test/C/ut_unique.c   \
+		-o ut_unique libqdf.so \
+		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
-ut_squeeze:  ../test/ut_squeeze.c  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/ut_squeeze.c   \
-		-o ut_squeeze libqdf.so  ${LIBS}
+ut_squeeze:  ../test/C/ut_squeeze.c  libqdf.so 
+	gcc ${CFLAGS} $(INCS) ../test/C/ut_squeeze.c   \
+		-o ut_squeeze libqdf.so  \
+		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
-ut_tm:  ../test/ut_tm.c  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/ut_tm.c   \
-		-o ut_tm libqdf.so  ${LIBS}
+ut_tm:  ../test/C/ut_tm.c  libqdf.so 
+	gcc ${CFLAGS} $(INCS) ../test/C/ut_tm.c   \
+		-o ut_tm libqdf.so \
+		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
 ut_copy:  ../test/C/ut_copy.c  libqdf.so 
 	gcc ${CFLAGS} $(INCS) ../test/C/ut_copy.c   \
@@ -370,20 +366,6 @@ ut_mixed_array:  ../test/C/ut_mixed_array.c  libqdf.so
 	gcc ${CFLAGS} $(INCS) ../test/C/ut_mixed_array.c   \
 		-o ut_mixed_array libqdf.so  \
 		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
-
-ut_line_to_cells:  ../test/ut_line_to_cells.c 
-	gcc ${CFLAGS} $(INCS) ../test/ut_line_to_cells.c   \
-	  	dsid.o \
-		-o ut_line_to_cells  ${LIBS}
-
-
-
-cli_check:  libqdf.so libmtmgcv.so \
-	./cli/cli_check.o
-	gcc ${CFLAGS} $(INCS) \
-		./cli/cli_check.c  \
-		 libqdf.so libmtmgcv.so \
-		-o cli_check ${LIBS}
 
 # Explanation: the linking is dependent on the order of modules.  # Symbols are first requested, and then linked in from a library 
 # that has them. So you have to specify modules that use libraries first, 
