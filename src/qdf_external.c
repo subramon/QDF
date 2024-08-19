@@ -1,5 +1,4 @@
 #include "incs.h"
-#include "macros.h"
 #include "qdf_struct.h"
 #include "rs_mmap.h"
 #include "qdf_external.h"
@@ -22,7 +21,7 @@ free_qdfs(
     char *X = qdfs[i].data;
     size_t nX = qdfs[i].size;
     if ( strcmp(mode, "munmap") == 0 ) { 
-      rs_munmap(X, nX);
+      mcr_rs_munmap(X, nX);
     }
     else if ( strcmp(mode, "free") == 0 ) { 
       if ( qdfs[i].is_foreign == false ) { 

@@ -44,7 +44,7 @@ main(
   BUF_SPEC_TYPE buf_spec; 
   memset(&buf_spec, 0, sizeof(BUF_SPEC_TYPE));
 
-  status = qdf_csv_to_df(infile, cols, qtypes,
+  status = qdf_csv_to_df(infile, NULL, 0, cols, qtypes,
       ",", "\"", "\n", is_hdr, &buf_spec, &qdf); 
   cBYE(status);
   status = get_key_val(&qdf, -1, infld, &qdf_x, NULL); cBYE(status);

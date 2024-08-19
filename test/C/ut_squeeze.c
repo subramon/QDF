@@ -40,7 +40,7 @@ main(
   const char * const infile_a = argv[1]; // "../data/test_squeeze_1a.csv"
   const char * const infile_b = argv[2]; // "../data/test_squeeze_1b.csv"
 
-  status = qdf_csv_to_df(infile_a, cols_a, qtypes_a,
+  status = qdf_csv_to_df(infile_a, NULL, 0, cols_a, qtypes_a,
       ",", "\"", "\n", is_hdr, &buf_spec, &qdf_a); 
   status = chk_qdf(&qdf_a); cBYE(status);
   uint32_t nkeys_a = x_get_obj_len(&qdf_a);
@@ -77,7 +77,7 @@ main(
   cols_b = strdup("w,v,u,x");
   qtypes_b = strdup("I1,I1,I1,I4");
 
-  status = qdf_csv_to_df(infile_b, cols_b, qtypes_b,
+  status = qdf_csv_to_df(infile_b, NULL, 0, cols_b, qtypes_b,
       ",", "\"", "\n", is_hdr, &buf_spec, &qdf_b); 
   status = chk_qdf(&qdf_b); cBYE(status);
   uint32_t nkeys_b = x_get_obj_len(&qdf_b);
@@ -115,7 +115,7 @@ main(
   //=============================================================
   // squeeze with v = all 1's (load qdf_a again)
   free_qdf(&qdf_a); memset(&qdf_a, 0, sizeof(qdf_a));
-  status = qdf_csv_to_df(infile_a, cols_a, qtypes_a,
+  status = qdf_csv_to_df(infile_a, NULL, 0, cols_a, qtypes_a,
       ",", "\"", "\n", is_hdr, &buf_spec, &qdf_a); 
   status = get_key_val(&qdf_b, -1, "v", &qdf_v, NULL);
   status = squeeze_where(&qdf_a, &qdf_v, &num_good);  cBYE(status);
@@ -139,7 +139,7 @@ main(
   //=============================================================
   // squeeze with u = all 0's, load qdf_a again
   free_qdf(&qdf_a); memset(&qdf_a, 0, sizeof(qdf_a));
-  status = qdf_csv_to_df(infile_a, cols_a, qtypes_a,
+  status = qdf_csv_to_df(infile_a, NULL, 0, cols_a, qtypes_a,
       ",", "\"", "\n", is_hdr, &buf_spec, &qdf_a); 
   status = get_key_val(&qdf_b, -1, "u", &qdf_u, NULL); cBYE(status);
   status = squeeze_where(&qdf_a, &qdf_u, &num_good); cBYE(status);

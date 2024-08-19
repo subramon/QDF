@@ -1,5 +1,5 @@
 local ffi           = require 'ffi'
-local register_type = require 'register_type'
+local register_type = require 'RSUTILS/lua/register_type'
 local cutils        = require 'libcutils'
 local rsutils       = ffi.load("librsutils.so") -- for read_csv()
 local cQDF          = ffi.load("libqdf.so")
@@ -951,8 +951,8 @@ function lQDF.read_csv(col_names, in_qtypes, csv_file, optargs)
   local out = assert(malloc_space_for_2d_array(m, ncols, l_widths))
   out = ffi.cast("void ** const", out)
   local widths = ffi.NULL -- will need ot set this properly to support SC
-  local status = rsutils.read_csv(csv_file, c_qtypes, out, widths,
-    nrows, ncols, ",", '"', "\n", is_hdr)
+  local status = rsutils.read_csv(csv_file, ffi.NULL, 0, c_qtypes, out, 
+    widths, nrows, ncols, ",", '"', "\n", is_hdr)
   assert(status == 0)
   ---------------------------------
   local df_qdf = lqdfmem(0)

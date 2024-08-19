@@ -91,10 +91,10 @@ CC=gcc
 	$(CC) -c -o $@ $< $(CFLAGS)  $(INCS)
 
 _stripped_cmem.h : ${CMEM_SRC_ROOT}/inc/cmem_struct.h 
-	luajit cli_for_cdef.lua ${CMEM_SRC_ROOT}/inc/cmem_struct.h _stripped_cmem.h
+	luajit ${RSUTILS_SRC_ROOT}/lua/cli_for_cdef.lua ${CMEM_SRC_ROOT}/inc/cmem_struct.h _stripped_cmem.h
 
 _stripped_sclr.h : ${SCLR_SRC_ROOT}/inc/sclr_struct.h 
-	luajit cli_for_cdef.lua ${SCLR_SRC_ROOT}/inc/sclr_struct.h _stripped_sclr.h
+	luajit ${RSUTILS_SRC_ROOT}/lua/cli_for_cdef.lua ${SCLR_SRC_ROOT}/inc/sclr_struct.h _stripped_sclr.h
 
 ../lua/util_hdrs.lua :  ${RSUTILS_SRC_ROOT}/inc/read_csv.h 
 	cat ${RSUTILS_SRC_ROOT}/inc/read_csv.h > ../lua/util_hdrs.lua 

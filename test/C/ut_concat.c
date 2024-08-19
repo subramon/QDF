@@ -33,7 +33,7 @@ main(
   qdfs = malloc(n_qdfs * sizeof(QDF_REC_TYPE));
   memset(qdfs, 0,  n_qdfs * sizeof(QDF_REC_TYPE));
   for ( uint32_t i = 0; i < n_qdfs; i++ ) { 
-    status = qdf_csv_to_df(infile, concat_cols, concat_qtypes,
+    status = qdf_csv_to_df(infile, NULL, 0, concat_cols, concat_qtypes,
         ",", "\"", "\n", is_hdr, &buf_spec, &(qdfs[i])); 
     cBYE(status);
     status = chk_qdf(&(qdfs[i])); cBYE(status);

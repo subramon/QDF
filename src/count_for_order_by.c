@@ -61,7 +61,7 @@ count_for_order_by(
     if ( my_ub < this_lb ) { skip_file = true; } 
     if ( my_lb > this_ub ) { skip_file = true; }  // TODO > or >= ?
     if ( skip_file ) { 
-      cum_filesz += nX; rs_munmap(X, nX); continue;
+      cum_filesz += nX; mcr_rs_munmap(X, nX); continue;
     }
     if ( ( my_lb < this_lb ) && ( my_ub >= this_ub ) ) {
       // process whole file 
@@ -131,14 +131,14 @@ count_for_order_by(
       num_rows_read++;
     }
     cum_filesz += nX;
-    rs_munmap(X, nX);
+    mcr_rs_munmap(X, nX);
   }
   info->num_rows_read  = num_rows_read;
   info->num_bytes_read = num_bytes_read;
   info->t_stop = get_time_usec();
 BYE:
   info->status = status; 
-  rs_munmap(X, nX);
+  mcr_rs_munmap(X, nX);
   free_if_non_null(Y);
   free_hive(&H, C);
 }

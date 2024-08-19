@@ -1,5 +1,4 @@
 #include "incs.h"
-#include "macros.h"
 #include "qdf_struct.h"
 #include "qtypes.h"
 #include "qdf_checkers.h"

@@ -26,7 +26,7 @@ main(
   uint32_t n_rows = (uint32_t)itmp;
   bool is_hdr = true;
 
-  status = qdf_csv_to_df(infile, cols, qtypes,
+  status = qdf_csv_to_df(infile, NULL, 0, cols, qtypes,
       ",", "\"", "\n", is_hdr, &buf_spec, &qdf); 
   status = chk_qdf(&qdf);
   if ( is_hdr ) { n_rows--; }

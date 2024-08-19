@@ -11,30 +11,13 @@
 #include "qdf_makers.h"
 #include "qdf_csv_to_df.h"
 
-static uint32_t
-extract_width_SC(
-    char * const str_qtype
-    )
-{
-  int status = 0;
-  if ( str_qtype == NULL ) { go_BYE(-1); }
-  if ( strlen(str_qtype) < 4 ) { go_BYE(-1); } 
-  char *cptr = str_qtype + strlen("SC:");
-  if ( *cptr == '\0' ) { go_BYE(-1); } 
-  for ( char *xptr = cptr; *xptr != '\0'; xptr++ ) { 
-    if ( !isdigit(*xptr) ) { go_BYE(-1); }
-  }
-  int itmp = atoi(cptr); if ( itmp < 2 ) { go_BYE(-1); }
-  // need width of 1+1 for nullc
-  uint32_t w = (uint32_t)itmp;
-BYE:
-  if ( status < 0 ) { return 0; } else { return w; }
-}
 // TODO P2 Add is_load to read_csv and to this function 
 // input is a CSV file, output is a QDF dataframe
 int
 qdf_csv_to_df(
     const char * const infile, // INPUT 
+    char *X, // INPUT (alternative to infile)
+    size_t nX, // INPUT (alternative to infile)
     const char * const concat_cols, // INPUT 
     const char * const concat_qtypes, // INPUT 
     const char * const str_fld_sep, // INPUT 
@@ -80,7 +63,7 @@ qdf_csv_to_df(
       // if we have SC:8, we want width to be 8
       // Note "1234567" can be stored in SC:8 but not "12345678"
       // Need one spot for nullc
-      width = extract_width_SC(str_qtypes[i]);
+      width = get_width_qtype(str_qtypes[i]);
       if ( width == 0 ) { go_BYE(-1); }
       // width needs to be multiple of 8
       width = (uint32_t)multiple_n((uint32_t)width, 8);
@@ -101,7 +84,7 @@ qdf_csv_to_df(
     c_qtypes[i] = qtype;
     widths[i] = width;
   }
-  status = read_csv(infile, str_qtypes, 
+  status = read_csv(infile, X, nX, str_qtypes, 
       (void **const)vals, widths, n_rows, n_cols, str_fld_sep, 
       str_fld_delim, str_rec_sep, is_hdr);
   cBYE(status);

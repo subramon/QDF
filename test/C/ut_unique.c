@@ -26,7 +26,7 @@ main(
   memset(&buf_spec, 0, sizeof(BUF_SPEC_TYPE));
   if ( argc != 1 ) { go_BYE(-1); } 
 
-  status = qdf_csv_to_df(infile, cols, qtypes,
+  status = qdf_csv_to_df(infile, NULL, 0, cols, qtypes,
       ",", "\"", "\n", is_hdr, &buf_spec, &qdf); 
   status = chk_qdf(&qdf); cBYE(status);
   status = get_key_val(&qdf, -1, "x", &col, NULL); cBYE(status);

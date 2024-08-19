@@ -1,5 +1,5 @@
 local ffi       = require 'ffi'
-local stringify = require 'stringify'
+local stringify = require 'RSUTILS/lua/stringify'
 local function load_meta(M)
   if ( not M ) then return end
     

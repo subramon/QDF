@@ -1,5 +1,4 @@
 #include "incs.h"
-#include "macros.h"
 #include "qdf_struct.h"
 #include "qtypes.h"
 #include "lookup8.h"
@@ -390,7 +389,7 @@ free_qdf(
   if ( ptr_qdf == NULL ) { go_BYE(-1); }
   if ( ptr_qdf->is_foreign == false ) { 
     if ( ptr_qdf->is_mmap ) { 
-      rs_munmap(ptr_qdf->data, ptr_qdf->size);
+      mcr_rs_munmap(ptr_qdf->data, ptr_qdf->size);
     }
     else {
       free_if_non_null(ptr_qdf->data);;

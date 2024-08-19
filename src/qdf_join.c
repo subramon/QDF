@@ -15,7 +15,6 @@
    and the nn column gets set to 0 
    */
 #include "incs.h"
-#include "macros.h"
 #include "qdf_struct.h"
 #include "unique.h"
 #include "qdf_external.h"

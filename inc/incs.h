@@ -20,6 +20,7 @@
 #include <time.h>
 #include <unistd.h>
 #include "macros.h"
+#include "q_macros.h"
 #define QDF_MAX_LEN_FILE_NAME 95
 #define QDF_MAX_LEN_SUFFIX 15
 #endif // QDF_INCS

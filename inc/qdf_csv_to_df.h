@@ -3,6 +3,8 @@
 extern int
 qdf_csv_to_df(
     const char * const infile, // INPUT 
+    char *X, // INPUT (alternative to infile)
+    size_t nX, // INPUT (alternative to infile)
     const char * const concat_cols, // INPUT 
     const char * const concat_qtypes, // INPUT 
     const char * const str_fld_sep, // INPUT 
