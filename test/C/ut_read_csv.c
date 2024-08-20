@@ -22,7 +22,9 @@ main(
   BUF_SPEC_TYPE buf_spec;
   memset(&buf_spec, 0, sizeof(BUF_SPEC_TYPE));
 
-  int itmp = num_lines(infile);  if ( itmp <= 0 ) { go_BYE(-1); }
+  int itmp = num_lines(infile, NULL, 0); 
+  if ( itmp <= 0 ) { go_BYE(-1); }
+
   uint32_t n_rows = (uint32_t)itmp;
   bool is_hdr = true;
 

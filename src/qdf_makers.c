@@ -341,7 +341,7 @@ make_data_frame(
     char ** const cols, // names of columns 
     uint32_t n_cols, // number of columns 
     const uint32_t * const widths, // widths of columns 
-    void **vals, // [n_cols][arr_size]
+    char **vals, // [n_cols][arr_size]
     uint32_t arr_len,
     uint32_t arr_size,  // 0 <= arr_len <= arr_size
     const qtype_t *const qtypes, // [n_cols]
