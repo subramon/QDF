@@ -493,9 +493,10 @@ chk_is_data_frame(
   status = chk_object(x); cBYE(status);
 #endif
 
-  uint32_t obj_arr_len   = x_get_arr_len(x); 
-  uint32_t obj_arr_size  = x_get_arr_size(x); 
+  uint32_t obj_arr_len   = get_obj_arr_len(x); 
+  uint32_t obj_arr_size  = get_obj_arr_size(x); 
   if ( obj_arr_size == 0 ) { go_BYE(-1); } 
+  if ( obj_arr_size == UINT_MAX ) { go_BYE(-1); } 
 
   // get number of rows and do some basic checks
   QDF_REC_TYPE keys; memset(&keys, 0, sizeof(QDF_REC_TYPE));
