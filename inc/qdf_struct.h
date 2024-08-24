@@ -7,6 +7,7 @@
 #include "qtypes.h"
 #include "sclr_struct.h"
 // TODO: Keep in sync with lua/jtypes.lua
+//START_FOR_CDEF
 typedef enum { 
   j_undef, 
   j_nil, 
@@ -135,6 +136,7 @@ typedef struct _qdf_rec_type {
   char *name; // for debugging  TODO DELETE LATER 
   int id; // for debugging TODO DELETE LATER 
 } QDF_REC_TYPE;
+//STOP_FOR_CDEF
 
 #define mcr_get_jtype(x) { ((qdf_hdr_t *)x)->jtype }
 #define mcr_get_qtype(x) { ((qdf_hdr_t *)x)->qtype }

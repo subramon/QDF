@@ -33,7 +33,6 @@ typedef enum {
 
   QF // must be last one 
 } qtype_t;
-// STOP extract_for_qtypes.tex
 typedef struct _tm_t {
   int16_t tm_year;	/* Year	- 1900. */
   int8_t tm_mon;	/* Month.	[0-11] */
@@ -140,6 +139,7 @@ typedef struct _sclr_rec_type {
 
 } SCLR_REC_TYPE;
 // TODO: Keep in sync with lua/jtypes.lua
+//START_FOR_CDEF
 typedef enum { 
   j_undef, 
   j_nil, 
@@ -268,6 +268,7 @@ typedef struct _qdf_rec_type {
   char *name; // for debugging  TODO DELETE LATER 
   int id; // for debugging TODO DELETE LATER 
 } QDF_REC_TYPE;
+//STOP_FOR_CDEF
 
 
 extern int
