@@ -67,7 +67,7 @@ UNIT_TESTS := ut_read_csv
 UNIT_TESTS += ut_squeeze 
 UNIT_TESTS += ut_unique 
 UNIT_TESTS += ut_tm 
-UNIT_TESTS += ut_to_Rserve
+UNIT_TESTS += ut_df_to_Rserve
 # TODO UNIT_TESTS += ut_line_to_cells
 
 LUA_HDRS := ../lua/qdf_hdrs.lua 
@@ -240,7 +240,7 @@ qdf_SRC += qdf_mem.c
 qdf_SRC += qdf_srt_grp_cnt.c 
 qdf_SRC += qdf_coalesce.c 
 qdf_SRC += qdf_named_vec.c 
-qdf_SRC += qdf_to_Rserve.c 
+qdf_SRC += qdf_df_to_Rserve.c 
 qdf_SRC += qdf_nop.c 
 qdf_SRC += qdf_pr.c 
 qdf_SRC += qdf_csv_to_df.c 
@@ -359,9 +359,9 @@ ut_concat:  ../test/C/ut_concat.c  libqdf.so
 		-o ut_concat libqdf.so \
 		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
-ut_to_Rserve:  ../test/C/ut_to_Rserve.c  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/C/ut_to_Rserve.c   \
-		-o ut_to_Rserve libqdf.so \
+ut_df_to_Rserve:  ../test/C/ut_df_to_Rserve.c  libqdf.so 
+	gcc ${CFLAGS} $(INCS) ../test/C/ut_df_to_Rserve.c   \
+		-o ut_df_to_Rserve libqdf.so \
 		${C2R_SRC_ROOT}/libc2r.so \
 		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 

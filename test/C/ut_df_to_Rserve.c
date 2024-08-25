@@ -4,7 +4,7 @@
 #include "qdf_struct.h"
 #include "split_str.h"
 #include "qdf_checkers.h"
-#include "qdf_to_Rserve.h"
+#include "qdf_df_to_Rserve.h"
 #include "qdf_helpers.h"
 #include "qdf_xhelpers.h"
 #include "qdf_external.h"
@@ -19,7 +19,6 @@ main(
   int status = 0;
   qtype_t *c_qtypes = NULL;
   char **str_qtypes = NULL; 
-  qdf_df_meta_data_t meta; memset(&meta, 0, sizeof(qdf_df_meta_data_t));
   int sock = -1;
   char **cols = NULL; uint32_t n_cols = 0; uint32_t uitmp;
   QDF_REC_TYPE qdf; memset(&qdf, 0, sizeof(QDF_REC_TYPE));
@@ -50,12 +49,7 @@ main(
   status = chk_qdf(&qdf); cBYE(status);
   if ( !x_get_is_df(&qdf) ) { go_BYE(-1); } 
 
-  meta.col_names = cols;
-  meta.n_cols = n_cols;
-  meta.c_qtypes = c_qtypes;
-  meta.has_nulls = NULL;
-  meta.is_load = NULL;
-  status = qdf_to_Rserve(sock, &qdf, &meta, "df_name");
+  status = qdf_df_to_Rserve(sock, &qdf, "df_name");
   cBYE(status);
 
   fprintf(stdout, "SUCCESS Test %s completed successfully\n", argv[0]);

@@ -1,6 +1,8 @@
+// sends a dataframe in QDF format to Rserve
 #include <jansson.h>
 #include "incs.h"
 #include "qdf_struct.h"
+#include "free_2d_array.h"
 #include "multiple.h"
 #include "cat_to_buf.h"
 #include "tm2time.h"
@@ -13,15 +15,14 @@
 #include "qdf_xhelpers.h"
 #include "chk_R_class.h"
 #include "n_df.h"
-#include "qdf_to_Rserve.h"
+#include "qdf_df_to_Rserve.h"
 
 #undef TM1_AS_SC
 
 int 
-qdf_to_Rserve(
+qdf_df_to_Rserve(
     int sock,
     QDF_REC_TYPE *ptr_qdf,
-    const qdf_df_meta_data_t *meta,
     const char * const df_name
 )
 {
@@ -32,6 +33,7 @@ qdf_to_Rserve(
   char *cmd = NULL; bool brslt;
   json_t *root = NULL;
   json_error_t error;
+  char **col_names = NULL; uint32_t n_cols;
 
   uint32_t num_sent_cols = 0;
   uint32_t num_rows = x_get_obj_arr_len(ptr_qdf);
@@ -39,9 +41,15 @@ qdf_to_Rserve(
   F8buf = malloc(num_rows * sizeof(double));
   if ( num_rows == 0 ) { go_BYE(-1); } 
   //------------------------------------------
-  uint32_t len_col_name = 0;
-  for ( uint32_t c = 0; c < meta->n_cols; c++ ) {
-    uint32_t l = (uint32_t)strlen(meta->col_names[c]);
+
+  if ( !x_get_is_df(ptr_qdf) ) { go_BYE(-1); }
+  uint32_t len  = x_get_obj_arr_len(ptr_qdf);
+
+  status = get_keys_as_array(ptr_qdf, &col_names, &n_cols); cBYE(status);
+  if ( n_cols == 0 ) { go_BYE(-1); } 
+  size_t len_col_name;
+  for ( uint32_t c = 0; c < n_cols; c++ ) {
+    size_t l = strlen(col_names[c]);
     if ( l > len_col_name ) {  len_col_name = l; }
   }
   len_col_name += 8; // for things like nn_ and so on
@@ -53,13 +61,17 @@ qdf_to_Rserve(
   status = cat_to_buf(&df_str, &bufsz, &buflen, " <- data.frame( ", 0);
   cBYE(status);
   //---------------------------------------
-  if ( meta->n_cols == 0 ) { go_BYE(-1); } 
-  for ( uint32_t c = 0; c < meta->n_cols; c++ ) {
-    if ( ( meta->is_load != NULL ) && ( meta->is_load[c] == false ) ) { 
-      continue; 
-    }
+  for ( uint32_t c = 0; c < n_cols; c++ ) {
     num_sent_cols++;
-    const char * const col_name = meta->col_names[c];
+    const char * const col_name = col_names[c];
+    // We use the following convention.
+    // Assume that a key "foo" has null values
+    // Then, we create another key "nn_foo" whose values are 0/1 and 
+    // such that nn_foo[i] == 0 => foo[i] == NULL 
+    // such that nn_foo[i] == 1 => foo[i] != NULL 
+    if ( strncmp(col_name, "nn_", strlen("nn_")) == 0 ) { 
+      continue;
+    }
     if ( c > 0 ) { 
       status = cat_to_buf(&df_str, &bufsz, &buflen, ", ", 0);
       cBYE(status);
@@ -67,34 +79,22 @@ qdf_to_Rserve(
     status = cat_to_buf(&df_str, &bufsz, &buflen, col_name, 0);
     cBYE(status);
     //----------------------------------------------
-    qtype_t qtype = meta->c_qtypes[c];
     QDF_REC_TYPE col_qdf; memset(&col_qdf, 0, sizeof(col_qdf));
     status = get_key_val(ptr_qdf, -1, col_name, &col_qdf, NULL);
     cBYE(status);
-#ifdef DEBUG
-    qtype_t chk_qtype = x_get_qtype(&col_qdf);
-    if ( chk_qtype != qtype ) { go_BYE(-1); }
+    qtype_t qtype = x_get_qtype(&col_qdf);
     jtype_t chk_jtype = x_get_jtype(&col_qdf);
     if ( chk_jtype != j_array ) { go_BYE(-1); }
-#endif
     char *dptr = get_arr_ptr(col_qdf.data);
-    // Check into nn column 
-    QDF_REC_TYPE nn_col_qdf; memset(&nn_col_qdf, 0, sizeof(nn_col_qdf));
-    char nn_col_name[len_col_name]; memset(nn_col_name, 0, len_col_name);
-    char *nn_dptr = NULL;
-    if ( ( meta->has_nulls != NULL ) && ( meta->has_nulls[c] ) ) { 
-      sprintf(nn_col_name, "nn_%s", col_name); 
-      // Note that has_nulls can be true and we may still not have
-      // nn column in qdf because it was not needed
-      bool b_is_key; status = is_key(ptr_qdf, nn_col_name, &b_is_key);
-      cBYE(status);
-      if ( b_is_key ) { 
-        status = get_key_val(ptr_qdf, -1, nn_col_name, &nn_col_qdf, NULL);
-        nn_dptr = get_arr_ptr(nn_col_qdf.data);
-      }
-    }
     //--------------------------------------
     switch ( qtype ) {
+      case BL :
+        for ( uint32_t i = 0; i < num_rows; i++ ) {
+          I4buf[i] = (int32_t)((bool *)dptr)[i];
+        }
+        status = set_vec(sock, col_name, "I4", I4buf, num_rows, 0);
+        cBYE(status);
+        break;
       case I1 :
         for ( uint32_t i = 0; i < num_rows; i++ ) {
           I4buf[i] = (int32_t)((int8_t *)dptr)[i];
@@ -250,8 +250,30 @@ qdf_to_Rserve(
     free_if_non_null(exec_out);
 
 #endif
+    // Determine whether this column has a nn column
+    len_col_name = strlen(col_name)+strlen("nn_") + 8;
+    char *nn_col_name = malloc(len_col_name);
+    memset(nn_col_name, 0, len);
+    sprintf(nn_col_name, "nn_%s", col_name);
+    bool has_nulls = false;
+    for ( uint32_t i = 0; i < n_cols; i++ ) {
+      if ( strcmp(col_names[i], nn_col_name) == 0 ) {
+        has_nulls = true;
+        break;
+      }
+    }
     // send nn column if needed 
-    if ( nn_col_qdf.data != NULL ) { 
+    if ( has_nulls ) {
+      // get data for nn column 
+      QDF_REC_TYPE nn_col_qdf; memset(&nn_col_qdf, 0, sizeof(nn_col_qdf));
+      status = get_key_val(ptr_qdf, -1, nn_col_name, &nn_col_qdf, NULL);
+      cBYE(status);
+      qtype_t nn_qtype = x_get_qtype(&nn_col_qdf);
+      if ( ( nn_qtype != I1 ) && ( nn_qtype != BL ) ) { go_BYE(-1); }
+      jtype_t chk_nn_jtype = x_get_jtype(&nn_col_qdf);
+      if ( chk_nn_jtype != j_array ) { go_BYE(-1); }
+      char *nn_dptr = get_arr_ptr(nn_col_qdf.data);
+      //--------------------------------------
       status = set_vec(sock, nn_col_name, "I1", nn_dptr, num_rows, 0);
       cBYE(status);
 #ifdef DEBUG
@@ -300,6 +322,7 @@ qdf_to_Rserve(
         }
       }
     }
+    free_if_non_null(nn_col_name);
   }
   status = cat_to_buf(&df_str, &bufsz, &buflen, ")", 0); 
   cBYE(status);
@@ -313,9 +336,26 @@ qdf_to_Rserve(
 #endif
   // STOP: send stuff over to R
 BYE:
+  free_2d_array(&col_names, n_cols);
   free_if_non_null(df_str);
   free_if_non_null(I4buf);
   free_if_non_null(F8buf);
   free_if_non_null(cmd);
   return status;
 }
+/*
+    // Check into nn column 
+    QDF_REC_TYPE nn_col_qdf; memset(&nn_col_qdf, 0, sizeof(nn_col_qdf));
+    char nn_col_name[len_col_name]; memset(nn_col_name, 0, len_col_name);
+    char *nn_dptr = NULL;
+    if ( ( meta->has_nulls != NULL ) && ( meta->has_nulls[c] ) ) { 
+      sprintf(nn_col_name, "nn_%s", col_name); 
+      // Note that has_nulls can be true and we may still not have
+      // nn column in qdf because it was not needed
+      bool b_is_key; status = is_key(ptr_qdf, nn_col_name, &b_is_key);
+      cBYE(status);
+      if ( b_is_key ) { 
+        status = get_key_val(ptr_qdf, -1, nn_col_name, &nn_col_qdf, NULL);
+        nn_dptr = get_arr_ptr(nn_col_qdf.data);
+      }
+*/
