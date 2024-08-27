@@ -34,6 +34,7 @@ qdf_df_to_Rserve(
   json_t *root = NULL;
   json_error_t error;
   char **col_names = NULL; uint32_t n_cols;
+  char *nn_col_name = NULL;
 
   uint32_t num_sent_cols = 0;
   uint32_t num_rows = x_get_obj_arr_len(ptr_qdf);
@@ -62,6 +63,7 @@ qdf_df_to_Rserve(
   cBYE(status);
   //---------------------------------------
   for ( uint32_t c = 0; c < n_cols; c++ ) {
+    free_if_non_null(nn_col_name);
     num_sent_cols++;
     const char * const col_name = col_names[c];
     // We use the following convention.
@@ -252,8 +254,9 @@ qdf_df_to_Rserve(
 #endif
     // Determine whether this column has a nn column
     len_col_name = strlen(col_name)+strlen("nn_") + 8;
-    char *nn_col_name = malloc(len_col_name);
-    memset(nn_col_name, 0, len);
+    free_if_non_null(nn_col_name);
+    nn_col_name = malloc(len_col_name);
+    memset(nn_col_name, 0, len_col_name);
     sprintf(nn_col_name, "nn_%s", col_name);
     bool has_nulls = false;
     for ( uint32_t i = 0; i < n_cols; i++ ) {
@@ -340,6 +343,7 @@ BYE:
   free_if_non_null(df_str);
   free_if_non_null(I4buf);
   free_if_non_null(F8buf);
+  free_if_non_null(nn_col_name);
   free_if_non_null(cmd);
   return status;
 }
