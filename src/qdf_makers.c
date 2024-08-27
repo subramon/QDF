@@ -149,9 +149,12 @@ make_SC_array(
     )
 {
   int status = 0;
+  // I used to have the following restriction but it did not work
+  // when I as  creating an empty data frame
   // exactly one of svals or concat_svals must be provided
-  if ( svals  == NULL ) { if ( concat_svals == NULL ) { go_BYE(-1); }  }
-  if ( concat_svals == NULL ) { if ( svals == NULL ) { go_BYE(-1); }  }
+  // if ( svals  == NULL ) { if ( concat_svals == NULL ) { go_BYE(-1); }  }
+  // if ( concat_svals == NULL ) { if ( svals == NULL ) { go_BYE(-1); }  }
+  if ( ( concat_svals != NULL ) && ( svals != NULL ) ) { go_BYE(-1); } 
   if ( arr_len == 0 ) { go_BYE(-1); }
   mcr_chk_null(ptr_qdf, -1); 
   uint32_t out_width = 0; // how we will write out data 
@@ -161,7 +164,7 @@ make_SC_array(
   if ( arr_size < arr_len ) { go_BYE(-1); } 
   if ( arr_size == 0 ) { go_BYE(-1); } // IMPORTANT
 
-  if ( concat_svals != NULL ) { 
+  if ( concat_svals != NULL ) {
     // There are 2 options here, best explained with an example
     // Let 0 represent the null character
     // Let arr_len = 4
@@ -206,7 +209,10 @@ make_SC_array(
       // +1 for nullc, multiple of 8 is requirement of QDF
     }
   }
-  if ( out_width == 0 ) { go_BYE(-1); } 
+  if ( ( concat_svals == NULL ) && ( svals == NULL ) ) { 
+    out_width = in_width;
+  }
+  if ( out_width <= 1 ) { go_BYE(-1); } 
   if ( out_width > 1024 ) { go_BYE(-1); } // TODO Document 
 
   uint32_t qdf_size = sizeof(qdf_array_hdr_t) + (arr_size * out_width);
@@ -376,7 +382,7 @@ make_data_frame(
   } 
   if ( arr_size == 0 ) { 
     go_BYE(-1); }
-  for ( uint32_t i = 0; i < n_cols; i++ ) { 
+  for ( uint32_t i = 0; i < n_cols; i++ ) {
     if ( qtypes[i] == Q0 ) { go_BYE(-1); } 
     const void *vals_i = NULL;
     if ( vals != NULL ) { vals_i = vals[i]; }
@@ -386,13 +392,13 @@ make_data_frame(
       if ( width < 1 ) { go_BYE(-1); } 
       status = make_SC_array(NULL, vals_i, width, arr_len, arr_size,
           &(qdf_cols[i]));
-    cBYE(status);
-    // status = x_pr_array(qdf_cols+i, "_xxxx.csv");  
+      cBYE(status);
+      // status = x_pr_array(qdf_cols+i, "_xxxx.csv");  
     }
     else {
       status = make_num_array(vals_i, arr_len, arr_size, qtypes[i], 
           &(qdf_cols[i]));
-    cBYE(status);
+      cBYE(status);
     }
 #ifdef DEBUG
     status = chk_qdf(&(qdf_cols[i])); cBYE(status);
@@ -486,7 +492,12 @@ make_mixed_array_or_object(
   QDF_REC_TYPE qdf_keys; memset(&qdf_keys, 0, sizeof(QDF_REC_TYPE));
   mcr_chk_null(ptr_out_qdf, -1); 
 
-  if ( n_qdfs == 0 ) { go_BYE(-1); }
+  if ( n_qdfs == 0 ) { 
+    // TODO P1 We do not handle this case properly. We have "hacked"
+    // around it by returning nil
+    status = make_nil(NULL, ptr_out_qdf); cBYE(status);
+    return status;
+  }
   bool is_keys = false;
   jtype_t jtype;
 
@@ -682,18 +693,23 @@ make_empty_data_frame(
 {
   int status = 0;
   qtype_t *qtypes = NULL;
+  uint32_t *widths = NULL;
   // As a prelim, convert qtypes from  strings to enums
+  widths = malloc(n_cols * sizeof(uint32_t));
+  return_if_malloc_failed(widths);
   qtypes = malloc(n_cols * sizeof(qtype_t));
   return_if_malloc_failed(qtypes);
   for ( uint32_t i = 0; i < n_cols; i++ ) { 
     qtypes[i] = get_c_qtype(str_qtypes[i]); 
+    widths[i] = get_width_qtype(str_qtypes[i]); 
   }
   //--------------------------
-  status = make_data_frame(cols, n_cols, NULL, NULL, 0, 
-      sz_rows, qtypes, ptr_qdf);
+  status = make_data_frame(cols, n_cols, widths, NULL, sz_rows, 0, 
+      qtypes, ptr_qdf);
   cBYE(status);
 BYE:
   free_if_non_null(qtypes);
+  free_if_non_null(widths);
   return status;
 }
 

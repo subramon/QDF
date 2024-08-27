@@ -10,7 +10,7 @@ local function is_jarray(T)
   for k, v in pairs(T) do 
     cnt = cnt + 1 
   end
-  assert(cnt > 0) -- TODO Need to undo this assumption
+  -- TODO P0 assert(cnt > 0) -- TODO Need to undo this assumption
   if ( cnt ~= nT ) then return false end -- this is an object
   -- Now we *think* its a table but one more check needed
   -- All T[i] from i = 1 to i = n must be defined

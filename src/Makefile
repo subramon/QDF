@@ -97,8 +97,13 @@ _stripped_cmem.h : ${CMEM_SRC_ROOT}/inc/cmem_struct.h
 _stripped_sclr.h : ${SCLR_SRC_ROOT}/inc/sclr_struct.h 
 	luajit ${RSUTILS_SRC_ROOT}/lua/cli_for_cdef.lua ${SCLR_SRC_ROOT}/inc/sclr_struct.h _stripped_sclr.h
 
-../lua/util_hdrs.lua :  ${RSUTILS_SRC_ROOT}/inc/read_csv.h 
-	cat ${RSUTILS_SRC_ROOT}/inc/read_csv.h > ../lua/util_hdrs.lua 
+
+../lua/read_csv_hdr.lua : ${RSUTILS_SRC_ROOT}/inc/read_csv.h
+	echo " return [[ " > ../lua/read_csv_hdr.lua 
+	luajit ${RSUTILS_SRC_ROOT}/lua/cli_for_cdef.lua  \
+		${RSUTILS_SRC_ROOT}/inc/read_csv.h \
+		>> ../lua/read_csv_hdr.lua 
+	echo " ]] " >> ../lua/read_csv_hdr.lua 
 
 ../lua/qdf_hdrs.lua : \
 		${RSUTILS_SRC_ROOT}/inc/qtypes.h \
@@ -278,7 +283,7 @@ ${RSUTILS_SO} :
 
 libqdf.so: ${qdf_OBJ} ${GEN_LIBS} ${C2R_SO} ${CMEM_SO} ${SCLR_SO} ${RSUTILS_SO}
 	gcc ${CFLAGS} $(INCS) ${qdf_OBJ} ${GEN_LIBS} -shared -o libqdf.so \
-	-lm ${C2R_SO} ${CMEM_SO} ${SCLR_SO} ${RSUTILS_SO}
+	${C2R_SO} ${CMEM_SO} ${SCLR_SO} ${RSUTILS_SO} -lm
 
 libispc.so : 
 	make -C ./gen/ libispc.so 

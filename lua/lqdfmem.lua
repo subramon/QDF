@@ -2,7 +2,7 @@
 -- I believe it was because I was running into trouble
 -- when using JNI
 local ffi               = require 'ffi'
-local register_type	= require 'register_type'
+local register_type	= require 'RSUTILS/lua/register_type'
 --[==[
 ---- enable commented section for stand alone testing 
 ffi.cdef([[

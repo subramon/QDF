@@ -19,9 +19,7 @@ typedef struct {
 ]])
 local QDF_hdrs = require 'qdf_hdrs' -- created by ../src/Makefile 
 ffi.cdef(QDF_hdrs)
-local hfile = cutils.file_as_str(os.getenv("RSUTILS_SRC_ROOT") 
-  .. "/inc/read_csv.h")
-ffi.cdef(hfile) -- for read_csv()
+local x            = require 'read_csv_hdr';      ffi.cdef(x)
 --================================
 local lqdfmem       = require 'lqdfmem'
 --================== 
@@ -142,7 +140,7 @@ local make_array_or_object = function(J, cqdf)
       -- print("Stop  non uniform array")
     end
   else -- object
-    print("Start object")
+    -- print("Start object")
     local K = assemble_keys(J)
     -- create a char ** keys array 
     local Tk, nTk = tbl_of_str_to_C_array(K)
@@ -168,7 +166,7 @@ local make_array_or_object = function(J, cqdf)
     end
     if ( is_debug ) then status = cQDF.chk_qdf(cqdf); end
       assert(status == 0)
-    print("Stop  object")
+    -- print("Stop  object")
   end
   return true
 end
@@ -267,6 +265,7 @@ make_json = function (J, cqdf)
     assert(make_array_or_object(J, cqdf_ptr)); 
     -- print("DONE making array or object: " .. tostring(#J))
   else
+    print("type(J) == ", type(J))
     error("bad JSON")
   end
   if ( is_debug ) then status = cQDF.chk_qdf(cqdf_ptr) end 
