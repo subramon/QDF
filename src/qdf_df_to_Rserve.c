@@ -48,12 +48,13 @@ qdf_df_to_Rserve(
 
   status = get_keys_as_array(ptr_qdf, &col_names, &n_cols); cBYE(status);
   if ( n_cols == 0 ) { go_BYE(-1); } 
-  size_t len_col_name;
+  size_t len_col_name = 0;
   for ( uint32_t c = 0; c < n_cols; c++ ) {
     size_t l = strlen(col_names[c]);
     if ( l > len_col_name ) {  len_col_name = l; }
   }
-  len_col_name += 8; // for things like nn_ and so on
+  if ( len_col_name == 0 ) { go_BYE(-1); } 
+  len_col_name += 32; // for things like nn_ and so on
   uint32_t len_cmd = (uint32_t)(4*multiple_n(len_col_name, 8) + 64);
   cmd = malloc(len_cmd); 
   //---------------------------------------
