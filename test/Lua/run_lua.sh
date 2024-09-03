@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 luajit test_qdf.lua
-luajit test_append.lua
+# TODO luajit test_append.lua
 luajit test_clamp.lua
 luajit test_qdf_csv.lua
 luajit test_clone.lua

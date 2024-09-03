@@ -347,7 +347,7 @@ extern int
 make_empty_data_frame(
     char **const cols, // [n_cols]
     uint32_t n_cols,
-    const char **const qtypes, // [n_cols]
+    char **const qtypes, // [n_cols]
     uint32_t sz_rows,
     QDF_REC_TYPE *ptr_qdf
     );
@@ -1277,7 +1277,7 @@ squeeze_where(
 extern int
 pr_df_as_csv(
     const QDF_REC_TYPE * const qdf,
-    const char **  const keys,
+    char **  const keys,
     uint32_t n_keys,
     const char * const file_name
     );

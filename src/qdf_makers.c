@@ -686,7 +686,7 @@ int
 make_empty_data_frame(
     char ** const cols, // [n_cols]
     uint32_t n_cols,
-    const char ** const str_qtypes, // [n_cols]
+    char ** const str_qtypes, // [n_cols]
     uint32_t sz_rows,
     QDF_REC_TYPE *ptr_qdf
     )
@@ -704,7 +704,7 @@ make_empty_data_frame(
     widths[i] = get_width_qtype(str_qtypes[i]); 
   }
   //--------------------------
-  status = make_data_frame(cols, n_cols, widths, NULL, sz_rows, 0, 
+  status = make_data_frame(cols, n_cols, widths, NULL, 0, sz_rows, 
       qtypes, ptr_qdf);
   cBYE(status);
 BYE:

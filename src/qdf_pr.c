@@ -25,7 +25,7 @@
 int
 pr_df_as_csv(
     const QDF_REC_TYPE * const ptr_qdf,
-    const char ** const keys_to_pr,
+    char ** const keys_to_pr,
     uint32_t n_keys_to_pr,
     const char * const file_name
     )

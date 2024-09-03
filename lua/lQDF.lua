@@ -930,7 +930,7 @@ function lQDF.read_csv(col_names, in_qtypes, csv_file, optargs)
   assert(ncols == chk_ncols)
   ---------------------------------
   local c_qtypes = mk_c_qtypes(in_qtypes)
-  c_qtypes = ffi.cast("const char ** const ", c_qtypes)
+  c_qtypes = ffi.cast("char ** const ", c_qtypes)
   local nrows_to_allocate = nrows
   if ( buf_spec ) then 
     local x = buf_spec.absolute
@@ -948,7 +948,7 @@ function lQDF.read_csv(col_names, in_qtypes, csv_file, optargs)
   end
   local m = nrows_to_allocate
   local out = assert(malloc_space_for_2d_array(m, ncols, l_widths))
-  out = ffi.cast("void ** const", out)
+  out = ffi.cast("char ** const", out)
   local widths = ffi.NULL -- will need ot set this properly to support SC
   local status = rsutils.read_csv(csv_file, ffi.NULL, 0, c_qtypes, out, 
     widths, nrows, ncols, ",", '"', "\n", is_hdr)
@@ -1114,6 +1114,7 @@ function lQDF:pr_df_as_csv(keys, file_name)
   if ( keys ) then 
     K, nK = tbl_of_str_to_C_array(keys)
   end
+  K = ffi.cast("char ** const", K)
   local status = cQDF.pr_df_as_csv(self:cmem_ptr(), K, nK, file_name)
   assert(status == 0)
   return true

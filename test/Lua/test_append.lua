@@ -81,6 +81,7 @@ tests.append_empty = function ()
   local dst = lQDF.make_empty_data_frame(cols, qtypes, s1n+s2n)
   assert(type(dst) == "lQDF")
   local ret = dst:append_df(src1)
+  print("XXX", type(ret));
   assert(type(ret) == "lQDF")
   local ret = dst:append_df(src2)
   assert(type(ret) == "lQDF")

@@ -6,7 +6,7 @@ tests.squeeze = function ()
   local qtypes = { "I4", "F8", "I1", }
   local ncols  = #col_names
   assert(#qtypes == #col_names)
-  local infile = "../squeeze1.csv"
+  local infile = "../data/squeeze1.csv"
   local optargs = { is_hdr = true }
   local x = assert(lQDF.read_csv(col_names, qtypes, infile, optargs))
   assert(type(x) == "lQDF")

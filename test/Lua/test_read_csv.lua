@@ -34,13 +34,13 @@ tests.read_csv_1 = function ()
     ffi.copy(x, qtypes[i], len)
     c_qtypes[i-1] = x
   end
-  c_qtypes = ffi.cast("const char ** const", c_qtypes)
+  c_qtypes = ffi.cast("char ** const", c_qtypes)
   --=========================
   -- allocated space for output
   local sz = ncols * ffi.sizeof("void *")
   local out = ffi.gc(ffi.C.malloc(sz), ffi.C.free)
   ffi.fill(out, sz)
-  out = ffi.cast("void ** const", out)
+  out = ffi.cast("char ** const", out)
   for i = 1, ncols do 
     local width
     if ( qtypes[i] == "I1" ) then
@@ -62,7 +62,7 @@ tests.read_csv_1 = function ()
     out[i-1] = ffi.gc(ffi.C.malloc(sz), ffi.C.free)
   end
   
-  local status = rsutils.read_csv(infile, c_qtypes, out, ffi.NULL,
+  local status = rsutils.read_csv(infile, ffi.NULL, 0, c_qtypes, out, ffi.NULL,
     nrows, ncols, ",", '"', "\n", is_hdr)
   assert(status == 0)
   -- spot checking the output
@@ -92,12 +92,12 @@ tests.read_csv_2 = function ()
   -- get qtypes and set up for C 
   local qtypes = require 'qtypes2'
   local c_qtypes = assert(mk_c_qtypes(qtypes))
-  c_qtypes = ffi.cast("const char ** const ", c_qtypes)
+  c_qtypes = ffi.cast("char ** const ", c_qtypes)
   -- allocate space for output
   local out = assert(alloc_csv_out(qtypes, nrows, ncols))
-  out = ffi.cast("void ** const ", out)
+  out = ffi.cast("char ** const ", out)
   -- read in file  
-  local status = rsutils.read_csv(infile, c_qtypes, out, ffi.NULL, 
+  local status = rsutils.read_csv(infile, ffi.NULL, 0, c_qtypes, out, ffi.NULL, 
     nrows, ncols, ",", '"', "\n", is_hdr)
   assert(status == 0)
   -- spot checking the output

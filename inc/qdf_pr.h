@@ -1,7 +1,7 @@
 extern int
 pr_df_as_csv(
     const QDF_REC_TYPE * const qdf,
-    const char **  const keys,
+    char **  const keys,
     uint32_t n_keys,
     const char * const file_name
     );

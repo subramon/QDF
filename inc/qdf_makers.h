@@ -76,7 +76,7 @@ extern int
 make_empty_data_frame(
     char **const cols, // [n_cols]
     uint32_t n_cols,
-    const char **const qtypes, // [n_cols]
+    char **const qtypes, // [n_cols]
     uint32_t sz_rows,
     QDF_REC_TYPE *ptr_qdf
     );
