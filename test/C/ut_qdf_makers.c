@@ -248,7 +248,7 @@ main(
   if ( *kidxs != -1 ) { go_BYE(-1); }
   // test pr_df_as_csv
   status = pr_df_as_csv(&qdf, NULL, 0, "_df.csv"); cBYE(status);
-  int itmp = num_lines("_df.csv");  if ( itmp < 0 ) { go_BYE(-1); }
+  int itmp = num_lines("_df.csv", NULL, 0);  if ( itmp < 0 ) { go_BYE(-1); }
   uint32_t nl = (uint32_t)itmp;
   if ( nl-1 != n_vals ) { go_BYE(-1); }  // -1 for header
   // TODO Test with other ways of specifying keys 

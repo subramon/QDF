@@ -281,9 +281,9 @@ ${RSUTILS_SO} :
 	make -C ${RSUTILS_SRC_ROOT}/src/
 
 
-libqdf.so: ${qdf_OBJ} ${GEN_LIBS} ${C2R_SO} ${CMEM_SO} ${SCLR_SO} ${RSUTILS_SO}
+libqdf.so: ${qdf_OBJ} ${GEN_LIBS} ${C2R_SO} ${RSUTILS_SO}
 	gcc ${CFLAGS} $(INCS) ${qdf_OBJ} ${GEN_LIBS} -shared -o libqdf.so \
-	${C2R_SO} ${CMEM_SO} ${SCLR_SO} ${RSUTILS_SO} -lm
+	${C2R_SO} ${RSUTILS_SO} -lm
 
 libispc.so : 
 	make -C ./gen/ libispc.so 
@@ -357,7 +357,7 @@ ut_tm:  ../test/C/ut_tm.c  libqdf.so
 
 ut_copy:  ../test/C/ut_copy.c  libqdf.so 
 	gcc ${CFLAGS} $(INCS) ../test/C/ut_copy.c   \
-		-o ut_copy libqdf.so  \
+		-o ut_copy libqdf.so  -ljansson
 
 ut_concat:  ../test/C/ut_concat.c  libqdf.so 
 	gcc ${CFLAGS} $(INCS) ../test/C/ut_concat.c   \

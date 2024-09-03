@@ -20,6 +20,6 @@ bash ut_qdf_makers.sh
 bash ut_read_csv.sh
 bash ut_squeeze.sh
 bash ut_tm.sh
-bash ut_uniques.sh
+bash ut_unique.sh
 
 echo "Completed $0 in $PWD successfully"
