@@ -148,11 +148,12 @@ qdf_df_to_Rserve(
           }
           status = set_vec(sock, col_name, "I4", I4buf, num_rows, 0);
           cBYE(status);
-          snprintf(cmd, len_cmd-1, 
-              "%s = as.Date(%s, origin='1970-01-01')",
-              col_name, col_name);
+          snprintf(cmd, len_cmd-1, "%s[%s == 0] <- NA", col_name, col_name);
           status = exec_str(sock, cmd, NULL, NULL, -1); cBYE(status);
 
+          snprintf(cmd, len_cmd-1, "%s = as.Date(%s, origin='1970-01-01')",
+              col_name, col_name);
+          status = exec_str(sock, cmd, NULL, NULL, -1); cBYE(status);
 #else
           uint32_t width = strlen("YYYY-MM-DD")+1;
           size_t l_buflen = num_rows * width;
