@@ -155,7 +155,6 @@ make_SC_array(
   // if ( svals  == NULL ) { if ( concat_svals == NULL ) { go_BYE(-1); }  }
   // if ( concat_svals == NULL ) { if ( svals == NULL ) { go_BYE(-1); }  }
   if ( ( concat_svals != NULL ) && ( svals != NULL ) ) { go_BYE(-1); } 
-  if ( arr_len == 0 ) { go_BYE(-1); }
   mcr_chk_null(ptr_qdf, -1); 
   uint32_t out_width = 0; // how we will write out data 
   // in contrast to in_width which is how the data is given to us

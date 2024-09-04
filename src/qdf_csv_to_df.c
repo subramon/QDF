@@ -35,10 +35,11 @@ qdf_csv_to_df(
   uint32_t *widths = NULL;
   qtype_t *c_qtypes = NULL;
 
-  char **alt_cols = NULL;
-  char **alt_vals = NULL;
-  uint32_t *alt_widths = NULL;
-  qtype_t *alt_c_qtypes = NULL;
+  char **alt_cols = NULL;  // [alt_n_cols]
+  char **alt_vals = NULL; // [alt_n_cols]
+  uint32_t *alt_widths = NULL; // [alt_n_cols]
+  qtype_t *alt_c_qtypes = NULL; // [alt_n_cols]
+  uint32_t alt_n_cols = 0;
 
   if ( infile == NULL ) { 
     if ( ( X == NULL ) || ( nX == 0 ) ) { go_BYE(-1); }
@@ -69,7 +70,6 @@ qdf_csv_to_df(
   memset(widths, 0, n_cols * sizeof(uint32_t));
   //----------------------------------------
 
-  uint32_t alt_n_cols = 0;
   for ( uint32_t i = 0; i < n_cols; i++ ) { 
     c_qtypes[i] = get_c_qtype(str_qtypes[i]);
     widths[i]   = get_width_qtype(str_qtypes[i]);
@@ -108,9 +108,9 @@ qdf_csv_to_df(
   }
   else {
     // Allocate space for columns that will actually be loaded
-    alt_cols = malloc(alt_n_cols * sizeof(qtype_t));
+    alt_cols = malloc(alt_n_cols * sizeof(char *));
     return_if_malloc_failed(alt_cols);
-    memset(alt_cols, 0,  alt_n_cols * sizeof(qtype_t));
+    memset(alt_cols, 0,  alt_n_cols * sizeof(char *));
 
     alt_c_qtypes = malloc(alt_n_cols * sizeof(qtype_t));
     return_if_malloc_failed(alt_c_qtypes);
@@ -121,7 +121,7 @@ qdf_csv_to_df(
     memset(alt_vals, 0, alt_n_cols * sizeof(char *));
 
     alt_widths = malloc(alt_n_cols * sizeof(uint32_t));
-    return_if_malloc_failed(widths);
+    return_if_malloc_failed(alt_widths);
     memset(alt_widths, 0, alt_n_cols * sizeof(uint32_t));
 
     uint32_t alt_idx = 0;
@@ -139,7 +139,6 @@ qdf_csv_to_df(
     cBYE(status);
     free_2d_array(&alt_cols, alt_n_cols);
     free_if_non_null(alt_c_qtypes);
-    free_2d_array(&alt_vals, alt_n_cols);
     free_if_non_null(alt_widths);
     // following needed because we have transferred from vals to_alt_vals
     for ( uint32_t i = 0; i < n_cols; i++ ) { vals[i] = NULL; }
@@ -150,6 +149,14 @@ BYE:
   free_if_non_null(widths);
   free_2d_array(&str_qtypes, n_qtypes);
   free_2d_array(&cols, n_cols);
+  //--------------------
+  if ( alt_vals != NULL ) { 
+    for ( uint32_t i = 0; i < alt_n_cols; i++ ) { 
+      free_if_non_null(alt_vals[i]);
+    }
+    free_if_non_null(alt_vals);
+  }
+  //--------------------
   if ( vals != NULL ) { 
     for ( uint32_t i = 0; i < n_cols; i++ ) { 
       free_if_non_null(vals[i]);
