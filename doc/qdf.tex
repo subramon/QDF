@@ -69,7 +69,7 @@ An array is said to be ``uniform'' when all elements have the same qtype
 \item Byte 0   contains jtype.
 \item Bytes 1 --- 3  unused
 \item Bytes 4 --- 7  contains poff
-\item rbc size is 8 bytes 
+\item qdf size is 8 bytes 
   \ee
 
 \section{boolean}
@@ -79,7 +79,7 @@ An array is said to be ``uniform'' when all elements have the same qtype
 \item Bytes 2 contains value (0 or 1)
 \item Bytes 3  unused
 \item Bytes 4 --- 7  contains poff
-\item rbc size is 8 bytes 
+\item qdf size is 8 bytes 
   \ee
 
 \section{number}
@@ -89,7 +89,7 @@ An array is said to be ``uniform'' when all elements have the same qtype
 \item Bytes 2 --- 3  unused
 \item Bytes 4 --- 7  contains poff
 \item Byte 8-15 contains value (number)
-\item rbc size is 16 bytes 
+\item qdf size is 16 bytes 
   \ee
 \section{date}
 This is actually \verb+ typedef struct _tm_t+ specified in qtypes
@@ -99,7 +99,7 @@ This is actually \verb+ typedef struct _tm_t+ specified in qtypes
 \item Bytes 2 --- 3  unused
 \item Bytes 4 --- 7  contains poff
 \item Byte 8-15 contains value (\verb+tm_t+)
-\item rbc size is 16 bytes 
+\item qdf size is 16 bytes 
   \ee
 \section{string}
 \be
@@ -118,7 +118,7 @@ This is actually \verb+ typedef struct _tm_t+ specified in qtypes
 need is to allow in-place updates without having to move things around.
 \ee
 \ee
-\item rbc size is 16 bytes plus \(s\)
+\item qdf size is 16 bytes plus \(s\)
   \ee
 
 \section{array}
@@ -132,7 +132,7 @@ need is to allow in-place updates without having to move things around.
 \item Byte 8-11 contains \verb+arr_len+, number of elements resident \(n\)
 \item Byte 12-15 contains \verb+arr_size+, number of elements allocated, \(s\)
 
-\item Byte 16-19 contains size of RBC, \(l\)
+\item Byte 16-19 contains size of QDF, \(l\)
 \item Byte 20-23 unused
   \ee
 \subsection{uniform array}
@@ -161,7 +161,7 @@ need is to allow in-place updates without having to move things around.
   Note that this can be 0 when a dataframe is being populated. But all columns
   must have the same number of elements.
 
-\item Byte 16 --- 19 contains length of RBC, \(l\)
+\item Byte 16 --- 19 contains length of QDF, \(l\)
 \item Byte 20 --- 23 contains \verb+obj_arr_size+ if a dataframe; else, 0
 
 For a dataframe, 

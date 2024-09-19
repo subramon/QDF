@@ -2,7 +2,7 @@ Check t_assign everywhere
 
 Rrecv_info needs  to be coded and verified in R_caller and R_writer
 
-All allocations in rbc_*.c that survive the call should
+All allocations in qdf_*.c that survive the call should
 be posix_memaligned
 
 
@@ -22,8 +22,8 @@ Write tests for j_date type
 Test null string
 Test empty array
 Test empty object
-Deal with printing SV in rbc.c
-Use is_read_only flag in QDF_REC_TYPE lrbcmem more aggressively
+Deal with printing SV in qdf.c
+Use is_read_only flag in QDF_REC_TYPE lqdfmem more aggressively
 
 Feb 1 2022
 
