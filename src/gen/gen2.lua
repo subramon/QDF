@@ -8,8 +8,7 @@
 -- vvlogical_and.c
 -- vvlogical_or.c
 
-local plfile = require 'pl.file'
-local plpath = require 'pl.path'
+local cutils = require 'libcutils'
 local gen_code = require 'RSUTILS/lua/gen_code'
 local QDF_SRC_ROOT = assert(os.getenv("QDF_SRC_ROOT"))
 local prefix = QDF_SRC_ROOT .. "/src/gen/"

@@ -6,8 +6,7 @@
 -- const_F4.c
 -- const_F8.c
 
-local plfile = require 'pl.file'
-local plpath = require 'pl.path'
+local cutils = require 'libcutils'
 local qtype_to_ctype = require 'qtype_to_ctype'
 local gen_code = require 'RSUTILS/lua/gen_code'
 local QDF_SRC_ROOT = assert(os.getenv("QDF_SRC_ROOT"))

@@ -2,8 +2,7 @@
 -- vs${operator}_${qtype}.c
 -- e.g., vsadd_I4.c 
 
-local plfile = require 'pl.file'
-local plpath = require 'pl.path'
+local cutils = require 'libcutils'
 local qtype_to_ctype = require 'qtype_to_ctype'
 local unsigned_qtype = require 'unsigned_qtype'
 local is_in          = require 'RSUTILS/lua/is_in'

@@ -6,8 +6,7 @@
 -- seq_F4.c, incr_on_by_F4.c 
 -- seq_F8.c, incr_on_by_F8.c 
 
-local plfile = require 'pl.file'
-local plpath = require 'pl.path'
+local cutils = require 'libcutils'
 local qtype_to_ctype = require 'qtype_to_ctype'
 local gen_code = require 'RSUTILS/lua/gen_code'
 local QDF_SRC_ROOT = assert(os.getenv("QDF_SRC_ROOT"))
@@ -29,7 +28,7 @@ for _, operator in ipairs(operators) do
   for i, qtype in ipairs(qtypes) do 
     local subs = {}
     subs.tmpl = prefix .. "tmpl4_" .. operator .. ".c.lua"
-    assert(plpath.isfile(subs.tmpl))
+    assert(cutils.isfile(subs.tmpl))
     subs.fn = operator .. "_" .. qtype
     subs.qtype = qtype
     subs.ctype = assert(qtype_to_ctype(qtype))
