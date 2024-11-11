@@ -5,8 +5,7 @@
 -- vvdiv.c
 
 
-local plfile = require 'pl.file'
-local plpath = require 'pl.path'
+local cutils = require 'libcutils'
 local qtype_to_ispctype = require 'qtype_to_ispctype'
 local qtype_to_ctype = require 'qtype_to_ctype'
 
@@ -17,8 +16,8 @@ local ops = { "add", "sub", "mul", "div", }
 --==================================================
 local cat_src_file = prefix .. "ispc/gen1d.ispc"
 local cat_inc_file = prefix .. "ispc/gen1d.isph"
-plfile.delete(cat_src_file)
-plfile.delete(cat_inc_file)
+cutils.delete(cat_src_file)
+cutils.delete(cat_inc_file)
 local sfp = io.open(cat_src_file, "w")
 --==================================================
 
@@ -48,10 +47,10 @@ for i, op in ipairs(ops) do
     local inc_file = gen_code.doth(subs, subs.incdir)
     print("Created " .. inc_file)
     --===============================================
-    local src_str = plfile.read(src_file)
+    local src_str = cutils.file_as_str(src_file)
     sfp:write(src_str)
-    -- IMOPRTANT plfile.delete(inc_file)
-    plfile.delete(src_file)
+    -- IMOPRTANT cutils.delete(inc_file)
+    cutils.delete(src_file)
     --===============================================
   end
 end

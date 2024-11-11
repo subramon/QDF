@@ -5,6 +5,9 @@ local lQDF = require 'lQDF'
 assert(arg)
 local infile  = assert(arg[1])
 local mode    = assert(arg[2])
+assert(cutils.isfile(infile), "File not found [" .. infile .. "]")
+assert((mode == "json") or ( mode == "csv"), 
+  "Invalid mode = [" .. mode .. "]")
 local outfile 
 if ( arg[3] ) then
   outfile = arg[3]

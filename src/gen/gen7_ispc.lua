@@ -12,7 +12,7 @@ local prefix = QDF_SRC_ROOT .. "/src/gen/"
 --==================================================
 local cat_src_file = prefix .. "ispc/gen7.ispc"
 print(cat_src_file)
-plfile.delete(cat_src_file)
+cutils.delete(cat_src_file)
 local sfp = io.open(cat_src_file, "w")
 --==================================================
 
@@ -49,9 +49,9 @@ for j, op in ipairs(operator_names) do
     local src_file = gen_code.dotc(subs, subs.srcdir)
     local inc_file = gen_code.doth(subs, subs.incdir)
     --===============================================
-    local src_str = plfile.read(src_file)
+    local src_str = cutils.file_as_str(src_file)
     sfp:write(src_str)
-    plfile.delete(src_file)
+    cutils.delete(src_file)
     --===============================================
   end
 end

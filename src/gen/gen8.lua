@@ -13,8 +13,8 @@ local cat_inc_file = prefix .. "inc/gen8.h"
 local lua_inc_file = prefix .. "inc/gen8_lua.h"
 print(cat_src_file)
 print(cat_inc_file)
-plfile.delete(cat_src_file)
-plfile.delete(cat_inc_file)
+cutils.delete(cat_src_file)
+cutils.delete(cat_inc_file)
 
 local sfp = io.open(cat_src_file, "w")
 local ifp = io.open(cat_inc_file, "w")
@@ -37,12 +37,12 @@ for i, qtype1 in ipairs(qtypes) do
     I[#I+1] = incfile
     S[#S+1] = srcfile
     --===============================================
-    local inc_str = plfile.read(inc_file)
-    local src_str = plfile.read(src_file)
+    local inc_str = cutils.file_as_str(inc_file)
+    local src_str = cutils.file_as_str(src_file)
     ifp:write(inc_str)
     sfp:write(src_str)
-    -- IMPORTANT plfile.delete(inc_file)
-    plfile.delete(src_file)
+    -- IMPORTANT cutils.delete(inc_file)
+    cutils.delete(src_file)
     --===============================================
   end
 end
