@@ -438,6 +438,12 @@ pr_1(
   int status = 0;
   switch ( qtype ) {
     //-------------------
+    case BL :
+      {
+        bool bval = ((const bool * const )valptr)[idx];
+        fprintf(fp, "%s", bval ? "true" : "false");
+      }
+      break;
     case I1 :
       fprintf(fp, "%d", ((const int8_t * const )valptr)[idx]);
       break;
@@ -489,11 +495,11 @@ pr_1(
       //-------------------
     case TM1 :
       {
-      const tm_t * const tmptr = (const tm_t * const )valptr;
-      fprintf(fp, "%d-%02d-%02d", 
-          1900+tmptr[idx].tm_year, 
-          1+tmptr[idx].tm_mon, 
-          tmptr[idx].tm_mday);
+        const tm_t * const tmptr = (const tm_t * const )valptr;
+        fprintf(fp, "%d-%02d-%02d", 
+            1900+tmptr[idx].tm_year, 
+            1+tmptr[idx].tm_mon, 
+            tmptr[idx].tm_mday);
       }
       break;
       //-------------------
