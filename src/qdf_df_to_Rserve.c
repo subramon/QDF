@@ -65,16 +65,16 @@ qdf_df_to_Rserve(
   //---------------------------------------
   for ( uint32_t c = 0; c < n_cols; c++ ) {
     free_if_non_null(nn_col_name);
-    num_sent_cols++;
     const char * const col_name = col_names[c];
     // We use the following convention.
     // Assume that a key "foo" has null values
     // Then, we create another key "nn_foo" whose values are 0/1 and 
     // such that nn_foo[i] == 0 => foo[i] == NULL 
     // such that nn_foo[i] == 1 => foo[i] != NULL 
-    if ( strncmp(col_name, "nn_", strlen("nn_")) == 0 ) { 
+    if ( strncmp(col_name, "_nn_", strlen("_nn_")) == 0 ) { 
       continue;
     }
+    num_sent_cols++;
     if ( c > 0 ) { 
       status = cat_to_buf(&df_str, &bufsz, &buflen, ", ", 0);
       cBYE(status);
@@ -344,6 +344,9 @@ qdf_df_to_Rserve(
   if ( ncols_df(sock, df_name) != num_sent_cols )  { go_BYE(-1); }
   if ( nrows_df(sock, df_name) != num_rows )  { go_BYE(-1); }
 #endif
+  sprintf(cmd, "saveRDS(%s, file  = \"/tmp/cfg.Rdata\")", df_name);
+  status = exec_str(sock, df_str, NULL, NULL, -1); cBYE(status);
+  
   // STOP: send stuff over to R
 BYE:
   free_2d_array(&col_names, n_cols);
