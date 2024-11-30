@@ -90,41 +90,46 @@ qdf_df_to_Rserve(
     if ( chk_jtype != j_array ) { go_BYE(-1); }
     char *dptr = get_arr_ptr(col_qdf.data);
     //--------------------------------------
+    // START: Find out if there is an nn array associated
+    nn_col_name = malloc(strlen(col_name) + 8);
+    sprintf(nn_col_name, "_nn_%s", col_name); 
+    // STOP : Find out if there is an nn array associated
+    //--------------------------------------
     switch ( qtype ) {
       case BL :
         for ( uint32_t i = 0; i < num_rows; i++ ) {
           I4buf[i] = (int32_t)((bool *)dptr)[i];
         }
-        status = set_vec(sock, col_name, "I4", I4buf, num_rows, 0);
+        status = set_vec(sock, col_name, "I4", I4buf, NULL, num_rows, 0);
         cBYE(status);
         break;
       case I1 :
         for ( uint32_t i = 0; i < num_rows; i++ ) {
           I4buf[i] = (int32_t)((int8_t *)dptr)[i];
         }
-        status = set_vec(sock, col_name, "I4", I4buf, num_rows, 0);
+        status = set_vec(sock, col_name, "I4", I4buf, NULL, num_rows, 0);
         cBYE(status);
         break;
       case I2 :
         for ( uint32_t i = 0; i < num_rows; i++ ) {
           I4buf[i] = (int32_t)((int16_t *)dptr)[i];
         }
-        status = set_vec(sock, col_name, "I4", I4buf, num_rows, 0);
+        status = set_vec(sock, col_name, "I4", I4buf, NULL, num_rows, 0);
         cBYE(status);
         break;
       case I4 :
-        status = set_vec(sock, col_name, "I4", dptr, num_rows, 0);
+        status = set_vec(sock, col_name, "I4", dptr, NULL, num_rows, 0);
         cBYE(status);
         break;
       case F4 : 
         for ( uint32_t i = 0; i < num_rows; i++ ) {
           F8buf[i] = (double)((float *)dptr)[i];
         }
-        status = set_vec(sock, col_name, "F8", F8buf, num_rows, 0);
+        status = set_vec(sock, col_name, "F8", F8buf, NULL, num_rows, 0);
         cBYE(status);
         break;
       case F8 :
-        status = set_vec(sock, col_name, "F8", dptr, num_rows, 0);
+        status = set_vec(sock, col_name, "F8", dptr, NULL, num_rows, 0);
         cBYE(status);
         break;
       case TM1 :
@@ -146,7 +151,7 @@ qdf_df_to_Rserve(
               I4buf[i] = (int32_t)(t/86400);
             }
           }
-          status = set_vec(sock, col_name, "I4", I4buf, num_rows, 0);
+          status = set_vec(sock, col_name, "I4", I4buf, NULL, num_rows, 0);
           cBYE(status);
           snprintf(cmd, len_cmd-1, "%s[%s == 0] <- NA", col_name, col_name);
           status = exec_str(sock, cmd, NULL, NULL, -1); cBYE(status);
@@ -171,7 +176,7 @@ qdf_df_to_Rserve(
             }
             strcpy(buffer+(i*width), buf);
           }
-          status = set_vec(sock, col_name, "SC", buffer, num_rows, width);
+          status = set_vec(sock, col_name, "SC", buffer, NULL, num_rows, width);
           free_if_non_null(buffer);
           cBYE(status);
 #endif
@@ -181,7 +186,7 @@ qdf_df_to_Rserve(
         {
           uint32_t width = x_get_arr_width(&col_qdf); 
           if ( width == 0 ) { go_BYE(-1); } 
-          status = set_vec(sock, col_name, "SC", dptr, num_rows, width);
+          status = set_vec(sock, col_name, "SC", dptr, NULL, num_rows, width);
           cBYE(status);
           if ( strcmp(col_name, "within_cluster_embedding") == 0 ) {
 #ifdef DEBUG
@@ -279,7 +284,7 @@ qdf_df_to_Rserve(
       if ( chk_nn_jtype != j_array ) { go_BYE(-1); }
       char *nn_dptr = get_arr_ptr(nn_col_qdf.data);
       //--------------------------------------
-      status = set_vec(sock, nn_col_name, "I1", nn_dptr, num_rows, 0);
+      status = set_vec(sock, nn_col_name, "I1", nn_dptr, NULL, num_rows, 0);
       cBYE(status);
 #ifdef DEBUG
       status = is_vector(sock, nn_col_name, &brslt); cBYE(status);
