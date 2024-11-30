@@ -14,6 +14,7 @@
 #include "qdf_helpers.h"
 #include "qdf_xhelpers.h"
 #include "chk_R_class.h"
+#include "get_R_class.h"
 #include "n_df.h"
 #include "qdf_df_to_Rserve.h"
 
@@ -34,7 +35,7 @@ qdf_df_to_Rserve(
   json_t *root = NULL;
   json_error_t error;
   char **col_names = NULL; uint32_t n_cols;
-  char *nn_col_name = NULL;
+  char *nn_col_name = NULL, *vec_class = NULL;
 
   uint32_t num_sent_cols = 0;
   uint32_t num_rows = x_get_obj_arr_len(ptr_qdf);
@@ -71,7 +72,7 @@ qdf_df_to_Rserve(
     // Then, we create another key "nn_foo" whose values are 0/1 and 
     // such that nn_foo[i] == 0 => foo[i] == NULL 
     // such that nn_foo[i] == 1 => foo[i] != NULL 
-    if ( strncmp(col_name, "_nn_", strlen("_nn_")) == 0 ) { 
+    if ( strncmp(col_name, "nn_", strlen("nn_")) == 0 ) { 
       continue;
     }
     num_sent_cols++;
@@ -92,7 +93,7 @@ qdf_df_to_Rserve(
     //--------------------------------------
     // START: Find out if there is an nn array associated
     nn_col_name = malloc(strlen(col_name) + 8);
-    sprintf(nn_col_name, "_nn_%s", col_name); 
+    sprintf(nn_col_name, "nn_%s", col_name); 
     // STOP : Find out if there is an nn array associated
     //--------------------------------------
     switch ( qtype ) {
@@ -260,7 +261,7 @@ qdf_df_to_Rserve(
 
 #endif
     // Determine whether this column has a nn column
-    len_col_name = strlen(col_name)+strlen("nn_") + 8;
+    len_col_name = strlen(col_name)+strlen("_`nn_") + 8;
     free_if_non_null(nn_col_name);
     nn_col_name = malloc(len_col_name);
     memset(nn_col_name, 0, len_col_name);
@@ -289,9 +290,14 @@ qdf_df_to_Rserve(
 #ifdef DEBUG
       status = is_vector(sock, nn_col_name, &brslt); cBYE(status);
       if ( !brslt ) { go_BYE(-1); }
+      memset(cmd, 0, len_cmd);
+      sprintf(cmd, "%s <- %s != 0", nn_col_name, nn_col_name);
+      status = exec_str(sock, cmd, NULL, NULL, -1); cBYE(status);
+    vec_class = get_R_class(sock, nn_col_name); 
+    if ( vec_class == NULL ) { go_BYE(-1); }
+    free_if_non_null(vec_class);
       if ( !chk_R_class(sock, nn_col_name, "logical") ) { go_BYE(-1); } 
 #endif
-      // z <- ifelse(y, x, NA_real_)
       memset(cmd, 0, len_cmd);
       switch ( qtype ) {
         case I1 : case I2 : case I4 : case I8 : 
@@ -355,6 +361,7 @@ BYE:
   free_if_non_null(F8buf);
   free_if_non_null(nn_col_name);
   free_if_non_null(cmd);
+  free_if_non_null(vec_class);
   return status;
 }
 /*

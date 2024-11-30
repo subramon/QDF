@@ -52,6 +52,9 @@ main(
   status = qdf_df_to_Rserve(sock, &qdf, "df_name");
   cBYE(status);
 
+  char Rcmd[1024];
+  sprintf(Rcmd, "saveRDS(df_name, file  = \"/tmp/cfg.Rdata\")");
+  status = exec_str(sock, Rcmd, NULL, NULL, -1); cBYE(status);
   fprintf(stdout, "SUCCESS Test %s completed successfully\n", argv[0]);
 
 BYE:
