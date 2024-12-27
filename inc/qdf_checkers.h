@@ -58,7 +58,7 @@ chk_is_data_frame(
     );
 extern int
 are_keys_in_object(
-      QDF_REC_TYPE * const ptr_qdf,
+      const QDF_REC_TYPE * ptr_qdf,
       char ** const keys, // [n_keys]
       uint32_t n_keys,
       bool *ptr_are_keys

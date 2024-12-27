@@ -80,7 +80,7 @@ pr_df_as_csv(
   if ( !x_get_is_df(ptr_qdf) ) { go_BYE(-1); }
   bool are_keys = false;
   status = are_keys_in_object(ptr_qdf, 
-      (const char **const)keys, n_keys, &are_keys);
+      (char ** const )keys, n_keys, &are_keys);
   cBYE(status);
   if ( !are_keys ) { go_BYE(-1); }
   for ( uint32_t i = 0; i < n_rows; i++ ) { 

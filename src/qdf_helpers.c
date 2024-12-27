@@ -850,17 +850,14 @@ get_qdf_size(
   switch ( jtype ) {
     case j_nil     : case j_bool    : 
       {
-        const qdf_bool_hdr_t *xp = (const qdf_bool_hdr_t *)x;
         return sizeof(qdf_bool_hdr_t); 
       }
     case j_number  : 
       {
-        const qdf_number_hdr_t *xp = (const qdf_number_hdr_t *)x;
         return sizeof(qdf_number_hdr_t); 
       }
     case j_date  : 
       {
-        const qdf_date_hdr_t *xp = (const qdf_date_hdr_t *)x;
         return sizeof(qdf_date_hdr_t); 
       }
     case j_string  : 
