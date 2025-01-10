@@ -870,122 +870,94 @@ function lQDF:set_is_df(b_is_df) -- DANGEROUS! USE WITH CAUTION
   assert(status == 0)
   return self
 end
-function lQDF.read_csv(col_names, in_qtypes, csv_file, optargs)
-  assert(type(col_names) == "table")
-  assert(type(in_qtypes) == "table")
-  local ncols = #col_names
+function lQDF.read_csv(M, csv_file, optargs)
+  assert(type(M) == "table")
+  ncols = #M
   assert(ncols > 0)
-  assert(ncols == #in_qtypes)
-  for i = 1, ncols do 
-    assert(#col_names[i] > 0)
-    assert(type(col_names[i]) == "string")
-    assert(type(in_qtypes[i]) == "string")
-  end
-  -- check names are distinct
-  for i = 1, ncols do 
-    for j = i+11, ncols do 
-      assert(col_names[i] ~= col_names[j])
+  -- START: extract information from M 
+  -- prefix l_ for Lua 
+  l_col_names = {} 
+  l_qtypes = {}
+  l_is_load = {}
+  l_has_nulls = {}
+  for k, v in ipairs(M) do 
+    l_col_names[k] = assert(M.qtype)
+    assert(type(l_col_names[k]) == "string")
+    assert(#l_col_names[k] >= 1)
+
+    l_qtypes[k] = assert(M.qtype)
+    assert(type(l_qtypes[k]) == "string")
+
+    l_is_load[k] = M.is_load
+    if ( type(l_is_load[k]) == "nil" ) then 
+      l_is_load[k] = true -- default assumption 
     end
+    assert(type(l_is_load[k]) == "boolean")
+
+    l_has_nulls[k] = M.has_nulls
+    if ( type(l_has_nulls[k]) == "nil" ) then 
+      l_has_nulls[k] = false  -- default assumption 
+    end
+    assert(type(l_has_nulls[k]) == "boolean")
   end
-  -- check types of columns and get their widths
-  local l_widths = {}
-  for i = 1, ncols do 
-    local qtype = trim_qtype(in_qtypes[i])
-    assert(qtypes[qtype], qtype)
-    l_widths[i] = assert(widths[qtype])
-  end
-  -- process optional arguments, if any
-  local is_hdr = true
-  local fld_sep = ","    -- hard coded  TODO P4
-  local fld_delim = '"'  -- hard coded  TODO P4
-  local buf_spec
-  if ( optargs ) then 
+  --  STOP: extract information from M 
+  -- some basic checks 
+  for k = 1, #M do 
+    assert(cutils.is_qtype(l_qtypes[k]))
+    for k2 = k+1, #M do 
+      assert(l_col_names[k] ~= l_col_names[k1])
+    end
+  end 
+  -- START: handle optargs 
+  local is_hdr = false
+  local fld_sep = ","
+  local fld_delim = '"'
+  local rec_sep = '\n'
+  if ( optargs ) then
     assert(type(optargs) == "table")
-    if ( optargs.is_hdr ~= nil ) then 
-      assert(type(optargs.is_hdr) == "boolean")
-      is_hdr = optargs.is_hdr
+    if ( optargs.fld_sep ) then 
+      fld_sep = optargs.fld_sep 
     end
-    if ( optargs.fld_sep ~= nil ) then 
-      assert(type(optargs.fld_sep) == "string")
-      assert(#fld_sep == 1)
-      fld_sep = optargs.fld_sep
+    if ( optargs.fld_delim ) then 
+      fld_delim = optargs.fld_delim 
     end
-    if ( optargs.fld_delim ~= nil ) then 
-      assert(type(optargs.fld_delim) == "string")
-      assert(#fld_delim == 1)
-      fld_delim = optargs.fld_delim
+    if ( optargs.rec_sep ) then 
+      rec_sep = optargs.rec_sep 
     end
-    if ( optargs.buf_spec ~= nil ) then 
-      assert(type(optargs.buf_spec) == "table")
-      buf_spec = optargs.buf_spec
-      -- TODO P4 can do more checks here
+    if ( type(optargs.is_hdr) ~= "nil" ) then 
+      is_hdr = optargs.is_hdr 
     end
   end
-  assert(fld_sep ~= fld_delim)
-  ---------------------------------
-  local nrows = cutils.num_lines(csv_file)
-  assert(nrows >= 1)
-  if ( is_hdr ) then nrows = nrows - 1 end
-  local chk_ncols = cutils.num_cols(csv_file)
-  assert(ncols == chk_ncols)
-  ---------------------------------
-  local c_qtypes = mk_c_qtypes(in_qtypes)
-  c_qtypes = ffi.cast("char ** const ", c_qtypes)
-  local nrows_to_allocate = nrows
-  if ( buf_spec ) then 
-    local x = buf_spec.absolute
-    local y = buf_spec.times
-    local z = buf_spec.plus
-    if ( x ) then 
-      if ( x > nrows ) then nrows_to_allocate = x end 
-    end
-    if ( y ) then 
-      if ( y > 1 ) then nrows_to_allocate = nrows * y end 
-    end
-    if ( z ) then 
-      if ( z > 0 ) then nrows_to_allocate = nrows + z end 
-    end
+  assert(type(fld_sep)   == "string"); assert(#fld_sep   == 1)
+  assert(type(fld_delim) == "string"); assert(#fld_delim == 1)
+  assert(type(rec_sep)   == "string"); assert(#rec_sep   == 1)
+  assert(type(is_hdr)    == "boolean"); 
+  --  STOP: handle optargs 
+  -- START: convert Lua to C 
+  local c_has_nulls = ffi.new("bool[?]", ncols)
+  local c_is_load   = ffi.new("bool[?]", ncols)
+  local c_qtype     = ffi.new("int[?]",  ncols)
+  local c_widths    = ffi.new("uint32_t[?]", ncols)
+  for i = 1, ncols do 
+    c_has_nulls[i-1] = l_has_nulls[i]
+    c_is_load[i-1]   = l_is_load[i]
+    c_qtypes[i-1]    = cutils.get_c_qtype(l_qtypes[i])
+    c_widths[i-1]    = cutils.get_width_qtype(l_qtypes[i])
   end
-  local m = nrows_to_allocate
-  local out = assert(malloc_space_for_2d_array(m, ncols, l_widths))
-  out = ffi.cast("char ** const", out)
-  local widths = ffi.NULL -- will need ot set this properly to support SC
-  local status = rsutils.read_csv(csv_file, ffi.NULL, 0, c_qtypes, out, 
-    widths, nrows, ncols, ",", '"', "\n", is_hdr)
-  assert(status == 0)
-  ---------------------------------
+  c_col_names = tbl_of_str_to_C_array(l_col_names)
+  --  STOP: convert Lua to C 
+  -- make the envelope for the dataframe to be loaded
   local df_qdf = lqdfmem(0)
   local df_qdf_mem = ffi.cast("QDF_REC_TYPE *", df_qdf._qdfmem)
-  ------
-  -- create a char ** keys array 
-  local Tk, nTk = tbl_of_str_to_C_array(col_names)
-  status = cQDF.make_mixed_array_or_object(
-        ffi.NULL, Tk, ncols, df_qdf_mem)
+  -- invoke C 
+  local status = XXXX.qdf_csv_to_df(infile, ffi.NULL, 0, 
+    c_col_names, c_qtypes, c_widths, c_has_nulls, c_is_load, 
+    ncols, fld_sep, fld_delim, rec_sep, is_hdr, df_qdf_mem); 
   assert(status == 0)
-  for i = 1, ncols do 
-    local status = 0
-    local tmpqdf = ffi.new("QDF_REC_TYPE[?]", 1)
-    local qtype = trim_qtype(in_qtypes[i])
-    local c_qtype = assert(qtypes[qtype]) -- convert str to enum for C 
-    status = cQDF.make_num_array(out[i-1], nrows, m, c_qtype, tmpqdf)
-    assert(status == 0)
-    if ( is_debug ) then status = cQDF.chk_qdf(tmpqdf) end 
-    assert(status == 0)
-    status = cQDF.append_mixed_array_or_object(df_qdf_mem, tmpqdf)
-    assert(status == 0)
-    if ( is_debug ) then status = cQDF.chk_qdf(df_qdf_mem) end 
-    assert(status == 0)
-  end
   local newqdf = setmetatable({}, lQDF)
   newqdf._cmem        = df_qdf
-  -- indicate that newqdf is a dataframe 
-  newqdf:set_is_df(true)
-  assert(nrows <= m)
-  newqdf:set_obj_arr_len(nrows)
-  newqdf:set_obj_arr_size(m)
   return newqdf
 end
-
 
 function lQDF:width()
   assert(self:jtype() == "j_array")
@@ -1193,7 +1165,7 @@ function lQDF:set_foreign() -- USE WITH GREAT CARE
 end
 
 function lQDF:free() 
-  error("XXXXX")
+  error("ZZZZZZZ")
   local status = cQDF.free_qdf(self:cmem_ptr())
   assert(status == 0)
   return true

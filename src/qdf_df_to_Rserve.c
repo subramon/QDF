@@ -45,8 +45,6 @@ qdf_df_to_Rserve(
   //------------------------------------------
 
   if ( !x_get_is_df(ptr_qdf) ) { go_BYE(-1); }
-  uint32_t len  = x_get_obj_arr_len(ptr_qdf);
-
   status = get_keys_as_array(ptr_qdf, &col_names, &n_cols); cBYE(status);
   if ( n_cols == 0 ) { go_BYE(-1); } 
   size_t len_col_name = 0;

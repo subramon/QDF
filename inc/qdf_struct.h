@@ -37,22 +37,6 @@ typedef struct {
   jtype_t jtype;
 } PRIMITIVE_VAL_TYPE;
 
-typedef enum { 
-  buf_undef,
-  buf_plus,
-  buf_times,
-  buf_absolute,
-} buf_spec_t;
-
-typedef struct { 
-  union Buf { 
-    int plus;
-    float times;
-    int abs;
-  } buf;
-  buf_spec_t spec;
-} BUF_SPEC_TYPE;
-
 typedef struct _qdf_hdr_t { 
   uint8_t jtype;
   uint8_t qtype;
