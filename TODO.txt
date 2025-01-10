@@ -1,3 +1,6 @@
+Check if get_val_by_idx frees when result is str
+
+
 -- Document how to use Docker
 colima stop
 colima start 

@@ -64,7 +64,6 @@ qdf_resize_df(
     //--------------------------
     uint32_t src_n  = get_arr_len(src_col.data);
     uint32_t src_w  = get_arr_width(src_col.data);
-    uint32_t src_sz = get_arr_size(src_col.data);
     char *src_ptr = get_arr_ptr(src_col.data);
     // STOP   get access to the source 
     // START: get access to the destination 
@@ -98,7 +97,6 @@ qdf_resize_df(
     //--------------------------
     uint32_t src_n = get_arr_len(src_col.data);
     uint32_t src_w = get_arr_width(src_col.data);
-    uint32_t src_sz = get_arr_size(src_col.data);
     char *src_ptr = get_arr_ptr(src_col.data);
     // STOP   get access to the source 
     // START: get access to the destination 

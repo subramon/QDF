@@ -1,39 +1,3 @@
-# CFLAGS := -g 
-CFLAGS := -g -O0 # optimizations cause buffer overflow on maas
-# CFLAGS := -O3
-
-CFLAGS += -DDEBUG
-CFLAGS += -DISPC
-CFLAGS += -fopenmp
-CFLAGS += -fstrict-aliasing 
-CFLAGS += -std=gnu99 -Wall -fPIC -W -Waggregate-return -Wcast-align 
-CFLAGS += -Wstrict-aliasing
-# CFLAGS += -Wincompatible-pointer-types # comment for CentOS
-CFLAGS += -Wmissing-prototypes -Wnested-externs -Wshadow -Wwrite-strings 
-CFLAGS += -Wunused-variable -Wunused-parameter 
-CFLAGS += -Wstrict-prototypes -Wmissing-prototypes -Wpointer-arith 
-CFLAGS += -Wmissing-declarations -Wredundant-decls -Wnested-externs 
-CFLAGS += -Wshadow -Wcast-qual -Wcast-align -Wwrite-strings 
-CFLAGS += -Wold-style-definition 
-CFLAGS += -Wattributes
-CFLAGS += -Wunused-label 
-# CFLAGS += -Wint-conversion # comment for CentOS
-CFLAGS += -Wconversion
-# CFLAGS += -Wnull-dereference  # comment for CentOS
-CFLAGS += -Wpedantic 
-CFLAGS += -Wuninitialized
-#---------------
-# WHY DID WE UNDO THIS CHECK? CFLAGS += -Wno-incompatible-pointer-types
-# WHY DID WE UNDO THIS CHECK? CFLAGS += -Wno-cast-align
-# WHY DID WE UNDO THIS CHECK? CFLAGS += -Wno-aggregate-return
-# CFLAGS += -Wno-discarded-qualifiers
-# WHY DID WE UNDO THIS CHECK? CFLAGS += -Wno-ignored-qualifiers
-# not for mac CFLAGS += -Wsuggest-attribute=noreturn -Wduplicated-cond 
-# not for mac CFLAGS += -Wmisleading-indentation 
-# not for mac CFLAGS += -Wduplicated-branches -Wrestrict
-#
-
-INCS := -I. # for globals.h 
 INCS += -I../inc/ 
 INCS += -I./gen/inc/  # for generated files
 INCS += -I./gen/ispc/  # for generated files
@@ -85,11 +49,11 @@ all: libqdf.so  ${GEN_LIBS} ${LUA_HDRS} ${UTIL_HDRS} ${UNIT_TESTS}
 CC=gcc
 # Use clang as an extra compile time check
 # CC=clang
-# CFLAGS=-Weverything -Wno-switch-enum
+# QCFLAGS=-Weverything -Wno-switch-enum
 
 
 .c.o :
-	$(CC) -c -o $@ $< $(CFLAGS)  $(INCS)
+	$(CC) -c -o $@ $< ${QCFLAGS}  $(INCS)
 
 _stripped_cmem.h : ${CMEM_SRC_ROOT}/inc/cmem_struct.h 
 	luajit ${RSUTILS_SRC_ROOT}/lua/cli_for_cdef.lua ${CMEM_SRC_ROOT}/inc/cmem_struct.h _stripped_cmem.h
@@ -209,59 +173,59 @@ clean:
 	rm -f *.o *.so _* ${UNIT_TESTS} 
 	rm -f ${LUA_HDRS} 
 
-qdf_SRC += qdf_makers.c 
-qdf_SRC += qdf_append.c 
-qdf_SRC += qdf_resize_df.c 
-qdf_SRC += qdf_checkers.c 
-qdf_SRC += qdf_concat.c 
-qdf_SRC += qdf_const.c 
-qdf_SRC += qdf_seq.c 
-qdf_SRC += qdf_incr_on_by.c 
-qdf_SRC += qdf_is_sawtooth.c 
-qdf_SRC += qdf_grp_sawtooth.c 
-qdf_SRC += qdf_grp_flatten_sawtooth.c 
-qdf_SRC += qdf_vals_counts.c 
-qdf_SRC += qdf_vals_sums.c 
-qdf_SRC += qdf_copy.c 
-qdf_SRC += qdf_clone.c 
-qdf_SRC += qdf_external.c 
-qdf_SRC += qdf_get_by_idx.c 
-qdf_SRC += qdf_helpers.c 
-qdf_SRC += qdf_xhelpers.c 
-qdf_SRC += qdf_join.c 
-qdf_SRC += qdf_vs_op.c 
-qdf_SRC += vsraised_to.c 
-qdf_SRC += sawtooth.c 
-qdf_SRC += flatten_sawtooth.c 
-qdf_SRC += qdf_f_to_s.c 
-qdf_SRC += qdf_vv_op.c 
-qdf_SRC += qdf_v_op.c 
-qdf_SRC += qdf_ifxthenyelsez.c 
-qdf_SRC += qdf_compress.c 
-qdf_SRC += qdf_decompress.c 
-qdf_SRC += qdf_permute.c 
-qdf_SRC += qdf_fill.c 
-qdf_SRC += qdf_mem.c 
-qdf_SRC += qdf_srt_grp_cnt.c 
-qdf_SRC += qdf_coalesce.c 
-qdf_SRC += qdf_named_vec.c 
-qdf_SRC += qdf_df_to_Rserve.c 
-qdf_SRC += qdf_nop.c 
-qdf_SRC += qdf_pr.c 
-qdf_SRC += qdf_csv_to_df.c 
-qdf_SRC += qdf_prefix_sums.c 
-qdf_SRC += qdf_setters.c 
-qdf_SRC += qdf_shift_up_down.c 
-qdf_SRC += qdf_next_prev.c 
-qdf_SRC += qdf_smear.c 
-qdf_SRC += qdf_sort.c 
-qdf_SRC += qdf_squeeze_where.c 
-qdf_SRC += qdf_tm.c 
-qdf_SRC += qdf_uq.c 
-qdf_SRC += qdf_write.c 
-# qdf_SRC   += cli/wrap_pr_df.c 
-# qdf_SRC   += cli/wrap_csv_to_qdf.c 
-qdf_OBJ  = $(qdf_SRC:.c=.o)
+QDF_SRC += qdf_makers.c 
+QDF_SRC += qdf_append.c 
+QDF_SRC += qdf_resize_df.c 
+QDF_SRC += qdf_checkers.c 
+QDF_SRC += qdf_concat.c 
+QDF_SRC += qdf_const.c 
+QDF_SRC += qdf_seq.c 
+QDF_SRC += qdf_incr_on_by.c 
+QDF_SRC += qdf_is_sawtooth.c 
+QDF_SRC += qdf_grp_sawtooth.c 
+QDF_SRC += qdf_grp_flatten_sawtooth.c 
+QDF_SRC += qdf_vals_counts.c 
+QDF_SRC += qdf_vals_sums.c 
+QDF_SRC += qdf_copy.c 
+QDF_SRC += qdf_clone.c 
+QDF_SRC += qdf_external.c 
+QDF_SRC += qdf_get_by_idx.c 
+QDF_SRC += qdf_helpers.c 
+QDF_SRC += qdf_xhelpers.c 
+QDF_SRC += qdf_join.c 
+QDF_SRC += qdf_vs_op.c 
+QDF_SRC += vsraised_to.c 
+QDF_SRC += sawtooth.c 
+QDF_SRC += flatten_sawtooth.c 
+QDF_SRC += qdf_f_to_s.c 
+QDF_SRC += qdf_vv_op.c 
+QDF_SRC += qdf_v_op.c 
+QDF_SRC += qdf_ifxthenyelsez.c 
+QDF_SRC += qdf_compress.c 
+QDF_SRC += qdf_decompress.c 
+QDF_SRC += qdf_permute.c 
+QDF_SRC += qdf_fill.c 
+QDF_SRC += qdf_mem.c 
+QDF_SRC += qdf_srt_grp_cnt.c 
+QDF_SRC += qdf_coalesce.c 
+QDF_SRC += qdf_named_vec.c 
+QDF_SRC += qdf_df_to_Rserve.c 
+QDF_SRC += qdf_nop.c 
+QDF_SRC += qdf_pr.c 
+QDF_SRC += qdf_csv_to_df.c 
+QDF_SRC += qdf_prefix_sums.c 
+QDF_SRC += qdf_setters.c 
+QDF_SRC += qdf_shift_up_down.c 
+QDF_SRC += qdf_next_prev.c 
+QDF_SRC += qdf_smear.c 
+QDF_SRC += qdf_sort.c 
+QDF_SRC += qdf_squeeze_where.c 
+QDF_SRC += qdf_tm.c 
+QDF_SRC += qdf_uq.c 
+QDF_SRC += qdf_write.c 
+# QDF_SRC   += cli/wrap_pr_df.c 
+# QDF_SRC   += cli/wrap_csv_to_qdf.c 
+QDF_OBJ  = $(QDF_SRC:.c=.o)
 
 #------------------------------------
 C2R_SO=${C2R_SRC_ROOT}/libc2r.so
@@ -281,8 +245,8 @@ ${RSUTILS_SO} :
 	make -C ${RSUTILS_SRC_ROOT}/src/
 
 
-libqdf.so: ${qdf_OBJ} ${GEN_LIBS} ${C2R_SO} ${RSUTILS_SO}
-	gcc ${CFLAGS} $(INCS) ${qdf_OBJ} ${GEN_LIBS} -shared -o libqdf.so \
+libqdf.so: ${QDF_OBJ} ${GEN_LIBS} ${C2R_SO} ${RSUTILS_SO}
+	gcc ${QDF_OBJ} ${GEN_LIBS} -shared -o libqdf.so \
 	${C2R_SO} ${RSUTILS_SO} -lm
 
 libispc.so : 
@@ -294,24 +258,24 @@ libgen.so:
 	cp ./gen/libgen.so  .
 
 cli_pr_df: ./cli/cli_pr_df.c libqdf.so $(LUA_HDRS)
-	gcc ${CFLAGS} $(INCS) \
+	gcc ${QCFLAGS} $(INCS) \
 		./cli/cli_pr_df.c \
 		libqdf.so \
 		-o cli_pr_df 
 
 cli_csv_to_qdf: ./cli/cli_csv_to_qdf.c libqdf.so $(LUA_HDRS)
-	gcc ${CFLAGS} $(INCS) \
+	gcc ${QCFLAGS} $(INCS) \
 		./cli/cli_csv_to_qdf.c \
 		libqdf.so \
 		-o cli_csv_to_qdf 
 
-qdf_makers.o : CFLAGS += -Wno-conversion
-qdf_checkers.o : CFLAGS += -Wno-conversion
-qdf_concat.o : CFLAGS += -Wno-conversion
-qdf_helpers.o : CFLAGS += -Wno-conversion
+qdf_makers.o : QCFLAGS += -Wno-conversion
+qdf_checkers.o : QCFLAGS += -Wno-conversion
+qdf_concat.o : QCFLAGS += -Wno-conversion
+qdf_helpers.o : QCFLAGS += -Wno-conversion
 
 ut_qdf_makers: libqdf.so ../test/C/ut_qdf_makers.c 
-	gcc ${CFLAGS} $(INCS)  ../test/C/ut_qdf_makers.c  \
+	gcc ${QCFLAGS} $(INCS)  ../test/C/ut_qdf_makers.c  \
 		-o ut_qdf_makers libqdf.so \
 		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
@@ -326,57 +290,57 @@ SRCS_UT_READ_CSV += sum.c
 SRCS_UT_READ_CSV += squeeze_where.c 
 
 ut_read_csv: ../test/C/ut_read_csv.c  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/C/ut_read_csv.c   \
+	gcc ${QCFLAGS} $(INCS) ../test/C/ut_read_csv.c   \
 		-o ut_read_csv libqdf.so \
 		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
 ut_logical_op: ../test/C/ut_logical_op.c  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/C/ut_logical_op.c   \
+	gcc ${QCFLAGS} $(INCS) ../test/C/ut_logical_op.c   \
 		-o ut_logical_op libqdf.so \
 		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
 ut_named_vec: ../test/C/ut_named_vec.c  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/C/ut_named_vec.c   \
+	gcc ${QCFLAGS} $(INCS) ../test/C/ut_named_vec.c   \
 		-o ut_named_vec libqdf.so \
 		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
 ut_unique:  ../test/C/ut_unique.c  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/C/ut_unique.c   \
+	gcc ${QCFLAGS} $(INCS) ../test/C/ut_unique.c   \
 		-o ut_unique libqdf.so \
 		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
 ut_squeeze:  ../test/C/ut_squeeze.c  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/C/ut_squeeze.c   \
+	gcc ${QCFLAGS} $(INCS) ../test/C/ut_squeeze.c   \
 		-o ut_squeeze libqdf.so  \
 		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
 ut_tm:  ../test/C/ut_tm.c  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/C/ut_tm.c   \
+	gcc ${QCFLAGS} $(INCS) ../test/C/ut_tm.c   \
 		-o ut_tm libqdf.so \
 		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
 ut_copy:  ../test/C/ut_copy.c  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/C/ut_copy.c   \
+	gcc ${QCFLAGS} $(INCS) ../test/C/ut_copy.c   \
 		-o ut_copy libqdf.so  -ljansson
 
 ut_concat:  ../test/C/ut_concat.c  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/C/ut_concat.c   \
+	gcc ${QCFLAGS} $(INCS) ../test/C/ut_concat.c   \
 		-o ut_concat libqdf.so \
 		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
 ut_df_to_Rserve:  ../test/C/ut_df_to_Rserve.c  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/C/ut_df_to_Rserve.c   \
+	gcc ${QCFLAGS} $(INCS) ../test/C/ut_df_to_Rserve.c   \
 		-o ut_df_to_Rserve libqdf.so \
 		${C2R_SRC_ROOT}/libc2r.so \
 		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
 ut_pr:  ../test/C/ut_pr.c  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/C/ut_pr.c   \
+	gcc ${QCFLAGS} $(INCS) ../test/C/ut_pr.c   \
 		-o ut_pr libqdf.so \
 		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
 ut_mixed_array:  ../test/C/ut_mixed_array.c  libqdf.so 
-	gcc ${CFLAGS} $(INCS) ../test/C/ut_mixed_array.c   \
+	gcc ${QCFLAGS} $(INCS) ../test/C/ut_mixed_array.c   \
 		-o ut_mixed_array libqdf.so  \
 		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 

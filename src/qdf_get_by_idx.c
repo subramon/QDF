@@ -1,4 +1,4 @@
-#include "incs.h"
+#include "incs.h" 
 #include "qdf_struct.h"
 #include "qdf_helpers.h"
 #include "qdf_get_by_idx.h"
@@ -42,7 +42,8 @@ qdf_get_by_idx(
     case  SC : {
                  uint32_t sw  = get_arr_width(sx); 
                  if ( sw == 0 ) { go_BYE(-1); }
-                 ptr_sclr->val.str  = (const char * const)sptr + (idx*sw); 
+                 const char * const cptr = (const char * const)sptr + (idx*sw); 
+                 ptr_sclr->val.str  = strdup(cptr); 
                }
                break;
     default : go_BYE(-1);  break;
