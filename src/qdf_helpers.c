@@ -576,7 +576,7 @@ get_arr_ptr(
   qdf_array_hdr_t *xp = (qdf_array_hdr_t *)x;
   if ( xp->jtype != j_array ) { WHEREAMI; return NULL; }
   if ( xp->qtype == Q0 ) { WHEREAMI; return NULL; }
-  void *kx  = (void *)(&(xp[1]));
+  void * kx  = (void * )(&(xp[1]));
   return kx;
 }
 // Note that the input is a uniform array of SC

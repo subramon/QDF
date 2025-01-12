@@ -6,6 +6,7 @@
 #include "qdf_checkers.h"
 #include "qdf_makers.h"
 #include "split_str.h"
+#include "free_2d_array.h"
 #include "qdf_named_vec.h"
 /* This is to capture the way Rserve returns a vector of the form 
  * { "x" : 12.34, y : "78.90", "z" : 12.12 }
@@ -31,7 +32,7 @@ qdf_named_vec(
   mcr_chk_null(ptr_out_qdf, -1); 
   status = split_str_nullc_sep(key_blob, n_blob, n_vals, &keys); 
   cBYE(status);
-  status = make_SC_array((const char ** const)keys, 
+  status = make_SC_array((char ** const)keys, 
       NULL, 0, n_vals, 0, &key_qdf); cBYE(status); 
   status = make_num_array(NULL, n_vals, 0, I4, &off_qdf); cBYE(status); 
   // calculate len off out_qdf

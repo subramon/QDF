@@ -43,8 +43,8 @@ qdf_next_prev(
   cmp_t cmp = get_cmp(str_cmp);
   if ( cmp == cmp_undef ) { go_BYE(-1); } 
 
-  const char * const x = ptr_qdf->data;
-  const char * const y = get_arr_ptr(x); 
+  char * const x = ptr_qdf->data;
+  char * y = get_arr_ptr(x); 
 
   jtype_t jtype = get_jtype(x);
   if ( jtype != j_array ) { go_BYE(-1); }

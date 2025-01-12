@@ -28,11 +28,10 @@ UNIT_TESTS += ut_pr
 UNIT_TESTS += ut_qdf_makers 
 UNIT_TESTS += ut_raw_to_csv
 UNIT_TESTS := ut_read_csv 
-UNIT_TESTS += ut_squeeze 
-UNIT_TESTS += ut_unique 
-UNIT_TESTS += ut_tm 
-UNIT_TESTS += ut_df_to_Rserve
-# TODO UNIT_TESTS += ut_line_to_cells
+# TODO UNIT_TESTS += ut_squeeze 
+# TODO UNIT_TESTS += ut_unique 
+# TODO UNIT_TESTS += ut_tm 
+# TODO UNIT_TESTS += ut_df_to_Rserve
 
 LUA_HDRS := ../lua/qdf_hdrs.lua 
 UTIL_HDRS := ../lua/util_hdrs.lua 

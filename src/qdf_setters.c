@@ -15,7 +15,7 @@ x_set_arr_val(
 {
   int status = 0;
   mcr_chk_non_null(ptr_qdf, -1); 
-  const void *x = ptr_qdf->data;
+  void * const x = ptr_qdf->data;
   const qdf_array_hdr_t *xp = (const qdf_array_hdr_t *)x;
   if ( xp->jtype != j_array ) { go_BYE(-1); }
   if ( xp->qtype != sclr.qtype ) { go_BYE(-1); }
@@ -24,22 +24,22 @@ x_set_arr_val(
   uint32_t arr_len = xp->arr_len;
 
   if ( idx >= arr_len ) { go_BYE(-1); }
-  void *arr_ptr = get_arr_ptr(x); 
+  char * const arr_ptr = get_arr_ptr(x); 
 
   switch ( xp->qtype ) {
     case Q0 : go_BYE(-1); break; 
-    case I1  : ((int8_t *)arr_ptr)[idx]   = sclr.val.i1; break; 
-    case I2  : ((int16_t *)arr_ptr)[idx]  = sclr.val.i2;  break; 
-    case I4  : ((int32_t *)arr_ptr)[idx]  = sclr.val.i4;  break; 
-    case I8  : ((int64_t *)arr_ptr)[idx]  = sclr.val.i8;  break; 
+    case I1  : ((int8_t *const)arr_ptr)[idx]   = sclr.val.i1; break; 
+    case I2  : ((int16_t *const)arr_ptr)[idx]  = sclr.val.i2;  break; 
+    case I4  : ((int32_t *const)arr_ptr)[idx]  = sclr.val.i4;  break; 
+    case I8  : ((int64_t *const)arr_ptr)[idx]  = sclr.val.i8;  break; 
 
-    case UI1 : ((uint8_t *)arr_ptr)[idx]  = sclr.val.ui1;  break; 
-    case UI2 : ((uint16_t *)arr_ptr)[idx] = sclr.val.ui2;  break; 
-    case UI4 : ((uint32_t *)arr_ptr)[idx] = sclr.val.ui4;  break; 
-    case UI8 : ((uint64_t *)arr_ptr)[idx] = sclr.val.ui8;  break; 
+    case UI1 : ((uint8_t *const)arr_ptr)[idx]  = sclr.val.ui1;  break; 
+    case UI2 : ((uint16_t *const)arr_ptr)[idx] = sclr.val.ui2;  break; 
+    case UI4 : ((uint32_t *const)arr_ptr)[idx] = sclr.val.ui4;  break; 
+    case UI8 : ((uint64_t *const)arr_ptr)[idx] = sclr.val.ui8;  break; 
 
-    case F4  : ((float *)arr_ptr)[idx]    = sclr.val.f4;  break; 
-    case F8  : ((double *)arr_ptr)[idx]   = sclr.val.f8; break; 
+    case F4  : ((float *const)arr_ptr)[idx]    = sclr.val.f4;  break; 
+    case F8  : ((double *const)arr_ptr)[idx]   = sclr.val.f8; break; 
 
     case SC : 
               {
