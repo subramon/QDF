@@ -222,6 +222,7 @@ QDF_SRC += qdf_squeeze_where.c
 QDF_SRC += qdf_tm.c 
 QDF_SRC += qdf_uq.c 
 QDF_SRC += qdf_write.c 
+QDF_SRC += add_nn_keys.c 
 # QDF_SRC   += cli/wrap_pr_df.c 
 # QDF_SRC   += cli/wrap_csv_to_qdf.c 
 QDF_OBJ  = $(QDF_SRC:.c=.o)

@@ -10,6 +10,7 @@
 #include "split_str.h"
 #include "num_lines.h"
 #include "qdf_makers.h"
+#include "add_nn_keys.h"
 #include "qdf_csv_to_df.h"
 
 // TODO P2 Add is_load to read_csv and to this function 
@@ -35,10 +36,12 @@ qdf_csv_to_df(
 {
   int status = 0;
   char **in_vals = NULL; bool **in_nn_vals = NULL; 
-  char **vals = NULL; bool **nn_vals = NULL; 
-  char **cols = NULL; 
-  qtype_t *qtypes = NULL; 
-  uint32_t *widths = NULL; 
+  // following is input to dataframe 
+  char **vals = NULL; 
+  char **cols = NULL;  // [ncols]
+  qtype_t *qtypes = NULL;  // [ncols]
+  uint32_t *widths = NULL;  // [ncols]
+  uint32_t ncols; 
 
   //----------------------------------------
   uint32_t nrows; 
@@ -52,10 +55,22 @@ qdf_csv_to_df(
     nrows--;
   }
   //----------------------------------------
+  // START: Allocate space for data  being read in 
   in_vals = malloc(in_ncols * sizeof(char *));
   memset(in_vals, 0, in_ncols * sizeof(char *));
-  in_nn_vals = malloc(in_ncols * sizeof(char *));
-  memset(in_nn_vals, 0,  in_ncols * sizeof(char *));
+  in_nn_vals = malloc(in_ncols * sizeof(bool *));
+  memset(in_nn_vals, 0,  in_ncols * sizeof(bool *));
+
+  for ( uint32_t i = 0; i < in_ncols; i++ ) { 
+    if ( !in_is_load[i] ) { continue; }
+    in_vals[i] = malloc(nrows * in_widths[i]);
+    return_if_malloc_failed(in_vals[i]);
+    if ( in_has_nulls[i] ) { 
+      in_nn_vals[i] = malloc(nrows * sizeof(bool));
+      return_if_malloc_failed(in_nn_vals[i]);
+    }
+  }
+  //  STOP: Allocate space for data  being read in 
 
   // read CSV file 
   status = read_csv(infile, X, nX, in_qtypes, in_widths, in_formats, 
@@ -68,11 +83,28 @@ qdf_csv_to_df(
   // 1) If is_load[i] == false, then in_col[i] will not show up in df
   // 2) If has_nulls[i] == false, then in_col[i] AND "nn_" .. in_col[i] 
   //   will show up in df
-  uint32_t ncols = 99999;
+  // Figure out what goes into dataframe 
+  status = add_nn_keys(in_cols, in_qtypes, in_widths, in_has_nulls,
+      in_is_load, in_ncols, 
+      &cols, &qtypes, &widths, &ncols);
+  cBYE(status);
+  // Move data into format needed for make_data_frame
   vals = malloc(ncols * sizeof(char *));
   memset(vals, 0,  ncols * sizeof(char *));
-  nn_vals = malloc(ncols * sizeof(char *));
-  memset(nn_vals, 0,  ncols * sizeof(char *));
+  uint32_t outidx = 0;
+  for ( uint32_t i = 0; i < in_ncols; i++ ) { 
+    if ( !in_is_load[i] ) { continue; }
+    vals[outidx++] = in_vals[i];
+  }
+  for ( uint32_t i = 0; i < in_ncols; i++ ) { 
+    if ( !in_is_load[i] ) { continue; }
+    if ( in_has_nulls[i] ) {
+    vals[outidx++] = (char *)in_nn_vals[i];
+    }
+  }
+  // Now we can throw away in_vals and in_nn_vals
+  free_if_non_null(in_vals); 
+  free_if_non_null(in_nn_vals); 
 
   // convert from in_vals to vals, from in_nn_vals to nn_vals
   status = make_data_frame(cols, ncols, widths, vals, nrows, 0, 
@@ -94,11 +126,5 @@ BYE:
     free_if_non_null(vals);
   }
   //--------------------
-  if ( nn_vals != NULL ) { 
-    for ( uint32_t i = 0; i < ncols; i++ ) { 
-      free_if_non_null(nn_vals[i]);
-    }
-    free_if_non_null(nn_vals);
-  }
   return status;
 }
