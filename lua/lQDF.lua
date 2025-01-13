@@ -879,6 +879,7 @@ function lQDF.read_csv(M, infile, optargs)
   l_qtypes = {}
   l_is_load = {}
   l_has_nulls = {}
+  l_formats = {}
   for k, v in ipairs(M) do 
     l_col_names[k] = assert(v.name)
     assert(type(l_col_names[k]) == "string")
@@ -898,6 +899,16 @@ function lQDF.read_csv(M, infile, optargs)
       l_has_nulls[k] = false  -- default assumption 
     end
     assert(type(l_has_nulls[k]) == "boolean")
+
+    l_formats[k] = ""
+    local n1, n2 = string.find(l_qtypes[k], "TM1:") 
+    if ( n1 ) then
+      l_formats[k] = string.sub(l_qtypes[k], 5)
+    end
+    local n1, n2 = string.find(l_qtypes[k], "TM:") 
+    if ( n1 ) then
+      l_formats[k] = string.sub(l_qtypes[k], 4)
+    end
   end
   --  STOP: extract information from M 
   -- some basic checks 
@@ -937,7 +948,7 @@ function lQDF.read_csv(M, infile, optargs)
   local c_is_load   = ffi.new("bool[?]", ncols)
   local c_qtypes    = ffi.new("int[?]",  ncols)
   local c_widths    = ffi.new("uint32_t[?]", ncols)
-  local c_formats   = ffi.NULL -- TODO 
+  local c_formats   = tbl_of_str_to_C_array(l_formats)
   for i = 1, ncols do 
     c_has_nulls[i-1] = l_has_nulls[i]
     c_is_load[i-1]   = l_is_load[i]

@@ -44,7 +44,6 @@ qdf_csv_to_df(
   uint32_t ncols; 
 
   //----------------------------------------
-  printf("ncols = %u \n", in_ncols);
   uint32_t nrows; 
   uint32_t max_cell_width = 1024-1;
   status = num_lines_safe(infile, X, nX, max_cell_width, in_ncols,
