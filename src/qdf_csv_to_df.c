@@ -54,7 +54,9 @@ qdf_csv_to_df(
   // check no dupes 
   for ( uint32_t i = 0; i < in_ncols; i++ ) { 
     for ( uint32_t j = i+1; j < in_ncols; j++ ) { 
-      if ( strcmp(in_cols[i], in_cols[j]) == 0 ) { go_BYE(-1); }
+      if ( strcmp(in_cols[i], in_cols[j]) == 0 ) { 
+        fprintf(stderr, "Duplicate names %u, %u %s \n", i, j, in_cols[i]);
+        go_BYE(-1); }
     }
   }
   // START: Allocate space for data  being read in 

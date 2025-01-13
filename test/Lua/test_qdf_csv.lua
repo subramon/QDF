@@ -3,15 +3,30 @@ local tests = {}
 
 tests.read_csv_1 = function ()
   local ncols = 40
-  local col_names =  {}
+  local M =  {}
   for i = 1, ncols do
-    col_names[i] = "col" .. tostring(i)
+    local m = {
+    name = "col" .. tostring(i),
+    qtype = "I4",
+    is_load = true,
+    has_nulls = false,
+  }
+    M[#M+1] = m
   end
-local qtypes = { "I4", "I2", "F4", "F4", "F4", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I1", "I4", "I2", "I1", }
-  assert(#qtypes == #col_names)
+  M[3].qtype = "F4"
+  M[4].qtype = "F4"
+  M[5].qtype = "F4"
+  local col_names = {}
+  for i = 1, #M do
+    col_names[i] = M[i].name
+  end
+  local qtypes = {}
+  for i = 1, #M do
+    qtypes[i] = M[i].qtype
+  end
   local infile = "in1.csv"
   local optargs = { is_hdr = true }
-  local x = assert(lQDF.read_csv(col_names, qtypes, infile, optargs))
+  local x = assert(lQDF.read_csv(M, infile, optargs))
   assert(type(x) == "lQDF")
   assert(x:jtype() == "j_object")
   local K = x:keys()

@@ -125,6 +125,7 @@ _stripped_sclr.h : ${SCLR_SRC_ROOT}/inc/sclr_struct.h
 	grep -v "^#" ../inc/qdf_makers.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_helpers.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_xhelpers.h >> ../lua/qdf_hdrs.lua
+	grep -v "^#" ../inc/qdf_csv_to_df.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_const.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_seq.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_incr_on_by.h >> ../lua/qdf_hdrs.lua

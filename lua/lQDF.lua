@@ -868,7 +868,8 @@ function lQDF:set_is_df(b_is_df) -- DANGEROUS! USE WITH CAUTION
   assert(status == 0)
   return self
 end
-function lQDF.read_csv(M, csv_file, optargs)
+function lQDF.read_csv(M, infile, optargs)
+  assert(type(infile) == "string")
   assert(type(M) == "table")
   ncols = #M
   assert(ncols > 0)
@@ -879,20 +880,20 @@ function lQDF.read_csv(M, csv_file, optargs)
   l_is_load = {}
   l_has_nulls = {}
   for k, v in ipairs(M) do 
-    l_col_names[k] = assert(M.qtype)
+    l_col_names[k] = assert(v.name)
     assert(type(l_col_names[k]) == "string")
     assert(#l_col_names[k] >= 1)
 
-    l_qtypes[k] = assert(M.qtype)
+    l_qtypes[k] = assert(v.qtype)
     assert(type(l_qtypes[k]) == "string")
 
-    l_is_load[k] = M.is_load
+    l_is_load[k] = v.is_load
     if ( type(l_is_load[k]) == "nil" ) then 
       l_is_load[k] = true -- default assumption 
     end
     assert(type(l_is_load[k]) == "boolean")
 
-    l_has_nulls[k] = M.has_nulls
+    l_has_nulls[k] = v.has_nulls
     if ( type(l_has_nulls[k]) == "nil" ) then 
       l_has_nulls[k] = false  -- default assumption 
     end
@@ -934,8 +935,9 @@ function lQDF.read_csv(M, csv_file, optargs)
   -- START: convert Lua to C 
   local c_has_nulls = ffi.new("bool[?]", ncols)
   local c_is_load   = ffi.new("bool[?]", ncols)
-  local c_qtype     = ffi.new("int[?]",  ncols)
+  local c_qtypes    = ffi.new("int[?]",  ncols)
   local c_widths    = ffi.new("uint32_t[?]", ncols)
+  local c_formats   = ffi.NULL -- TODO 
   for i = 1, ncols do 
     c_has_nulls[i-1] = l_has_nulls[i]
     c_is_load[i-1]   = l_is_load[i]
@@ -948,8 +950,8 @@ function lQDF.read_csv(M, csv_file, optargs)
   local df_qdf = lqdfmem(0)
   local df_qdf_mem = ffi.cast("QDF_REC_TYPE *", df_qdf._qdfmem)
   -- invoke C 
-  local status = XXXX.qdf_csv_to_df(infile, ffi.NULL, 0, 
-    c_col_names, c_qtypes, c_widths, c_has_nulls, c_is_load, 
+  local status = cQDF.qdf_csv_to_df(infile, ffi.NULL, 0, 
+    c_col_names, c_qtypes, c_widths, c_formats, c_has_nulls, c_is_load, 
     ncols, fld_sep, fld_delim, rec_sep, is_hdr, df_qdf_mem); 
   assert(status == 0)
   local newqdf = setmetatable({}, lQDF)
