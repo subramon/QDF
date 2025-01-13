@@ -44,17 +44,19 @@ qdf_csv_to_df(
   uint32_t ncols; 
 
   //----------------------------------------
+  printf("ncols = %u \n", in_ncols);
   uint32_t nrows; 
   uint32_t max_cell_width = 1024-1;
   status = num_lines_safe(infile, X, nX, max_cell_width, in_ncols,
-    str_fld_sep, str_rec_sep, &nrows);
+      is_hdr, str_fld_sep, str_rec_sep, &nrows);
   cBYE(status);
-  if ( nrows <= 0 ) { go_BYE(-1); }
-  if ( is_hdr ) { 
-    if ( nrows <= 1 ) { go_BYE(-1); }
-    nrows--;
+  if ( nrows == 0 ) { go_BYE(-1); }
+  // check no dupes 
+  for ( uint32_t i = 0; i < in_ncols; i++ ) { 
+    for ( uint32_t j = i+1; j < in_ncols; j++ ) { 
+      if ( strcmp(in_cols[i], in_cols[j]) == 0 ) { go_BYE(-1); }
+    }
   }
-  //----------------------------------------
   // START: Allocate space for data  being read in 
   in_vals = malloc(in_ncols * sizeof(char *));
   memset(in_vals, 0, in_ncols * sizeof(char *));
@@ -63,7 +65,9 @@ qdf_csv_to_df(
 
   for ( uint32_t i = 0; i < in_ncols; i++ ) { 
     if ( !in_is_load[i] ) { continue; }
-    in_vals[i] = malloc(nrows * in_widths[i]);
+    uint32_t in_width_i = in_widths[i];
+    if ( in_width_i == 0 ) { go_BYE(-1); }
+    in_vals[i] = malloc(nrows * in_width_i);
     return_if_malloc_failed(in_vals[i]);
     if ( in_has_nulls[i] ) { 
       in_nn_vals[i] = malloc(nrows * sizeof(bool));
@@ -99,7 +103,7 @@ qdf_csv_to_df(
   for ( uint32_t i = 0; i < in_ncols; i++ ) { 
     if ( !in_is_load[i] ) { continue; }
     if ( in_has_nulls[i] ) {
-    vals[outidx++] = (char *)in_nn_vals[i];
+      vals[outidx++] = (char *)in_nn_vals[i];
     }
   }
   // Now we can throw away in_vals and in_nn_vals

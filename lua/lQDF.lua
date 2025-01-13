@@ -1,7 +1,6 @@
 local ffi           = require 'ffi'
 local register_type = require 'RSUTILS/lua/register_type'
 local cutils        = require 'libcutils'
-local rsutils       = ffi.load("librsutils.so") -- for read_csv()
 local cQDF          = ffi.load("libqdf.so")
 ffi.cdef([[
 extern size_t strlen(const char *s);
@@ -19,7 +18,6 @@ typedef struct {
 ]])
 local QDF_hdrs = require 'qdf_hdrs' -- created by ../src/Makefile 
 ffi.cdef(QDF_hdrs)
-local x            = require 'read_csv_hdr';      ffi.cdef(x)
 --================================
 local lqdfmem       = require 'lqdfmem'
 --================== 

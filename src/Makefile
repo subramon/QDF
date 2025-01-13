@@ -27,7 +27,7 @@ UNIT_TESTS += ut_named_vec
 UNIT_TESTS += ut_pr 
 UNIT_TESTS += ut_qdf_makers 
 UNIT_TESTS += ut_raw_to_csv
-UNIT_TESTS := ut_read_csv 
+UNIT_TESTS := ut_csv_to_df 
 # TODO UNIT_TESTS += ut_squeeze 
 # TODO UNIT_TESTS += ut_unique 
 # TODO UNIT_TESTS += ut_tm 
@@ -279,19 +279,9 @@ ut_qdf_makers: libqdf.so ../test/C/ut_qdf_makers.c
 		-o ut_qdf_makers libqdf.so \
 		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
-SRCS_UT_READ_CSV += qdf_helpers.c 
-SRCS_UT_READ_CSV += qdf_checkers.c 
-SRCS_UT_READ_CSV += qdf_external.c 
-SRCS_UT_READ_CSV += qdf_setters.c 
-SRCS_UT_READ_CSV += qdf_pr.c 
-SRCS_UT_READ_CSV += qdf_makers.c 
-SRCS_UT_READ_CSV += logical_op.c 
-SRCS_UT_READ_CSV += sum.c 
-SRCS_UT_READ_CSV += squeeze_where.c 
-
-ut_read_csv: ../test/C/ut_read_csv.c  libqdf.so 
-	gcc ${QCFLAGS} $(INCS) ../test/C/ut_read_csv.c   \
-		-o ut_read_csv libqdf.so \
+ut_csv_to_df: ../test/C/ut_csv_to_df.c  libqdf.so 
+	gcc ${QCFLAGS} $(INCS) ../test/C/ut_csv_to_df.c   \
+		-o ut_csv_to_df libqdf.so \
 		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
 ut_logical_op: ../test/C/ut_logical_op.c  libqdf.so 

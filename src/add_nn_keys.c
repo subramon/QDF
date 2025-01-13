@@ -35,7 +35,7 @@ add_nn_keys(
 {
   int status = 0;
   char **all_keys = NULL; 
-  bool *all_qtypes = NULL; 
+  qtype_t *all_qtypes = NULL; 
   uint32_t *all_widths = NULL; 
   uint32_t all_nK = 0;
 
@@ -50,11 +50,11 @@ add_nn_keys(
   all_keys = malloc(all_nK * sizeof(char *));
   memset(all_keys, 0,  all_nK * sizeof(char *));
 
-  all_qtypes = malloc(all_nK * sizeof(bool));
-  memset(all_qtypes, 0,  all_nK * sizeof(bool));
+  all_qtypes = malloc(all_nK * sizeof(qtype_t));
+  memset(all_qtypes, 0,  all_nK * sizeof(qtype_t));
 
   all_widths = malloc(all_nK * sizeof(uint32_t));
-  memset(all_widths, 0,  all_nK * sizeof(bool));
+  memset(all_widths, 0,  all_nK * sizeof(uint32_t));
 
   for ( uint32_t i = 0; i < nK; i++ ) {
     all_keys[i]   = strdup(keys[i]);
@@ -71,6 +71,10 @@ add_nn_keys(
       all_widths[j] = sizeof(bool);
       j++;
     }
+  }
+  for ( uint32_t i = 0; i < all_nK; i++ ) { 
+    if ( all_widths[i] == 0 ) { go_BYE(-1); }
+    if ( all_qtypes[i] == Q0 ) { go_BYE(-1); }
   }
   *ptr_all_keys   = all_keys;
   *ptr_all_qtypes = all_qtypes;
