@@ -26,12 +26,11 @@ UNIT_TESTS += ut_mixed_array
 UNIT_TESTS += ut_named_vec
 UNIT_TESTS += ut_pr 
 UNIT_TESTS += ut_qdf_makers 
-UNIT_TESTS += ut_raw_to_csv
-UNIT_TESTS := ut_csv_to_df 
-# TODO UNIT_TESTS += ut_squeeze 
-# TODO UNIT_TESTS += ut_unique 
-# TODO UNIT_TESTS += ut_tm 
-# TODO UNIT_TESTS += ut_df_to_Rserve
+UNIT_TESTS += ut_csv_to_df 
+UNIT_TESTS += ut_squeeze 
+UNIT_TESTS += ut_unique 
+UNIT_TESTS += ut_tm 
+UNIT_TESTS += ut_df_to_Rserve
 
 LUA_HDRS := ../lua/qdf_hdrs.lua 
 UTIL_HDRS := ../lua/util_hdrs.lua 
@@ -170,6 +169,7 @@ _stripped_sclr.h : ${SCLR_SRC_ROOT}/inc/sclr_struct.h
 	echo "]]"             >> ../lua/qdf_hdrs.lua
 
 clean:
+	echo ${UNIT_TESTS}
 	rm -f *.o *.so _* ${UNIT_TESTS} 
 	rm -f ${LUA_HDRS} 
 
@@ -224,6 +224,7 @@ QDF_SRC += qdf_tm.c
 QDF_SRC += qdf_uq.c 
 QDF_SRC += qdf_write.c 
 QDF_SRC += add_nn_keys.c 
+QDF_SRC += prep_args_for_read_csv.c 
 # QDF_SRC   += cli/wrap_pr_df.c 
 # QDF_SRC   += cli/wrap_csv_to_qdf.c 
 QDF_OBJ  = $(QDF_SRC:.c=.o)
@@ -312,7 +313,8 @@ ut_tm:  ../test/C/ut_tm.c  libqdf.so
 
 ut_copy:  ../test/C/ut_copy.c  libqdf.so 
 	gcc ${QCFLAGS} $(INCS) ../test/C/ut_copy.c   \
-		-o ut_copy libqdf.so  -ljansson
+		-o ut_copy libqdf.so \
+		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
 ut_concat:  ../test/C/ut_concat.c  libqdf.so 
 	gcc ${QCFLAGS} $(INCS) ../test/C/ut_concat.c   \

@@ -1,4 +1,7 @@
 #include "incs.h"
+#include "qtypes.h"
+#include "free_2d_array.h"
+#include "prep_args_for_read_csv.h"
 #include "qdf_struct.h"
 #include "qdf_helpers.h"
 #include "qdf_checkers.h"
@@ -19,15 +22,24 @@ main(
   memset(&qdf, 0, sizeof(QDF_REC_TYPE));
   memset(&col, 0, sizeof(QDF_REC_TYPE));
   const char * const infile = "../data/test_unique_1.csv";
-  char * cols = strdup("x");
-  char * qtypes = strdup("I2");
+  char * in_cols = strdup("x");
+  char * in_str_qtypes = strdup("I2");
   bool is_hdr = true;
-  BUF_SPEC_TYPE buf_spec;
-  memset(&buf_spec, 0, sizeof(BUF_SPEC_TYPE));
+  char **cols = NULL; uint32_t ncols = 0;
+  qtype_t *qtypes = NULL;  // [ncols]
+  uint32_t *widths = NULL;  // [ncols]
+  char **formats = NULL;  // [ncols]
+  bool *has_nulls = NULL; // [ncols]
+  bool *is_load = NULL; // [ncols]
+
   if ( argc != 1 ) { go_BYE(-1); } 
 
+  status = prep_args_for_read_csv(in_cols, in_str_qtypes,
+    &qtypes, &widths, &formats, &has_nulls, &is_load , &cols, &ncols);
   status = qdf_csv_to_df(infile, NULL, 0, cols, qtypes,
-      ",", "\"", "\n", is_hdr, &buf_spec, &qdf); 
+      widths, formats, has_nulls, is_load, ncols, 
+      ",", "\"", "\n", is_hdr, &qdf); 
+
   status = chk_qdf(&qdf); cBYE(status);
   status = get_key_val(&qdf, -1, "x", &col, NULL); cBYE(status);
   status = x_num_unique(&col, NULL, &n); cBYE(status);
@@ -60,8 +72,14 @@ main(
 BYE:
   free_qdf(&qdf);
   free_qdf(&col);
-  free_if_non_null(cols);
+  free_if_non_null(in_cols);
+  free_if_non_null(in_str_qtypes);
   free_if_non_null(dvals);
   free_if_non_null(qtypes);
+  free_if_non_null(widths);
+  free_2d_array(&cols, ncols);
+  free_2d_array(&formats, ncols);
+  free_if_non_null(has_nulls);
+  free_if_non_null(is_load);
   return status;
 }

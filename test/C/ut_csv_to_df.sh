@@ -20,7 +20,7 @@ infile="../data/in2.csv"
 cols="tm,i1"
 qtypes="TM1:%Y-%m-%d,I1" 
 $VG ut_csv_to_df $infile $cols $qtypes $opfile 1>_x 2>&1
-grep "definitely lost: 0 bytes in 0 blocks" _x 1>_y 2>&1
+grep "definitely lost: 0 bytes in 0 blocks"  _x 1>/dev/null 2>&1
 #----------------------------
 echo "Successfully completed $0 in $PWD"
 

@@ -1,4 +1,7 @@
 #include "incs.h"
+#include "qtypes.h"
+#include "free_2d_array.h"
+#include "prep_args_for_read_csv.h"
 #include "qdf_struct.h"
 #include "qdf_checkers.h"
 #include "qdf_helpers.h"
@@ -31,22 +34,28 @@ main(
   memset(&sclr_max_x, 0, sizeof(sclr_max_x));
   memset(&sclr_max_y, 0, sizeof(sclr_max_y));
 
+  char **cols = NULL; uint32_t ncols = 0;
+  qtype_t *qtypes = NULL;  // [ncols]
+  uint32_t *widths = NULL;  // [ncols]
+  char **formats = NULL;  // [ncols]
+  bool *has_nulls = NULL; // [ncols]
+  bool *is_load = NULL; // [ncols]
   if ( argc != 6 ) { go_BYE(-1); } 
 
   const char * const infile = argv[1];
-  char * const   cols = argv[2];
-  char * const qtypes = argv[3];
+  char * const   in_cols = argv[2];
+  char * const in_str_qtypes = argv[3];
   char * const infld  = argv[4];
   char * const outfld = argv[5];
   jtype_t jtype ;
 
-  bool is_hdr = false;
-  BUF_SPEC_TYPE buf_spec; 
-  memset(&buf_spec, 0, sizeof(BUF_SPEC_TYPE));
-
+  bool is_hdr = true;
+  status = prep_args_for_read_csv(in_cols, in_str_qtypes,
+    &qtypes, &widths, &formats, &has_nulls, &is_load , &cols, &ncols);
   status = qdf_csv_to_df(infile, NULL, 0, cols, qtypes,
-      ",", "\"", "\n", is_hdr, &buf_spec, &qdf); 
-  cBYE(status);
+      widths, formats, has_nulls, is_load, ncols, 
+      ",", "\"", "\n", is_hdr, &qdf); 
+
   status = get_key_val(&qdf, -1, infld, &qdf_x, NULL); cBYE(status);
   status = chk_qdf(&qdf_x); cBYE(status);
   jtype = x_get_jtype(&qdf_x);
@@ -79,5 +88,14 @@ main(
 
 BYE:
   free_qdf(&qdf);
+  free_if_non_null(qtypes);
+  free_if_non_null(widths);
+  free_2d_array(&cols, ncols);
+  // XX free_2d_array(&str_qtypes, ncols);
+  if ( formats != NULL ) { 
+    free_2d_array(&formats, ncols);
+  }
+  free_if_non_null(has_nulls);
+  free_if_non_null(is_load);
   return status;
 }

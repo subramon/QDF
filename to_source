@@ -23,6 +23,7 @@ QCFLAGS+=" -Wstrict-prototypes -Wmissing-prototypes -Wpointer-arith "
 QCFLAGS+=" -Wshadow -Wcast-qual -Wcast-align -Wwrite-strings "
 QCFLAGS+=" -Wold-style-definition -Wsuggest-attribute=noreturn "
 
+set +e
 lscpu | grep "Architecture" | grep "arm" 1>/dev/null 2>&1
 IS_ARM_32="`echo $?`"
 lscpu | grep "Architecture" | grep "aarch64" 1>/dev/null 2>&1

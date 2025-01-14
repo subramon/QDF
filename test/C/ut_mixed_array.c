@@ -22,7 +22,7 @@ main(
   char **svals = NULL; uint32_t n_svals = 4;
   double *dvals = NULL; uint32_t n_dvals = 10;
   int32_t *ivals = NULL; uint32_t n_ivals = 20;
-  void **vals = NULL; uint32_t n_vals = 123;
+  char **vals = NULL; uint32_t n_vals = 123;
 
   qtype_t *qtypes = NULL;
 

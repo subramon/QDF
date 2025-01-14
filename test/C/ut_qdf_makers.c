@@ -22,14 +22,12 @@ main(
   char **svals = NULL; uint32_t n_svals = 4;
   double *dvals = NULL; uint32_t n_dvals = 10;
   int32_t *ivals = NULL; uint32_t n_ivals = 20;
-  void **vals = NULL;
+  char **vals = NULL;
   qtype_t *qtypes = NULL;
   QDF_REC_TYPE qdf;
   char ** files = NULL; uint32_t n_files = 0;
   QDF_REC_TYPE *ext_qdfs = NULL;
   int *kidxs = NULL;
-  BUF_SPEC_TYPE buf_spec; 
-  memset(&buf_spec, 0, sizeof(BUF_SPEC_TYPE));
 
   if ( argc != 1 ) { go_BYE(-1); }
   // check j_nil

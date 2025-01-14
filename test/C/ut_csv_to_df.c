@@ -9,6 +9,7 @@
 #include "qdf_external.h"
 #include "qdf_helpers.h"
 #include "qdf_pr.h"
+#include "prep_args_for_read_csv.h"
 #include "qdf_xhelpers.h"
 #include "qdf_csv_to_df.h"
 
@@ -23,8 +24,8 @@ main(
 
   char **cols = NULL; // [ncols]
   uint32_t ncols = 0; 
-  char **str_qtypes = NULL; // [nqtypes]
-  uint32_t nqtypes = 0; 
+  // X char **str_qtypes = NULL; // [nqtypes]
+  // X uint32_t nqtypes = 0; 
   QDF_REC_TYPE qdf; memset(&qdf, 0, sizeof(QDF_REC_TYPE));
   QDF_REC_TYPE jqdf; memset(&jqdf, 0, sizeof(QDF_REC_TYPE));
   qtype_t *qtypes = NULL;  // [ncols]
@@ -41,33 +42,14 @@ main(
   const char * const opfile = argv[4];
   bool is_hdr = true;
 
-  status = split_str(in_cols, ",", &cols, &ncols);
-  cBYE(status);
-  if ( ncols == 0 ) { go_BYE(-1); }
-
-  status = split_str(in_str_qtypes, ",", &str_qtypes, &nqtypes);
-  cBYE(status);
-  if ( nqtypes != ncols ) { go_BYE(-1); }
-
-  qtypes    = malloc(ncols * sizeof(qtype_t));
-  widths    = malloc(ncols * sizeof(uint32_t));
-  formats   = malloc(ncols * sizeof(char *));
-  has_nulls = malloc(ncols * sizeof(bool));
-  is_load   = malloc(ncols * sizeof(bool));
-
-  for ( uint32_t i = 0; i < ncols; i++ ) { 
-    has_nulls[i] = false;
-    is_load[i] = true;
-    qtypes[i] = get_c_qtype(str_qtypes[i]);
-    formats[i] = get_format(str_qtypes[i]);
-    widths[i] = get_width_c_qtype(qtypes[i]);
-  }
-
+  status = prep_args_for_read_csv(in_cols, in_str_qtypes,
+    &qtypes, &widths, &formats, &has_nulls, &is_load , &cols, &ncols);
   status = qdf_csv_to_df(infile, NULL, 0, cols, qtypes,
       widths, formats, has_nulls, is_load, ncols, 
       ",", "\"", "\n", is_hdr, &qdf); 
+  cBYE(status);
   status = chk_qdf(&qdf);
-  if ( !x_get_is_df(&qdf) ) { go_BYE(-1); } 
+  cBYE(status); if ( !x_get_is_df(&qdf) ) { go_BYE(-1); } 
   int itmp = num_lines(infile, NULL, 0);
   uint32_t chk_nrows = 0;
   if ( is_hdr ) { 
@@ -79,7 +61,6 @@ main(
   }
   uint32_t nrows = x_get_obj_arr_len(&qdf); 
   if ( chk_nrows != nrows ) { go_BYE(-1); }
-  status = chk_qdf(&qdf); cBYE(status);
   status = pr_df_as_csv(&qdf, NULL, 0, opfile); cBYE(status);
   jqdf.size = 65536;
   jqdf.data = malloc(65536);
@@ -95,7 +76,7 @@ BYE:
   free_if_non_null(qtypes);
   free_if_non_null(widths);
   free_2d_array(&cols, ncols);
-  free_2d_array(&str_qtypes, ncols);
+  // XX free_2d_array(&str_qtypes, ncols);
   if ( formats != NULL ) { 
     free_2d_array(&formats, ncols);
   }

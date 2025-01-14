@@ -24,7 +24,7 @@ main(
   double *dvals = NULL; uint32_t n_dvals = 3;
   int *ivals = NULL; uint32_t n_ivals = 10;
   char **svals = NULL; uint32_t n_svals = 2;
-  void **vals = NULL; uint32_t n_vals = 3; 
+  char **vals = NULL; uint32_t n_vals = 3; 
   qtype_t *qtypes = NULL;
   memset(&qdf, 0, sizeof(QDF_REC_TYPE));
   memset(&str_qdf, 0, sizeof(QDF_REC_TYPE));
@@ -109,7 +109,7 @@ main(
   }
   //----------------------
   status = make_data_frame(svals, n_svals, NULL, 
-      (const void **)vals, n_vals, 0, qtypes, &qdf);
+      vals, n_vals, 0, qtypes, &qdf);
   cBYE(status);
   status = pr_json(&qdf, &str_qdf, &str_len, NULL); cBYE(status);
   // TODO P1 FIX FIX FIX 

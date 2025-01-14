@@ -1,4 +1,7 @@
 #include "incs.h"
+#include "qtypes.h"
+#include "free_2d_array.h"
+#include "prep_args_for_read_csv.h"
 #include "qdf_struct.h"
 #include "qdf_helpers.h"
 #include "qdf_xhelpers.h"
@@ -17,15 +20,25 @@ main(
     )
 {
   int status = 0;
-  char *cols_b = NULL; char *qtypes_b = NULL;
   // read first data frame that is to be squeezed
   SCLR_REC_TYPE sclr; memset(&sclr, 0, sizeof(sclr));
   QDF_REC_TYPE qdf_a, qdf_b, qdf_u, qdf_v, qdf_w, qdf_x, qdf_op;
-  char * cols_a = strdup("x,y");
-  char * qtypes_a = strdup("F4,F8");
+
+  char * in_cols_a = strdup("x,y");
+  char * in_str_qtypes_a = strdup("F4,F8");
+
+  char * in_cols_b = strdup("w,v,u,x");
+  char *in_str_qtypes_b = strdup("I1,I1,I1,I4");
+
   bool is_hdr = true;
   uint32_t len_str = 0;
   uint32_t chk_n;
+  char **cols = NULL; uint32_t ncols = 0;
+  qtype_t *qtypes = NULL;  // [ncols]
+  uint32_t *widths = NULL;  // [ncols]
+  char **formats = NULL;  // [ncols]
+  bool *has_nulls = NULL; // [ncols]
+  bool *is_load = NULL; // [ncols]
 
   memset(&qdf_a, 0, sizeof(QDF_REC_TYPE));
   memset(&qdf_b, 0, sizeof(QDF_REC_TYPE));
@@ -33,15 +46,26 @@ main(
   memset(&qdf_v, 0, sizeof(QDF_REC_TYPE));
   memset(&qdf_w, 0, sizeof(QDF_REC_TYPE));
   memset(&qdf_x, 0, sizeof(QDF_REC_TYPE));
-  memset(&qdf_op, 0, sizeof(QDF_REC_TYPE));
-  BUF_SPEC_TYPE buf_spec; memset(&buf_spec, 0, sizeof(BUF_SPEC_TYPE));
+  memset(&qdf_op, 0, sizeof(QDF_REC_TYPE)); 
   if ( argc != 3 ) { go_BYE(-1); } 
 
   const char * const infile_a = argv[1]; // "../data/test_squeeze_1a.csv"
   const char * const infile_b = argv[2]; // "../data/test_squeeze_1b.csv"
 
-  status = qdf_csv_to_df(infile_a, NULL, 0, cols_a, qtypes_a,
-      ",", "\"", "\n", is_hdr, &buf_spec, &qdf_a); 
+  //read dataframe a 
+  status = prep_args_for_read_csv(in_cols_a, in_str_qtypes_a,
+    &qtypes, &widths, &formats, &has_nulls, &is_load , &cols, &ncols);
+  status = qdf_csv_to_df(infile_a, NULL, 0, cols, qtypes,
+      widths, formats, has_nulls, is_load, ncols, 
+      ",", "\"", "\n", is_hdr, &qdf_a); 
+  free_if_non_null(qtypes);
+  free_if_non_null(widths);
+  free_2d_array(&cols, ncols);
+  free_2d_array(&formats, ncols);
+  free_if_non_null(has_nulls);
+  free_if_non_null(is_load);
+  //---------------------------------------------------------
+
   status = chk_qdf(&qdf_a); cBYE(status);
   uint32_t nkeys_a = x_get_obj_len(&qdf_a);
   if ( nkeys_a != 2 ) { go_BYE(-1); }  // => 2 columns in data frame: x, y
@@ -74,11 +98,19 @@ main(
   if ( max_sclr.val.f4 != 10 ) { go_BYE(-1); } 
 
   // read second data frame that is to be used for squeezing
-  cols_b = strdup("w,v,u,x");
-  qtypes_b = strdup("I1,I1,I1,I4");
+  status = prep_args_for_read_csv(in_cols_b, in_str_qtypes_b,
+    &qtypes, &widths, &formats, &has_nulls, &is_load , &cols, &ncols);
+  status = qdf_csv_to_df(infile_b, NULL, 0, cols, qtypes,
+      widths, formats, has_nulls, is_load, ncols, 
+      ",", "\"", "\n", is_hdr, &qdf_b); 
+  free_if_non_null(qtypes);
+  free_if_non_null(widths);
+  free_2d_array(&cols, ncols);
+  free_2d_array(&formats, ncols);
+  free_if_non_null(has_nulls);
+  free_if_non_null(is_load);
+  //---------------------------------------------------------
 
-  status = qdf_csv_to_df(infile_b, NULL, 0, cols_b, qtypes_b,
-      ",", "\"", "\n", is_hdr, &buf_spec, &qdf_b); 
   status = chk_qdf(&qdf_b); cBYE(status);
   uint32_t nkeys_b = x_get_obj_len(&qdf_b);
   if ( nkeys_b != 4 ) { go_BYE(-1); }  // => 4 columns in data frame
@@ -115,8 +147,18 @@ main(
   //=============================================================
   // squeeze with v = all 1's (load qdf_a again)
   free_qdf(&qdf_a); memset(&qdf_a, 0, sizeof(qdf_a));
-  status = qdf_csv_to_df(infile_a, NULL, 0, cols_a, qtypes_a,
-      ",", "\"", "\n", is_hdr, &buf_spec, &qdf_a); 
+  status = prep_args_for_read_csv(in_cols_a, in_str_qtypes_a,
+    &qtypes, &widths, &formats, &has_nulls, &is_load , &cols, &ncols);
+  status = qdf_csv_to_df(infile_a, NULL, 0, cols, qtypes,
+      widths, formats, has_nulls, is_load, ncols, 
+      ",", "\"", "\n", is_hdr, &qdf_a); 
+  free_if_non_null(qtypes);
+  free_if_non_null(widths);
+  free_2d_array(&cols, ncols);
+  free_2d_array(&formats, ncols);
+  free_if_non_null(has_nulls);
+  free_if_non_null(is_load);
+  //---------------------------------------------------------
   status = get_key_val(&qdf_b, -1, "v", &qdf_v, NULL);
   status = squeeze_where(&qdf_a, &qdf_v, &num_good);  cBYE(status);
   // Note that when squeeze_where succeeds, it returns number of 
@@ -139,8 +181,18 @@ main(
   //=============================================================
   // squeeze with u = all 0's, load qdf_a again
   free_qdf(&qdf_a); memset(&qdf_a, 0, sizeof(qdf_a));
-  status = qdf_csv_to_df(infile_a, NULL, 0, cols_a, qtypes_a,
-      ",", "\"", "\n", is_hdr, &buf_spec, &qdf_a); 
+  status = prep_args_for_read_csv(in_cols_a, in_str_qtypes_a,
+    &qtypes, &widths, &formats, &has_nulls, &is_load , &cols, &ncols);
+  status = qdf_csv_to_df(infile_a, NULL, 0, cols, qtypes,
+      widths, formats, has_nulls, is_load, ncols, 
+      ",", "\"", "\n", is_hdr, &qdf_a); 
+  free_if_non_null(qtypes);
+  free_if_non_null(widths);
+  free_2d_array(&cols, ncols);
+  free_2d_array(&formats, ncols);
+  free_if_non_null(has_nulls);
+  free_if_non_null(is_load);
+  //---------------------------------------------------------
   status = get_key_val(&qdf_b, -1, "u", &qdf_u, NULL); cBYE(status);
   status = squeeze_where(&qdf_a, &qdf_u, &num_good); cBYE(status);
   //  check that number after squeezing is correct
@@ -209,9 +261,9 @@ BYE:
   free_qdf(&qdf_a);
   free_qdf(&qdf_op);
   free_qdf(&qdf_b);
-  free_if_non_null(cols_a);
-  free_if_non_null(qtypes_a);
-  free_if_non_null(cols_b);
-  free_if_non_null(qtypes_b);
+  free_if_non_null(in_cols_a);
+  free_if_non_null(in_str_qtypes_a);
+  free_if_non_null(in_cols_b);
+  free_if_non_null(in_str_qtypes_b);
   return status;
 }
