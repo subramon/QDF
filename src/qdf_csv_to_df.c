@@ -70,9 +70,11 @@ qdf_csv_to_df(
     if ( in_width_i == 0 ) { go_BYE(-1); }
     in_vals[i] = malloc(nrows * in_width_i);
     return_if_malloc_failed(in_vals[i]);
+    memset(in_vals[i], 0,  nrows * in_width_i);
     if ( in_has_nulls[i] ) { 
       in_nn_vals[i] = malloc(nrows * sizeof(bool));
       return_if_malloc_failed(in_nn_vals[i]);
+      memset(in_nn_vals[i], 0,  nrows * sizeof(bool));
     }
   }
   //  STOP: Allocate space for data  being read in 
@@ -96,15 +98,14 @@ qdf_csv_to_df(
   // Move data into format needed for make_data_frame
   vals = malloc(ncols * sizeof(char *));
   memset(vals, 0,  ncols * sizeof(char *));
-  uint32_t outidx = 0;
-  for ( uint32_t i = 0; i < in_ncols; i++ ) { 
-    if ( !in_is_load[i] ) { continue; }
-    vals[outidx++] = in_vals[i];
-  }
-  for ( uint32_t i = 0; i < in_ncols; i++ ) { 
-    if ( !in_is_load[i] ) { continue; }
-    if ( in_has_nulls[i] ) {
-      vals[outidx++] = (char *)in_nn_vals[i];
+  uint32_t inidx = 0, outidx = 0;
+  for ( ; inidx < in_ncols; inidx++ ) { 
+    if ( !in_is_load[inidx] ) { continue; }
+    vals[outidx++] = in_vals[inidx];
+    in_vals[inidx] = NULL;
+    if ( in_has_nulls[inidx] ) {
+      vals[outidx++] = (char *)in_nn_vals[inidx];
+      in_nn_vals[inidx] = NULL;
     }
   }
   // Now we can throw away in_vals and in_nn_vals

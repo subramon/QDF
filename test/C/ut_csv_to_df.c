@@ -21,8 +21,10 @@ main(
 {
   int status = 0;
   json_t *jroot = NULL; json_error_t error; // for debugging 
+  char **keys = NULL; uint32_t nkeys = 0;
 
-  char **cols = NULL; // [ncols]
+  const char *exp_keys[] = { "I1", "I2", "nn_I2", "I8", "F4", "F8", "X8", };
+  char **cols = NULL;
   uint32_t ncols = 0; 
   // X char **str_qtypes = NULL; // [nqtypes]
   // X uint32_t nqtypes = 0; 
@@ -43,7 +45,11 @@ main(
   bool is_hdr = true;
 
   status = prep_args_for_read_csv(in_cols, in_str_qtypes,
-    &qtypes, &widths, &formats, &has_nulls, &is_load , &cols, &ncols);
+    &qtypes, &widths, &formats, &has_nulls, &is_load, &cols, &ncols);
+  if ( ncols >= 2 ) { 
+    is_load[0] = false; // just to stress test 
+    has_nulls[1] = true; // just to stress test 
+  }
   status = qdf_csv_to_df(infile, NULL, 0, cols, qtypes,
       widths, formats, has_nulls, is_load, ncols, 
       ",", "\"", "\n", is_hdr, &qdf); 
@@ -70,12 +76,34 @@ main(
   printf("%s\n", (char *)jqdf.data);
   jroot = json_loads((char *)jqdf.data, 0, &error);
   if ( jroot == NULL ) { go_BYE(-1); } else { json_decref(jroot); }
+  // Check keys created
+  status = get_keys_as_array(&qdf, &keys, &nkeys);
+  /* TODO P2 This is hard-coded for a particular input. Need to fix that
+  if ( nkeys != 7 ) { go_BYE(-1); }
+  for ( uint32_t k = 0; k < nkeys; k++ ) { 
+    printf("%d:%s\n", k, keys[k]);
+      bool found = false;
+    for ( uint32_t k2 = 0; k2 < nkeys; k2++ ) { 
+      if ( strcmp(keys[k], exp_keys[k2]) == 0 ) { 
+        found = true;
+        break;
+      }
+    }
+    if ( !found ) { 
+      printf("Could not find %d:%s\n", k, keys[k]);
+      go_BYE(-1); 
+    }
+  }
+  */
+  //-----------------------------------------------------------
+
 
   fprintf(stdout, "SUCCESS; Test %s completed successfully\n", argv[0]);
 BYE:
   free_if_non_null(qtypes);
   free_if_non_null(widths);
   free_2d_array(&cols, ncols);
+  free_2d_array(&keys, nkeys);
   // XX free_2d_array(&str_qtypes, ncols);
   if ( formats != NULL ) { 
     free_2d_array(&formats, ncols);

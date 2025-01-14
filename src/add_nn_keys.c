@@ -40,12 +40,11 @@ add_nn_keys(
   uint32_t all_nK = 0;
 
   if ( nK == 0 ) { go_BYE(-1); }
-  uint32_t n = 0;
   for ( uint32_t i = 0; i < nK; i++ ) {
     if ( !is_load[i] ) { continue; }
-    if ( has_nulls[i] ) { n++; }
+    all_nK++;
+    if ( has_nulls[i] ) { all_nK++; }
   }
-  all_nK = nK + n;
 
   all_keys = malloc(all_nK * sizeof(char *));
   memset(all_keys, 0,  all_nK * sizeof(char *));
@@ -56,20 +55,19 @@ add_nn_keys(
   all_widths = malloc(all_nK * sizeof(uint32_t));
   memset(all_widths, 0,  all_nK * sizeof(uint32_t));
 
-  for ( uint32_t i = 0; i < nK; i++ ) {
-    all_keys[i]   = strdup(keys[i]);
-    all_qtypes[i] = qtypes[i];
-    all_widths[i] = widths[i];
-  }
-  uint32_t j = nK;
-  for ( uint32_t i = 0; i < nK; i++ ) {
-    if ( !is_load[i] ) { continue; }
-    if ( has_nulls[i] ) { 
-      if ( j >= all_nK ) { go_BYE(-1); }
-      all_keys[j]   = rs_strcat("nn_", keys[i]);
-      all_qtypes[j] = BL;
-      all_widths[j] = sizeof(bool);
-      j++;
+  uint32_t inidx = 0, outidx = 0;
+  for ( ; inidx < nK; inidx++ ) { 
+    if ( !is_load[inidx] ) { continue; }
+    all_keys[outidx]   = strdup(keys[inidx]);
+    all_qtypes[outidx] = qtypes[inidx];
+    all_widths[outidx] = widths[inidx];
+    outidx++;
+    if ( has_nulls[inidx] ) { 
+      if ( outidx >= all_nK ) { go_BYE(-1); }
+      all_keys[outidx]   = rs_strcat("nn_", keys[inidx]);
+      all_qtypes[outidx] = BL;
+      all_widths[outidx] = sizeof(bool);
+      outidx++;
     }
   }
   for ( uint32_t i = 0; i < all_nK; i++ ) { 
