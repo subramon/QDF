@@ -41,7 +41,7 @@ add_nn_keys(
 
   if ( nK == 0 ) { go_BYE(-1); }
   for ( uint32_t i = 0; i < nK; i++ ) {
-    if ( !is_load[i] ) { continue; }
+    if ( ( is_load != NULL ) && ( is_load[i] == false )) { continue; }
     all_nK++;
     if ( has_nulls[i] ) { all_nK++; }
   }
@@ -57,7 +57,7 @@ add_nn_keys(
 
   uint32_t inidx = 0, outidx = 0;
   for ( ; inidx < nK; inidx++ ) { 
-    if ( !is_load[inidx] ) { continue; }
+    if ( ( is_load != NULL ) && ( is_load[inidx] == false )) { continue; }
     all_keys[outidx]   = strdup(keys[inidx]);
     all_qtypes[outidx] = qtypes[inidx];
     all_widths[outidx] = widths[inidx];
