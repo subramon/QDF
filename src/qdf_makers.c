@@ -685,30 +685,17 @@ int
 make_empty_data_frame(
     char ** const cols, // [n_cols]
     uint32_t n_cols,
-    char ** const str_qtypes, // [n_cols]
+    const qtype_t * qtypes, // [n_cols]
+    const uint32_t * widths, // [n_cols]
     uint32_t sz_rows,
     QDF_REC_TYPE *ptr_qdf
     )
 {
   int status = 0;
-  qtype_t *qtypes = NULL;
-  uint32_t *widths = NULL;
-  // As a prelim, convert qtypes from  strings to enums
-  widths = malloc(n_cols * sizeof(uint32_t));
-  return_if_malloc_failed(widths);
-  qtypes = malloc(n_cols * sizeof(qtype_t));
-  return_if_malloc_failed(qtypes);
-  for ( uint32_t i = 0; i < n_cols; i++ ) { 
-    qtypes[i] = get_c_qtype(str_qtypes[i]); 
-    widths[i] = get_width_qtype(str_qtypes[i]); 
-  }
-  //--------------------------
   status = make_data_frame(cols, n_cols, widths, NULL, 0, sz_rows, 
       qtypes, ptr_qdf);
   cBYE(status);
 BYE:
-  free_if_non_null(qtypes);
-  free_if_non_null(widths);
   return status;
 }
 

@@ -21,6 +21,8 @@ ffi.cdef(QDF_hdrs)
 --================================
 local lqdfmem       = require 'lqdfmem'
 --================== 
+local str_qtypes_to_c_qtypes_widths = 
+  require 'str_qtypes_to_c_qtypes_widths'
 local qtypes         = require 'qtypes'
 local compress_modes = require 'compress_modes'
 local rev_qtypes     = require 'rev_qtypes'
@@ -1144,9 +1146,8 @@ function lQDF:append_df(src)
   return self
 end
 
-function lQDF.make_empty_data_frame(cols, qtypes, sz_rows)
+function lQDF.make_empty_data_frame(cols, str_qtypes, sz_rows)
   assert(type(cols)   == "table")
-  assert(type(qtypes) == "table")
   local nC = #cols
   assert(nC >= 1)
   assert(nC == #qtypes)
@@ -1160,10 +1161,14 @@ function lQDF.make_empty_data_frame(cols, qtypes, sz_rows)
   --===========================
   local cqdf = lqdfmem(0)
   local C, nC = tbl_of_str_to_C_array(cols)
-  local Q, nQ = tbl_of_str_to_C_array(qtypes)
-  assert(nC == nQ)
-  local status = cQDF.make_empty_data_frame(C, nC, Q, sz_rows, 
-    ffi.cast("QDF_REC_TYPE *", cqdf._qdfmem))
+  local c_widths, c_qtypes, chk_nC = 
+    str_qtypes_to_c_qtypes_widths(str_qtypes)
+  assert(chk_nC == nC)
+
+  local status = cQDF.make_empty_data_frame(C, nC, c_qtypes, c_widths,
+    sz_rows, ffi.cast("QDF_REC_TYPE *", cqdf._qdfmem))
+  ffi.C.free(c_widths)
+  ffi.C.free(c_qtypes)
   assert(status == 0)
   local newqdf = setmetatable({}, lQDF)
   newqdf._cmem = cqdf

@@ -19,7 +19,9 @@ qdf_resize_df(
   int status = 0;
   uint32_t n_keys = 0; char **keys = NULL; // [n_keys] 
   uint32_t uitmp; char **str_qtypes = NULL; // [n_keys] 
-                                            //--------------------------------------------------
+  qtype_t *c_qtypes = NULL; 
+  qtype_t *c_widths = NULL; 
+  //--------------------------------------------------
   if ( ptr_old == NULL ) { go_BYE(-1); } 
   if ( ptr_new == NULL ) { go_BYE(-1); } 
   status = chk_qdf(ptr_old); cBYE(status);
@@ -47,9 +49,15 @@ qdf_resize_df(
     str_qtypes = in_str_qtypes;
     n_keys = in_n_keys;
   }
+  c_qtypes = malloc(n_keys * sizeof(qtype_t));
+  c_widths = malloc(n_keys * sizeof(uint32_t));
+  for ( uint32_t i = 0; i < n_keys; i++ ) { 
+    c_qtypes[i] = get_c_qtype(str_qtypes[i]); 
+    c_widths[i] = get_width_qtype(str_qtypes[i]);
+  }
   // we are now ready to make a new data frame 
-  status = make_empty_data_frame(keys, n_keys, str_qtypes,
-      new_sz, ptr_new);
+  status = make_empty_data_frame(keys, n_keys, c_qtypes,
+      c_widths, new_sz, ptr_new);
   cBYE(status);
   // iterate through each key and copy it from old to new 
   for ( uint32_t i = 0; i < n_keys; i++ ) {
@@ -140,5 +148,7 @@ BYE:
   else {
     // you have just copied pointers. DO NOT FREE!
   }
+  free_if_non_null(c_qtypes);
+  free_if_non_null(c_widths);
   return status;
 }
