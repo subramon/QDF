@@ -1,4 +1,4 @@
-
+#!/bin/bash
 export VG="valgrind --leak-check=full --show-leak-kinds=all " 
 export VG=" "
 set -e

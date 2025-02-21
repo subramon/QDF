@@ -65,7 +65,7 @@ qdf_csv_to_df(
   memset(in_nn_vals, 0,  in_ncols * sizeof(bool *));
 
   for ( uint32_t i = 0; i < in_ncols; i++ ) { 
-    if ( !in_is_load[i] ) { continue; }
+    if ( ( in_is_load != NULL ) && ( !in_is_load[i] ) ) { continue; }
     uint32_t in_width_i = in_widths[i];
     if ( in_width_i == 0 ) { go_BYE(-1); }
     in_vals[i] = malloc(nrows * in_width_i);
