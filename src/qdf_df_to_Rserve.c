@@ -312,7 +312,8 @@ qdf_df_to_Rserve(
           break;
 #ifndef TM1_AS_SC 
         case TM1 :
-          sprintf(cmd, "%s <- as.Date(ifelse(%s, %s, NA_Date_)); \n",
+          sprintf(cmd, 
+            "%s <- as.Date(ifelse(%s, %s, NA_Date_),  origin='1970-01-01'); \n",
               col_name, nn_col_name, col_name); 
 #else
           sprintf(cmd, "%s <- ifelse(%s, %s, NA_character_); \n",

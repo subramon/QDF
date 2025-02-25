@@ -1,3 +1,4 @@
+
 export RSUTILS_SRC_ROOT=$HOME/RSUTILS/
 export CMEM_SRC_ROOT=$HOME/CMEM/
 export Q_SRC_ROOT=$HOME/Q/
@@ -9,6 +10,7 @@ export LUA_PATH="$HOME/?.lua;$QDF_SRC_ROOT/lua/?.lua;;"
 export LUA_CPATH="$RSUTILS_SRC_ROOT/binding/src/?.so;$QDF_SRC_ROOT/src/?.so;;"
 export LD_LIBRARY_PATH="$QDF_SRC_ROOT/src/:$QDF_SRC_ROOT/src/gen/:$RSUTILS_SRC_ROOT/src/"
 
+unset QCFLAGS
 QCFLAGS=" -std=gnu99  -fPIC     "
 QCFLAGS+=" -g " # Comment for speed 
 QCFLAGS+=" -DDEBUG " # Comment for speed 
@@ -23,7 +25,6 @@ QCFLAGS+=" -Wstrict-prototypes -Wmissing-prototypes -Wpointer-arith "
 QCFLAGS+=" -Wshadow -Wcast-qual -Wcast-align -Wwrite-strings "
 QCFLAGS+=" -Wold-style-definition -Wsuggest-attribute=noreturn "
 
-set +e
 lscpu | grep "Architecture" | grep "arm" 1>/dev/null 2>&1
 IS_ARM_32="`echo $?`"
 lscpu | grep "Architecture" | grep "aarch64" 1>/dev/null 2>&1
@@ -34,3 +35,4 @@ if [ $IS_ARM_32 == 0 ] || [ $IS_ARM_64 == 0 ]; then
   export Q_IS_ARM="true"
 fi
 export QCFLAGS="$QCFLAGS"
+echo "All done"
