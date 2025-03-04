@@ -480,7 +480,7 @@ BYE:
 
 int
 make_mixed_array_or_object(
-    const QDF_REC_TYPE * const qdf_vals, // [n_qdfs]
+    QDF_REC_TYPE **qdf_vals, // [n_qdfs]
     char ** const keys, // [n_qdfs]
     uint32_t n_qdfs,
     QDF_REC_TYPE *ptr_out_qdf
@@ -490,6 +490,7 @@ make_mixed_array_or_object(
   QDF_REC_TYPE qdf_offs; memset(&qdf_offs, 0, sizeof(QDF_REC_TYPE));
   QDF_REC_TYPE qdf_keys; memset(&qdf_keys, 0, sizeof(QDF_REC_TYPE));
   mcr_chk_null(ptr_out_qdf, -1); 
+  bool is_df = false;
 
   if ( n_qdfs == 0 ) { 
     // TODO P1 We do not handle this case properly. We have "hacked"
@@ -524,9 +525,29 @@ make_mixed_array_or_object(
   }
   l_offs = x_get_qdf_size(&qdf_offs); 
 
+  uint32_t arr_len = 0;
+  uint32_t arr_size = 0;
   if ( qdf_vals != NULL ) { 
     for ( uint32_t i = 0; i < n_qdfs; i++ ) { 
-      l_qdfs += x_get_qdf_size(&(qdf_vals[i])); 
+      l_qdfs += x_get_qdf_size(qdf_vals[i]); 
+    }
+    is_df = true;
+    for ( uint32_t i = 0; i < n_qdfs; i++ ) {
+      if ( x_get_jtype(qdf_vals[i]) != j_array )  {
+        is_df = false; break; 
+      }
+      else {
+        uint32_t chk_arr_len = x_get_arr_len(qdf_vals[i]); 
+        uint32_t chk_arr_size = x_get_arr_size(qdf_vals[i]); 
+        if ( i == 0 ) { 
+          arr_len = chk_arr_len;
+          arr_size = chk_arr_size;
+        }
+        else {
+          if ( arr_len != chk_arr_len ) { is_df = false; break; }
+          if ( arr_size != chk_arr_size ) { is_df = false; break; }
+        }
+      }
     }
   }
   //---------------------------------------------
@@ -535,7 +556,7 @@ make_mixed_array_or_object(
     // This condition happens when we use append_mixed_array
     // to add the individual components of the object/array later
     for ( uint32_t i = 0; i < n_qdfs; i++ ) { 
-      status = chk_qdf(&(qdf_vals[i])); cBYE(status);
+      status = chk_qdf(qdf_vals[i]); cBYE(status);
     }
   }
 #endif
@@ -551,6 +572,11 @@ make_mixed_array_or_object(
   set_qdf_size(x, qdf_size);
   if ( jtype == j_object ) { 
     set_obj_len(x, n_qdfs); 
+    if ( is_df ) { 
+      set_is_df(x, true);
+      set_obj_arr_len(x, arr_len);
+      set_obj_arr_size(x, arr_size);
+    }
   }
   else { 
     set_arr_len(x, n_qdfs); 
@@ -577,7 +603,7 @@ make_mixed_array_or_object(
     SCLR_REC_TYPE sclr;
     sclr.val.i4 = (int32_t)offset; sclr.qtype = I4;
     status = x_set_arr_val(&qdf_offs, i, sclr); cBYE(status);
-    offset += x_get_qdf_size(&(qdf_vals[i]));
+    offset += x_get_qdf_size(qdf_vals[i]);
   }
 #ifdef DEBUG
   status = chk_qdf(&qdf_offs); cBYE(status);
@@ -588,8 +614,8 @@ make_mixed_array_or_object(
   // Now copy the QDF for the individual vectors
   offset = l_hdr + l_keys + l_offs;
   for ( uint32_t i = 0; i < n_qdfs; i++ ) { 
-    memcpy(x+offset, qdf_vals[i].data, qdf_vals[i].size);
-    offset += qdf_vals[i].size;
+    memcpy(x+offset, qdf_vals[i]->data, qdf_vals[i]->size);
+    offset += qdf_vals[i]->size;
   }
 BYE:
   free_qdf(&qdf_offs);

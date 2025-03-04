@@ -3,7 +3,8 @@ local lQDF = require 'lQDF'
 local cQDF = ffi.load("libqdf.so")
 local lqdfmem       = require 'lqdfmem'
 
-local function foo(qdfs, l_keys)
+--[[
+local function vecs_to_df(qdfs, l_keys)
 
   local n_qdfs = #qdfs
   local n_keys = #l_keys
@@ -27,6 +28,7 @@ local function foo(qdfs, l_keys)
   if ( is_debug ) then assert(lqdf:check()) end
   return lqdf
 end
+--]]
 
 local tests = {}
 tests.t1 = function()
@@ -48,12 +50,19 @@ tests.t1 = function()
   local qdfs = { v1, v2 }
   local l_keys = { "size_per_unit_q", "tcin" }
 
-  local out_qdf = foo(qdfs, l_keys)
+  local out_qdf = lQDF.vecs_to_df(qdfs, l_keys)
   assert(type(out_qdf) == "lQDF")
   local K = out_qdf:keys()
   assert(#K == 2) 
   for k, v in pairs(K) do print(k, v) end 
+  for i, k in ipairs(l_keys) do
+    print("Printing values for key " .. k) 
+    local x = out_qdf:get(k)
+    assert(type(x) == "lQDF")
+    x:pr_csv()
+  end
   assert(out_qdf:check())
+  print("out_n = " .. out_qdf:obj_arr_len())
 
   print("Test t1 succeeded ")
 end

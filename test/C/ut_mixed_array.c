@@ -17,7 +17,7 @@ main(
     )
 {
   int status = 0;
-  QDF_REC_TYPE *in_qdfs = NULL;
+  QDF_REC_TYPE **in_qdfs = NULL;
 
   char **svals = NULL; uint32_t n_svals = 4;
   double *dvals = NULL; uint32_t n_dvals = 10;
@@ -102,16 +102,16 @@ main(
   cBYE(status);
   // set up input for mixed array
   uint32_t n_mixed = 9;
-  in_qdfs = malloc(n_mixed * sizeof(QDF_REC_TYPE));
-  in_qdfs[0] = qdf_nil; 
-  in_qdfs[1] = qdf_true;
-  in_qdfs[2] = qdf_false;
-  in_qdfs[3] = qdf_num;
-  in_qdfs[4] = qdf_str;
-  in_qdfs[5] = qdf_SC_arr;
-  in_qdfs[6] = qdf_F8_arr;
-  in_qdfs[7] = qdf_I4_arr ;
-  in_qdfs[8] = qdf_df;
+  in_qdfs = malloc(n_mixed * sizeof(QDF_REC_TYPE *));
+  in_qdfs[0] = &qdf_nil; 
+  in_qdfs[1] = &qdf_true;
+  in_qdfs[2] = &qdf_false;
+  in_qdfs[3] = &qdf_num;
+  in_qdfs[4] = &qdf_str;
+  in_qdfs[5] = &qdf_SC_arr;
+  in_qdfs[6] = &qdf_F8_arr;
+  in_qdfs[7] = &qdf_I4_arr ;
+  in_qdfs[8] = &qdf_df;
   // call mixded array
   status = make_mixed_array_or_object(
       in_qdfs, NULL, n_mixed, &qdf_mixed); 

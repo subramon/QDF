@@ -4,6 +4,7 @@
 #include "qdf_checkers.h"
 #include "qdf_makers.h"
 #include "tm2time.h"
+#include "I4_to_TM1.h"
 #include "qdf_tm.h"
 
 int
@@ -173,3 +174,30 @@ BYE:
   return status;
 }
 
+int
+qdf_I4_to_TM1(
+    const QDF_REC_TYPE *const ptr_src,
+    QDF_REC_TYPE * restrict ptr_dst
+    )
+{
+  int status = 0;
+  mcr_chk_non_null(ptr_src, -1); 
+  mcr_chk_null(ptr_dst, -1); 
+  char *sx = ptr_src->data;
+  jtype_t sjtype = get_jtype(sx); if ( sjtype != j_array ) { go_BYE(-1); }
+  qtype_t sqtype = get_qtype(sx); if ( sqtype != I4 ) { go_BYE(-1); }
+  uint32_t sn    = get_arr_len(sx); 
+  uint32_t ssz   = get_arr_size(sx);  
+
+  const int32_t * const src_vals_ptr = get_arr_ptr(sx); 
+
+  status = make_num_array(NULL, sn, ssz, TM1, ptr_dst); cBYE(status);
+  tm_t *dst_vals_ptr = get_arr_ptr(ptr_dst->data); 
+  for ( uint32_t i = 0; i < sn; i++ ) { 
+    status = I4_to_TM1(src_vals_ptr[i], false, &(dst_vals_ptr[i]));
+    cBYE(status);
+  }
+
+BYE:
+  return status;
+}

@@ -1903,4 +1903,57 @@ function lQDF:clone()
   newqdf._cmem = cqdf
   return newqdf
 end
+function lQDF.vecs_to_df(qdfs, l_keys)
+  assert(type(qdfs) == "table")
+  for i, v in ipairs(qdfs) do
+    assert(type(v) == "lQDF")
+    if ( is_debug ) then assert(v:check()) end 
+  end
+  assert(type(l_keys) == "table")
+  for i, v in ipairs(l_keys) do
+    assert(type(v) == "string")
+    assert(#v > 0)
+  end
+
+  local n_qdfs = #qdfs
+  local n_keys = #l_keys
+  assert(n_keys > 0)
+  assert(n_keys == n_qdfs)
+
+  -- prepare keys for C 
+  local c_keys = ffi.new("char *[?]", n_keys)
+  for i, l_key in ipairs(l_keys) do 
+    local len = #l_key + 1
+    c_keys[i-1] = ffi.new("char[?]", len)
+    ffi.fill(c_keys[i-1], len, 0)
+    ffi.copy(c_keys[i-1], l_key)
+  end
+  local c_qdfs = ffi.new("QDF_REC_TYPE *[?]", n_qdfs)
+  ffi.fill(c_qdfs, ffi.sizeof("QDF_REC_TYPE *") * n_qdfs, 0)
+  for i, qdf in ipairs(qdfs) do
+    local in_qdf_rec = assert(qdf:cmem_ptr())
+    c_qdfs[i-1] = in_qdf_rec
+  end
+  -- prepare output for C 
+  local cqdf = lqdfmem(0)
+  local cqdf_ptr = ffi.cast("QDF_REC_TYPE *", cqdf._qdfmem)
+  --=============================
+  local status = cQDF.make_mixed_array_or_object(c_qdfs,
+    c_keys, n_keys, cqdf_ptr)
+  assert(status == 0)
+  local lqdf = setmetatable({}, lQDF)
+  lqdf._cmem = cqdf
+  if ( is_debug ) then assert(lqdf:check()) end
+  return lqdf
+end
+function lQDF:I4_to_TM1()
+  local cqdf = lqdfmem(0)
+  local cqdf_ptr = ffi.cast("QDF_REC_TYPE *", cqdf._qdfmem)
+  local status = cQDF.qdf_I4_to_TM1(self:cmem_ptr(), cqdf_ptr)
+  -- TODO 
+  assert(status == 0)
+  local newqdf = setmetatable({}, lQDF)
+  newqdf._cmem = cqdf
+  return newqdf
+end
 return lQDF

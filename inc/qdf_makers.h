@@ -62,7 +62,7 @@ make_data_frame(
     );
 extern int
 make_mixed_array_or_object(
-    const QDF_REC_TYPE * const qdf_vals, // [n_qdfs]
+    QDF_REC_TYPE **qdf_vals, // [n_qdfs]
     char ** const keys, // [n_qdfs]
     uint32_t n_qdfs,
     QDF_REC_TYPE *ptr_out_qdf

@@ -15,3 +15,8 @@ qdf_mktime(
     const QDF_REC_TYPE *const ptr_src,
     QDF_REC_TYPE * restrict ptr_dst
     );
+extern int
+qdf_I4_to_TM1(
+    const QDF_REC_TYPE *const ptr_src,
+    QDF_REC_TYPE * restrict ptr_dst
+    );

@@ -321,7 +321,7 @@ make_data_frame(
     );
 extern int
 make_mixed_array_or_object(
-    const QDF_REC_TYPE * const qdf_vals, // [n_qdfs]
+    QDF_REC_TYPE **qdf_vals, // [n_qdfs]
     char ** const keys, // [n_qdfs]
     uint32_t n_qdfs,
     QDF_REC_TYPE *ptr_out_qdf
@@ -1458,6 +1458,11 @@ x_time_band(
     );
 extern int
 qdf_mktime(
+    const QDF_REC_TYPE *const ptr_src,
+    QDF_REC_TYPE * restrict ptr_dst
+    );
+extern int
+qdf_I4_to_TM1(
     const QDF_REC_TYPE *const ptr_src,
     QDF_REC_TYPE * restrict ptr_dst
     );
