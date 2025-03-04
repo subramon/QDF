@@ -174,6 +174,7 @@ vs_op(
       status = vsadd(xptr, ptr_sclr, sn1, zptr); cBYE(status);
       break;
     case bop_vssub : 
+      zptr[0] = 0;
       status = vssub(xptr, ptr_sclr, sn1, zptr); cBYE(status);
       break;
     case bop_vsmul : 

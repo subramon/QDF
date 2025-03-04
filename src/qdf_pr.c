@@ -44,25 +44,51 @@ pr_df_as_csv(
     QDF_REC_TYPE keys_qdf; memset(&keys_qdf, 0, sizeof(QDF_REC_TYPE));
     status = get_keys(ptr_qdf, &keys_qdf); cBYE(status);
     status = chk_qdf(&keys_qdf); cBYE(status);
-    n_keys = get_arr_len(keys_qdf.data);  
-    if ( n_keys == 0 ) { go_BYE(-1); }
+    //-- we need to discount nn_ keys 
+    uint32_t tmp_n_keys = get_arr_len(keys_qdf.data);  
+    if ( tmp_n_keys == 0 ) { go_BYE(-1); }
+    n_keys = 0;
+    for ( uint32_t i = 0; i < tmp_n_keys; i++ ) { 
+      SCLR_REC_TYPE sclr;
+      status = get_arr_val(keys_qdf.data, i, &sclr, NULL); 
+      if ( strncmp(sclr.val.str, "nn_", strlen("nn_")) != 0 ) {
+        n_keys++;
+      }
+    }
+    //----------------------------------------
     keys = malloc(n_keys * sizeof(char *));
     return_if_malloc_failed(keys);
     memset(keys, 0,  n_keys * sizeof(char *));
-    for ( uint32_t i = 0; i < n_keys; i++ ) { 
+    uint32_t kidx = 0;
+    for ( uint32_t i = 0; i < tmp_n_keys; i++ ) { 
       SCLR_REC_TYPE sclr;
       status = get_arr_val(keys_qdf.data, i, &sclr, NULL); 
-      keys[i] = strdup(sclr.val.str);
+      if ( strncmp(sclr.val.str, "nn_", strlen("nn_")) != 0 ) {
+        if ( kidx == n_keys ) { go_BYE(-1); }
+        keys[kidx++] = strdup(sclr.val.str);
+      }
     }
   }
   else {
     if ( n_keys_to_pr == 0 ) { go_BYE(-1); }
-    n_keys = n_keys_to_pr;
+    // discount nn_ keys 
+    n_keys = 0;
+    uint32_t tmp_n_keys = n_keys_to_pr;
+    for ( uint32_t i = 0; i < tmp_n_keys; i++ ) { 
+      if ( strncmp(keys_to_pr[i], "nn_", strlen("nn_")) != 0 ) { 
+        n_keys++;
+      }
+    }
+    if ( n_keys == 0 ) { go_BYE(-1); }
     keys = malloc(n_keys * sizeof(char *));
     return_if_malloc_failed(keys);
     memset(keys, 0,  n_keys * sizeof(char *));
-    for ( uint32_t i = 0; i < n_keys; i++ ) { 
-      keys[i] = strdup(keys_to_pr[i]);
+    uint32_t kidx = 0;
+    for ( uint32_t i = 0; i < tmp_n_keys; i++ ) { 
+      if ( strncmp(keys_to_pr[i], "nn_", strlen("nn_")) != 0 ) { 
+        if ( kidx == n_keys ) { go_BYE(-1); }
+        keys[kidx++] = strdup(keys_to_pr[i]);
+      }
     }
   }
   //------------------------------------------------------
@@ -86,6 +112,23 @@ pr_df_as_csv(
   for ( uint32_t i = 0; i < n_rows; i++ ) { 
     for ( uint32_t j = 0; j < n_keys; j++ ) {
       if ( j > 0 ) { fprintf(fp, ","); }
+      // START: for potential nn column 
+      const char * nn_ptr = NULL;
+      QDF_REC_TYPE nn_col; memset(&nn_col, 0, sizeof(QDF_REC_TYPE));
+      bool is_nn = false; 
+      char *nn_key = NULL;
+      size_t len = strlen(keys[j]) + 8; 
+      nn_key = malloc(len); memset(nn_key, 0, len);
+      sprintf(nn_key, "nn_%s", keys[j]);
+      status = is_key(ptr_qdf, nn_key, &is_nn); 
+      if ( is_nn ) { 
+        status = get_key_val(ptr_qdf, -1, nn_key, &nn_col, NULL); 
+        cBYE(status);
+        qtype_t qtype = get_qtype(nn_col.data); 
+        if ( qtype != BL ) { go_BYE(-1); }
+        nn_ptr = get_arr_ptr(nn_col.data); 
+      }
+      // STOP : for potential nn column 
       QDF_REC_TYPE col; memset(&col, 0, sizeof(QDF_REC_TYPE));
       status = get_key_val(ptr_qdf, -1, keys[j], &col, NULL); cBYE(status);
       qtype_t qtype = get_qtype(col.data); 
@@ -94,7 +137,7 @@ pr_df_as_csv(
         width = get_arr_width(col.data); if ( width < 1 ) { go_BYE(-1); } 
       }
       const char * const valptr = get_arr_ptr(col.data); 
-      status = pr_1(valptr, qtype, width, i, fp); cBYE(status);
+      status = pr_1(valptr, nn_ptr, qtype, width, i, fp); cBYE(status);
     }
     fprintf(fp, "\n");
   }
@@ -429,6 +472,7 @@ BYE:
 int
 pr_1(
     const void * const valptr, 
+    const char * const nn_ptr,
     qtype_t qtype, 
     uint32_t width,
     uint32_t idx,
@@ -436,6 +480,12 @@ pr_1(
     )
 {
   int status = 0;
+  if ( fp == NULL ) { go_BYE(-1); }
+  if ( ( nn_ptr != NULL ) && ( nn_ptr[idx] == 0 ) ) { 
+    fprintf(fp, "\"\"");
+    return status;
+  }
+
   switch ( qtype ) {
     //-------------------
     case BL :
@@ -537,7 +587,7 @@ x_pr_array(
     return_if_fopen_failed(fp, file_name, "w");
   }
   for ( uint32_t i = 0; i < n_elem; i++ ) { 
-    status = pr_1(valptr, qtype, width, i, fp);  cBYE(status);
+    status = pr_1(valptr, NULL, qtype, width, i, fp);  cBYE(status);
     fprintf(fp, "\n");
   }
 BYE:
@@ -580,7 +630,7 @@ pr_csv(
   }
   //-----------------------------------
   for ( uint32_t i = 0; i < n; i++ ) { 
-    status = pr_1(srcptr, sqtype, width, i, fp); cBYE(status);
+    status = pr_1(srcptr, NULL, sqtype, width, i, fp); cBYE(status);
     fprintf(fp, "\n");
   }
 BYE:

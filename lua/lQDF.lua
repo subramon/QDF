@@ -1084,7 +1084,9 @@ function lQDF:squeeze_where(where)
 end
 
 function lQDF:pr_csv(file_name)
-  assert(type(file_name) == "string")
+  if ( file_name ~= nil ) then 
+    assert(type(file_name) == "string")
+  end
   local status = cQDF.pr_csv(self:cmem_ptr(), file_name)
   assert(status == 0)
   return true

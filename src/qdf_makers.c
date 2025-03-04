@@ -722,10 +722,13 @@ place_in_data_frame(
   uint32_t src_arr_len  = sxp->arr_len;
   if ( src_arr_len == 0 ) { go_BYE(-1); }  // src is empty, nothing to do
 
+  char  *srcptr = (char *)get_arr_ptr(ptr_src->data);  // for debugging
+
   // tmp_qdf is what will be over-written by src_qdf
   QDF_REC_TYPE tmp_qdf; memset(&tmp_qdf, 0, sizeof(QDF_REC_TYPE));
   uint32_t offset = 0; // where src should be placed in dst 
   status = get_key_val(ptr_dst, -1, key, &tmp_qdf, &offset); cBYE(status);
+  char  *dstptr = (char *)get_arr_ptr(tmp_qdf.data);  // for debugging
   // src_qdf must conform to tmp_qdf
   qdf_array_hdr_t *txp = (qdf_array_hdr_t *)(tmp_qdf.data);
   if ( txp->jtype != j_array ) { go_BYE(-1); }
