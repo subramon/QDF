@@ -1083,6 +1083,15 @@ function lQDF:squeeze_where(where)
   return tonumber(num_good[0])
 end
 
+function lQDF:pr_json(file_name)
+  if ( file_name ~= nil ) then 
+    assert(type(file_name) == "string")
+  end
+  local status = cQDF.x_pr_json(self:cmem_ptr(), file_name)
+  assert(status == 0)
+  return true
+end
+
 function lQDF:pr_csv(file_name)
   if ( file_name ~= nil ) then 
     assert(type(file_name) == "string")

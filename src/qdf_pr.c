@@ -152,6 +152,28 @@ BYE:
   return status;
 }
 
+// This is for calling from Lua 
+int
+x_pr_json(
+    const QDF_REC_TYPE * const ptr_qdf,
+    const char * const file_name
+    )
+{
+  int status = 0;
+  FILE *fp = NULL;
+  QDF_REC_TYPE out; memset(&out, 0, sizeof(QDF_REC_TYPE));
+  uint32_t len = 0;
+  status = pr_json(ptr_qdf, &out, &len, NULL); cBYE(status);
+  if ( ( out.data == NULL ) || ( out.size == 0 ) ) { go_BYE(-1); }
+
+  fp = fopen(file_name, "w");
+  return_if_fopen_failed(fp, file_name, "w");
+  fwrite(out.data, len, 1, fp);
+  fclose_if_non_null(fp); 
+  free_qdf(&out); 
+BYE:
+  return status;
+}
 int
 pr_json(
     const QDF_REC_TYPE * const ptr_qdf,
