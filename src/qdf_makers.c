@@ -179,8 +179,7 @@ make_SC_array(
         if ( len > maxlen ) { maxlen = len; } 
         idx += (len+1); // +1 for nullc
       }
-      out_width = multiple_n(maxlen+1, 8); 
-       // +1 for nullc, multiple of 8 for QDF
+      out_width = maxlen+1; // +1 for nullc
     }
     else {
       out_width = in_width;
@@ -189,6 +188,7 @@ make_SC_array(
         if ( concat_svals[((i+1)*in_width)-1] != '\0' ) { go_BYE(-1); }
       }
     }
+    out_width = multiple_n(out_width, 8); // multiple of 8 for QDF
   }
   if ( svals != NULL ) { // => we are given an array of strings
     // Get max len of svals[i] since we store as SC
@@ -400,7 +400,11 @@ make_data_frame(
       cBYE(status);
     }
 #ifdef DEBUG
-    status = chk_qdf(&(qdf_cols[i])); cBYE(status);
+    status = chk_qdf(&(qdf_cols[i])); 
+    if ( status != 0 ) { 
+      WHEREAMI;
+    }
+    cBYE(status);
 #endif
   }
   // create offsets QDF for columns, placed after keys QDF 
