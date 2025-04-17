@@ -43,6 +43,12 @@ qdf_csv_to_df(
   uint32_t *widths = NULL;  // [ncols]
   uint32_t ncols; 
 
+  if ( infile == NULL ) { 
+    FILE *fp = fopen("/tmp/_x.csv", "w");
+    fwrite(X, 1, nX, fp);
+    fclose(fp);
+  }
+
   //----------------------------------------
   uint32_t nrows; 
   uint32_t max_cell_width = 1024-1;

@@ -20,6 +20,7 @@ qdf_concat(
   int status = 0;
   uint32_t *n_rows = NULL; // [n_qdfs]
   qtype_t *qtypes = NULL; // [n_keys]
+  uint32_t *widths = NULL; // [n_keys]
   // Check parameters
   if ( n_qdfs <= 0 ) { go_BYE(-1); }
   if ( n_keys <= 0 ) { go_BYE(-1); }
@@ -28,6 +29,10 @@ qdf_concat(
   qtypes = malloc(n_keys * sizeof(qtype_t));
   return_if_malloc_failed(qtypes);
   memset(qtypes, 0,  n_keys * sizeof(qtype_t));
+
+  widths = malloc(n_keys * sizeof(uint32_t));
+  return_if_malloc_failed(widths);
+  memset(widths, 0,  n_keys * sizeof(uint32_t));
 
   n_rows = malloc(n_qdfs * sizeof(uint32_t));
   return_if_malloc_failed(n_rows);
@@ -47,12 +52,14 @@ qdf_concat(
   //-------------------------------------------
   for ( uint32_t j = 0; j < n_keys; j++ ) {
     qtype_t qtype_j = Q0;
+    uint32_t width_j = 0; 
     for ( uint32_t i = 0; i < n_qdfs; i++ )  {
       //--------------------------------
       // get type of column with key = key in i^{th} input QDF
       QDF_REC_TYPE tmp_qdf; memset(&tmp_qdf, 0, sizeof(QDF_REC_TYPE));
       status = get_key_val(&(in_qdfs[i]), -1, keys[j], &tmp_qdf, NULL); 
       cBYE(status);
+      //-----------------------------------------------
       qtype_t qtype =  get_qtype(tmp_qdf.data); 
       if ( i == 0 ) { 
         qtype_j = qtype;
@@ -60,21 +67,31 @@ qdf_concat(
       else {
         if ( qtype_j != qtype ) { go_BYE(-1); }
       }
+      //-----------------------------------------------
+      uint32_t width =  get_arr_width(tmp_qdf.data); 
+      if ( i == 0 ) { 
+        width_j = width;
+      }
+      else {
+        if ( width_j != width ) { go_BYE(-1); }
+      }
     }
     qtypes[j] = qtype_j;
+    widths[j] = width_j;
   }
   if ( total_n_rows == 0 ) { go_BYE(-1); } 
   // we now have information to create an empty output QDF
-  status = make_data_frame(keys, n_keys, NULL, NULL, total_n_rows, 0, 
-      qtypes, ptr_out_qdf);
+  status = make_empty_data_frame(keys, n_keys, qtypes, widths, 
+      total_n_rows, ptr_out_qdf);
   cBYE(status);
   // but we still have to copy data from input to output
   for ( uint32_t j = 0; j < n_keys; j++ ) { 
     QDF_REC_TYPE dst_qdf; memset(&dst_qdf, 0, sizeof(QDF_REC_TYPE));
     const char * const key = keys[j];
     qtype_t qtype = qtypes[j];
-    uint32_t width = get_width_c_qtype(qtype);
-    if ( width == 0 ) { go_BYE(-1); }
+    uint32_t width = widths[j];
+    if ( width == 0 ) { 
+      go_BYE(-1); }
 
     // figure out destination for writes 
     status = get_key_val(ptr_out_qdf, -1, key, &dst_qdf, NULL); 
@@ -95,6 +112,7 @@ qdf_concat(
   }
 BYE:
   free_if_non_null(qtypes);
+  free_if_non_null(widths);
   free_if_non_null(n_rows);
   return status;
 }
