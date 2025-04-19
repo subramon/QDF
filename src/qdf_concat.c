@@ -110,6 +110,8 @@ qdf_concat(
       dstptr += (n_rows[i] * width);
     }
   }
+  status = set_obj_arr_len(ptr_out_qdf->data, total_n_rows);
+  cBYE(status);
 BYE:
   free_if_non_null(qtypes);
   free_if_non_null(widths);
