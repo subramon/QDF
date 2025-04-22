@@ -166,12 +166,19 @@ x_pr_json(
   status = pr_json(ptr_qdf, &out, &len, NULL); cBYE(status);
   if ( ( out.data == NULL ) || ( out.size == 0 ) ) { go_BYE(-1); }
 
-  fp = fopen(file_name, "w");
-  return_if_fopen_failed(fp, file_name, "w");
+  if ( file_name == NULL ) { 
+    fp = stdout;
+  }
+  else {
+    fp = fopen(file_name, "w");
+    return_if_fopen_failed(fp, file_name, "w");
+  }
   fwrite(out.data, len, 1, fp);
-  fclose_if_non_null(fp); 
   free_qdf(&out); 
 BYE:
+  if ( file_name != NULL ) { 
+    fclose_if_non_null(fp); 
+  }
   return status;
 }
 int
