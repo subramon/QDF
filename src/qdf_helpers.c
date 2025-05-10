@@ -4,6 +4,7 @@
 #include "lookup8.h"
 #include "qdf_checkers.h"
 #include "qdf_helpers.h"
+#include "addr_as_hex_string.h"
 
 //--------------------------------------------------
 int
@@ -970,3 +971,104 @@ get_str_qtypes_as_array(
 BYE:
   return status;
 }
+int 
+get_qtypes_as_array(
+    QDF_REC_TYPE *ptr_qdf,
+    qtype_t **ptr_qtypes, 
+    uint32_t *ptr_n_qtypes
+    )
+{
+  int status = 0;
+  uint32_t n_qtypes = 0;
+  qtype_t *qtypes = NULL; // [n_keys] 
+  //--------------------------------------------------
+  if ( ptr_qdf == NULL ) { go_BYE(-1); } 
+#ifdef DEBUG
+  status = chk_qdf(ptr_qdf); cBYE(status);
+#endif
+  if ( !get_is_df(ptr_qdf->data) ) { go_BYE(-1); }
+  n_qtypes = get_obj_len(ptr_qdf->data);  
+  if ( n_qtypes == 0 ) { go_BYE(-1); }
+  qtypes = malloc(n_qtypes * sizeof(qtype_t));
+  //--------------------------------------------------
+  for ( int i = 0; i < (int)n_qtypes; i++ ) { // for each key in src 
+    QDF_REC_TYPE col_qdf; memset(&col_qdf, 0, sizeof(QDF_REC_TYPE));
+    status = get_key_val(ptr_qdf, i, NULL, &col_qdf, NULL); cBYE(status);
+    qtype_t qtype = get_qtype(col_qdf.data);
+    if ( qtype == Q0 ) { go_BYE(-1); }
+    qtypes[i] = qtype;
+  }
+  *ptr_qtypes = qtypes;
+  *ptr_n_qtypes = n_qtypes;
+BYE:
+  return status;
+}
+int 
+get_widths_as_array(
+    QDF_REC_TYPE *ptr_qdf,
+    uint32_t **ptr_widths, 
+    uint32_t *ptr_n_widths
+    )
+{
+  int status = 0;
+  uint32_t n_widths = 0;
+  uint32_t *widths = NULL; // [n_keys] 
+  //--------------------------------------------------
+  if ( ptr_qdf == NULL ) { go_BYE(-1); } 
+#ifdef DEBUG
+  status = chk_qdf(ptr_qdf); cBYE(status);
+#endif
+  if ( !get_is_df(ptr_qdf->data) ) { go_BYE(-1); }
+  n_widths = get_obj_len(ptr_qdf->data);  
+  if ( n_widths == 0 ) { go_BYE(-1); }
+  widths = malloc(n_widths * sizeof(uint32_t));
+  //--------------------------------------------------
+  for ( int i = 0; i < (int)n_widths; i++ ) { // for each key in src 
+    QDF_REC_TYPE col_qdf; memset(&col_qdf, 0, sizeof(QDF_REC_TYPE));
+    status = get_key_val(ptr_qdf, i, NULL, &col_qdf, NULL); cBYE(status);
+    uint32_t width = get_arr_width(col_qdf.data);
+    if ( width == 0 ) { go_BYE(-1); }
+    widths[i] = width;
+  }
+  *ptr_widths = widths;
+  *ptr_n_widths = n_widths;
+BYE:
+  return status;
+}
+
+uint32_t
+get_qdf_raw_size(
+    QDF_REC_TYPE *ptr_qdf
+    )
+{
+  if ( ptr_qdf == NULL ) { WHEREAMI; return 0; }
+  return (uint32_t)ptr_qdf->size; 
+}
+
+char *
+get_qdf_ptr(
+    QDF_REC_TYPE *ptr_qdf
+    )
+{
+  if ( ptr_qdf == NULL ) { WHEREAMI; return NULL; }
+  return (char *)ptr_qdf->data; 
+}
+
+int 
+get_qdf_ptr_as_hex_string(
+    QDF_REC_TYPE *ptr_qdf,
+    char hex_str[32]
+    )
+{
+  int status = 0;
+  char *x = NULL;
+  if ( ptr_qdf == NULL ) { go_BYE(-1); } 
+  x = addr_as_hex_string(ptr_qdf->data);
+  if ( strlen(x) >= 32 ) { go_BYE(-1); }
+  memset(hex_str, 0, 32);
+  strcpy(hex_str, x); 
+BYE:
+  free_if_non_null(x); 
+  return status;
+}
+

@@ -238,4 +238,29 @@ get_str_qtypes_as_array(
     char ***ptr_str_qtypes, 
     uint32_t *ptr_n_str_qtypes
     );
+extern char *
+get_qdf_ptr(
+    QDF_REC_TYPE *ptr_qdf
+    );
+extern int 
+get_qdf_ptr_as_hex_string(
+    QDF_REC_TYPE *ptr_qdf,
+    char hex_str[32]
+    );
+extern uint32_t
+get_qdf_raw_size(
+    QDF_REC_TYPE *ptr_qdf
+    );
+extern int 
+get_qtypes_as_array(
+    QDF_REC_TYPE *ptr_qdf,
+    qtype_t **ptr_qtypes, 
+    uint32_t *ptr_n_qtypes
+    );
+extern int 
+get_widths_as_array(
+    QDF_REC_TYPE *ptr_qdf,
+    uint32_t **ptr_widths, 
+    uint32_t *ptr_n_widths
+    );
 #endif //  QDF_HELPERS_H

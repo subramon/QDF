@@ -12,7 +12,11 @@ tests.test1 = function ()
   assert(#qtypes == #col_names)
   local infile = "../data/lags1.csv"
   local optargs = { is_hdr = true }
-  local x = assert(lQDF.read_csv(col_names, qtypes, infile, optargs))
+  local M = {}
+  for k, v in ipairs(col_names) do
+    M[k] = { name = col_names[k], qtype = qtypes[k], }
+  end
+  local x = assert(lQDF.read_csv(M, infile, optargs))
   assert(type(x) == "lQDF")
   x:pr_df_as_csv({"l1", "nn_l1", "l2", "nn_l2", }, "/tmp/foo.csv")
   -- TODO Should test output 

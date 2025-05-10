@@ -10,7 +10,11 @@ tests.test1 = function ()
   local qtypes = { "I1", "F4", }
   local infile = "data_chk1.csv"
   local optargs = { is_hdr = true, }
-  local x = assert(lQDF.read_csv(col_names, qtypes, infile, optargs))
+  local M = {}
+  for k, v in ipairs(col_names) do
+    M[k] = { name = col_names[k], qtype = qtypes[k], }
+  end
+  local x = assert(lQDF.read_csv(M, infile, optargs))
 
   local y = x:clone()
   assert(type(y) == "lQDF")

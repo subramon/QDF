@@ -583,6 +583,31 @@ get_str_qtypes_as_array(
     char ***ptr_str_qtypes, 
     uint32_t *ptr_n_str_qtypes
     );
+extern char *
+get_qdf_ptr(
+    QDF_REC_TYPE *ptr_qdf
+    );
+extern int 
+get_qdf_ptr_as_hex_string(
+    QDF_REC_TYPE *ptr_qdf,
+    char hex_str[32]
+    );
+extern uint32_t
+get_qdf_raw_size(
+    QDF_REC_TYPE *ptr_qdf
+    );
+extern int 
+get_qtypes_as_array(
+    QDF_REC_TYPE *ptr_qdf,
+    qtype_t **ptr_qtypes, 
+    uint32_t *ptr_n_qtypes
+    );
+extern int 
+get_widths_as_array(
+    QDF_REC_TYPE *ptr_qdf,
+    uint32_t **ptr_widths, 
+    uint32_t *ptr_n_widths
+    );
 extern uint32_t
 x_get_obj_len(
     const QDF_REC_TYPE * const ptr_qdf
@@ -687,6 +712,10 @@ x_set_num_val(
     const QDF_REC_TYPE * const ptr_qdf,
     double num_val
     );
+int
+x_set_foreign(
+    QDF_REC_TYPE * ptr_qdf
+    );
 extern int
 qdf_csv_to_df(
     const char * const infile, // INPUT 
@@ -712,6 +741,13 @@ qdf_const(
     uint32_t sz,
     QDF_REC_TYPE *dst // output 
    );
+extern int
+qdf_const_str(
+    const char * const str,
+    uint32_t n,
+    uint32_t sz,
+    QDF_REC_TYPE *dst // output 
+    );
 extern int
 qdf_seq(
     SCLR_REC_TYPE *ptr_start,
@@ -1282,6 +1318,13 @@ squeeze_where(
     uint32_t *ptr_num_good
    );
 extern int
+qdf_where(
+    QDF_REC_TYPE *ptr_src, // INPUT df consisting of numeric arrays
+    const QDF_REC_TYPE *const where, // numeric I1 array (1=> good, 0 => null)
+    QDF_REC_TYPE *ptr_dst, // OUTPUT: same as INPUT 
+    uint32_t *ptr_num_good
+   );
+extern int
 pr_df_as_csv(
     const QDF_REC_TYPE * const qdf,
     char **  const keys,
@@ -1478,6 +1521,13 @@ qdf_write(
     bool truncate, // INPUT
     QDF_REC_TYPE * restrict dst // INPUT and OUTPUT 
    );
+extern int
+add_col_to_df(
+    QDF_REC_TYPE *src,
+    const char * const col, // name of new column
+    QDF_REC_TYPE *add, // column to be added 
+    QDF_REC_TYPE *dst
+    );
 extern int
 x_num_unique(
     const QDF_REC_TYPE *const ptr_qdf,

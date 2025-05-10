@@ -17,8 +17,9 @@ bash ut_mixed_array.sh
 bash ut_named_vec.sh 
 bash ut_pr.sh 
 bash ut_qdf_makers.sh 
-bash ut_read_csv.sh 
+bash ut_csv_to_df.sh 
 bash ut_squeeze.sh
+bash ut_where.sh
 bash ut_tm.sh 
 bash ut_unique.sh
 # DO MANUALLY bash ut_df_to_Rserve.sh

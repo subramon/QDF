@@ -500,6 +500,7 @@ function lQDF:get(idx, in_mode)
   -- idx is what we use to index the JSON to get to what we want
   -- it can be a number or a string or a table of number/string
   -- if it is null, thene we return self
+  -- TODO P1 : Case of idx == null is non-intuitive Consider this carefully
 
   -- mode can be raw or simplified. Default is simplified
 
@@ -820,6 +821,26 @@ function lQDF.decompress(x, y, compress_mode)
   return newqdf 
 end
 --==============================
+-- returns qdf data pointer 
+function lQDF:get_qdf_ptr_as_hex_string()
+  local hex_str = ffi.new("char[?]", 32)
+  ffi.fill(hex_str, 32, 0)
+  hex_str = ffi.cast("char *", hex_str)
+  local status = cQDF.get_qdf_ptr_as_hex_string(self:cmem_ptr(), hex_str)
+  assert(status == 0)
+
+  local ret = ffi.string(hex_str)
+  return ret
+end
+function lQDF:get_qdf_ptr()
+  local qdf_ptr = cQDF.get_qdf_ptr(self:cmem_ptr())
+  qdf_ptr = ffi.cast("char *", qdf_ptr)
+  return qdf_ptr
+end
+function lQDF:get_qdf_raw_size()
+  local qdf_size = cQDF.get_qdf_raw_size(self:cmem_ptr())
+  return qdf_size
+end
 -- returns a pointer to the data 
 function lQDF:get_arr_ptr()
   local rslt = ffi.new("char *[?]", 1) -- IMPORTANT: Note params ton new()
@@ -873,15 +894,15 @@ end
 function lQDF.read_csv(M, infile, optargs)
   assert(type(infile) == "string")
   assert(type(M) == "table")
-  ncols = #M
+  local ncols = #M
   assert(ncols > 0)
   -- START: extract information from M 
   -- prefix l_ for Lua 
-  l_col_names = {} 
-  l_qtypes = {}
-  l_is_load = {}
-  l_has_nulls = {}
-  l_formats = {}
+  local l_col_names = {} 
+  local l_qtypes = {}
+  local l_is_load = {}
+  local l_has_nulls = {}
+  local l_formats = {}
   for k, v in ipairs(M) do 
     l_col_names[k] = assert(v.name)
     assert(type(l_col_names[k]) == "string")
@@ -914,10 +935,10 @@ function lQDF.read_csv(M, infile, optargs)
   end
   --  STOP: extract information from M 
   -- some basic checks 
-  for k = 1, #M do 
-    assert(cutils.is_qtype(l_qtypes[k]))
-    for k2 = k+1, #M do 
-      assert(l_col_names[k] ~= l_col_names[k1])
+  for k1 = 1, #M do 
+    assert(cutils.is_qtype(l_qtypes[k1]))
+    for k2 = k1+1, #M do 
+      assert(l_col_names[k1] ~= l_col_names[k2])
     end
   end 
   -- START: handle optargs 
@@ -957,7 +978,7 @@ function lQDF.read_csv(M, infile, optargs)
     c_qtypes[i-1]    = cutils.get_c_qtype(l_qtypes[i])
     c_widths[i-1]    = cutils.get_width_qtype(l_qtypes[i])
   end
-  c_col_names = tbl_of_str_to_C_array(l_col_names)
+  local c_col_names = tbl_of_str_to_C_array(l_col_names)
   --  STOP: convert Lua to C 
   -- make the envelope for the dataframe to be loaded
   local df_qdf = lqdfmem(0)
@@ -1072,6 +1093,24 @@ function lQDF:set_lags(lag_start, lag_stop, lag_prefix, grpby, val, tim)
 end
 
 --- REVEIWED BELOW BUT STILL TO BE TESTED 
+function lQDF:where(where)
+  assert(type(where) == "lQDF")
+  assert(where:jtype() == "j_array")
+  assert(where:qtype() == "I1")
+  local num_good = ffi.new("uint32_t[?]", 1)
+
+  local df_qdf = lqdfmem(0)
+  local df_qdf_mem = ffi.cast("QDF_REC_TYPE *", df_qdf._qdfmem)
+
+  local status = cQDF.qdf_where(self:cmem_ptr(), 
+    where:cmem_ptr(), df_qdf_mem, num_good)
+  assert(status == 0)
+
+  local newqdf = setmetatable({}, lQDF)
+  newqdf._cmem        = df_qdf
+  return newqdf, tonumber(num_good[0])
+end
+
 function lQDF:squeeze_where(where)
   assert(type(where) == "lQDF")
   assert(where:jtype() == "j_array")
@@ -1161,7 +1200,7 @@ function lQDF.make_empty_data_frame(cols, str_qtypes, sz_rows)
   assert(type(cols)   == "table")
   local nC = #cols
   assert(nC >= 1)
-  assert(nC == #qtypes)
+  assert(nC == #str_qtypes)
   for k1, v1 in ipairs(cols) do 
     for k2, v2 in ipairs(cols) do 
      if ( k1 ~= k2 ) then assert( v1 ~= v2) end
@@ -1172,7 +1211,7 @@ function lQDF.make_empty_data_frame(cols, str_qtypes, sz_rows)
   --===========================
   local cqdf = lqdfmem(0)
   local C, nC = tbl_of_str_to_C_array(cols)
-  local c_widths, c_qtypes, chk_nC = 
+  local c_qtypes, c_widths, chk_nC = 
     str_qtypes_to_c_qtypes_widths(str_qtypes)
   assert(chk_nC == nC)
 
@@ -1187,12 +1226,11 @@ function lQDF.make_empty_data_frame(cols, str_qtypes, sz_rows)
 end
 
 function lQDF:set_foreign() -- USE WITH GREAT CARE
-  local x = get_qdf_rec(self)
-  x[0].is_foreign = true 
+  local status = cQDF.x_set_foreign(self:cmem_ptr())
+  assert(status == 0)
 end
 
 function lQDF:free() 
-  error("ZZZZZZZ")
   local status = cQDF.free_qdf(self:cmem_ptr())
   assert(status == 0)
   return true
@@ -1479,15 +1517,25 @@ function lQDF.ifxthenyelsez(x, y, z)
 end
 --==========================================================
 function lQDF.const(val, str_qtype, n, sz)
-  assert(type(val) == "number")
-  assert(type(str_qtype) == "string")
-  assert(type(n) == "number")
-  if ( sz == nil ) then sz = 0 end
-  assert(type(sz) == "number") 
-  --===============================
-  local val_sclr = lua_num_as_sclr(val, str_qtype)
+  assert(val) 
+  assert(str_qtype) 
+  local status
   local cqdf = lqdfmem(0)
-  local status = cQDF.qdf_const(val_sclr, n, sz, cqdf._qdfmem)
+  if ( type(val) == "string" ) then 
+    assert(type(str_qtype) == "string")
+    assert(str_qtype == "SC")
+    status = cQDF.qdf_const_str(val, n, sz, cqdf._qdfmem)
+  elseif assert(type(val) == "number") then
+    assert(type(str_qtype) == "string")
+    assert(type(n) == "number")
+    if ( sz == nil ) then sz = 0 end
+    assert(type(sz) == "number") 
+    --===============================
+    local val_sclr = lua_num_as_sclr(val, str_qtype)
+    status = cQDF.qdf_const(val_sclr, n, sz, cqdf._qdfmem)
+  else
+    error("bad value for const")
+  end
   assert(status == 0)
   local newqdf = setmetatable({}, lQDF)
   newqdf._cmem = cqdf
@@ -1960,6 +2008,21 @@ function lQDF:I4_to_TM1()
   local cqdf_ptr = ffi.cast("QDF_REC_TYPE *", cqdf._qdfmem)
   local status = cQDF.qdf_I4_to_TM1(self:cmem_ptr(), cqdf_ptr)
   -- TODO 
+  assert(status == 0)
+  local newqdf = setmetatable({}, lQDF)
+  newqdf._cmem = cqdf
+  return newqdf
+end
+function lQDF:add_col_to_df(new_col_name, new_col)
+  assert(type(new_col_name) == "string")
+  assert(#new_col_name > 0)
+  assert(type(new_col) == "lQDF")
+  assert(new_col:jtype() == "j_array")
+
+  local cqdf = lqdfmem(0)
+  local cqdf_ptr = ffi.cast("QDF_REC_TYPE *", cqdf._qdfmem)
+  local status = cQDF.add_col_to_df(self:cmem_ptr(), 
+    new_col_name, new_col:cmem_ptr(), cqdf_ptr)
   assert(status == 0)
   local newqdf = setmetatable({}, lQDF)
   newqdf._cmem = cqdf

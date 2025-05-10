@@ -1,9 +1,8 @@
 G = {} -- to avoid strict complaints
 G.debug= true
-local plfile = require 'pl.file'
-local plstringx = require 'pl.stringx'
 -- above must come before strict 
 require 'strict'
+local cutils = require 'libcutils'
 local lQDF = require 'lQDF'
 local tests = {}
 function file_as_str(file)
@@ -42,9 +41,10 @@ tests.make_empty_data_frame = function ()
   end
   --===============================
   x:pr_df_as_csv( col_names, "/tmp/foo.csv")
-  local str = plfile.read("/tmp/foo.csv")
-  str = plstringx.strip(str)
-  assert(str == "i1,i2,i4,i8,f4,f8,tm")
+  local str = cutils.file_as_str("/tmp/foo.csv")
+  -- str = plstringx.strip(str)
+  print("XXX", str)
+  assert(str == "i1,i2,i4,i8,f4,f8,tm\n")
   print("Test make_empty_data_frame completed successfully")
 end
 tests.make_empty_data_frame()

@@ -1,7 +1,7 @@
 G = {} -- to bypass strict 
 G.debug= true
-local plfile = require 'pl.file'
 require 'strict'
+local cutils = require 'libcutils'
 local lQDF = require 'lQDF'
 local tests = {}
 
@@ -10,7 +10,11 @@ local cols =  { "i4", "i8", "f4", "val", "nn_val", }
 local qtypes = { "I4", "I8", "F4", "F4", "I1",  }
 local optargs = { is_hdr = true }
 local infile = "data_mk_sort_idx_2.csv"
-local indf = assert(lQDF.read_csv(cols, qtypes, infile, optargs))
+  local M = {}
+  for k, v in ipairs(cols) do
+    M[k] = { name = cols[k], qtype = qtypes[k], }
+  end
+local indf = assert(lQDF.read_csv(M, infile, optargs))
 --===============================
 tests.mk_sort_idx_2 = function ()
   local src1 = indf:get("i4")

@@ -11,14 +11,19 @@ tests.append = function ()
   --===============================
   local infile = "../data/append_src.csv"
   local optargs = { is_hdr = true }
-  local src = assert(lQDF.read_csv(col_names, qtypes, infile, optargs))
+  local M = {}
+  for k, v in ipairs(col_names) do
+    M[k] = { name = col_names[k], qtype = qtypes[k], }
+  end
+
+  local src = assert(lQDF.read_csv(M, infile, optargs))
   assert(type(src) == "lQDF")
   local is_df = src:is_data_frame(); assert(is_df == true)
   local sn    = src:obj_arr_len(); assert(sn == 7)
   --===============================
   local infile = "../data/append_dst.csv"
   local optargs = { is_hdr = true }
-  local dst = assert(lQDF.read_csv(col_names, qtypes, infile, optargs))
+  local dst = assert(lQDF.read_csv(M, infile, optargs))
   local is_df = lQDF.is_data_frame(dst); assert(is_df == true)
   local dn    = dst:obj_arr_len(); assert(dn == 4)
   --===============================
@@ -31,15 +36,15 @@ tests.append = function ()
   local dn    = dst:obj_arr_len(); assert(dn == 4)
   --===============================
   local infile = "../data/append_dst.csv"
-  local optargs = { is_hdr = true, buf_spec = { absolute = 11 } }
-  local dst = assert(lQDF.read_csv(col_names, qtypes, infile, optargs))
+  local optargs = { is_hdr = true }
+  local dst = assert(lQDF.read_csv(M, infile, optargs))
   local is_df = dst:is_data_frame(); assert(is_df == true)
   local dn    = dst:obj_arr_len(); assert(dn == 4)
   local tmp = dst:get("i1")
   assert(type(tmp) == "lQDF")
   assert(tmp:jtype() == "j_array")
   local ds = tmp:arr_size()
-  assert(ds == 11)
+  assert(ds == 4)
   local dn = tmp:num_elements()
   assert(dn == 4)
   --===============================
@@ -108,7 +113,7 @@ tests.resize_1 = function ()
   --===============================
   local infile = "../data/append_src.csv"
   local optargs = { is_hdr = true }
-  local src = assert(lQDF.read_csv(col_names, qtypes, infile, optargs))
+  local src = assert(lQDF.read_csv(M, infile, optargs))
   assert(type(src) == "lQDF")
   local is_df  = src:is_data_frame(); assert(is_df == true)
   local src_n  = src:obj_arr_len();   assert(src_n == 7)

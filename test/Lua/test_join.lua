@@ -15,7 +15,11 @@ tests.t1  = function(
   local infile  = dstfile
   local optargs = { is_hdr = true }
   print("READING ", infile)
-  local dst = assert(lQDF.read_csv(cols, qtypes, infile, optargs))
+  local M = {}
+  for k, v in ipairs(cols) do
+    M[k] = { name = cols[k], qtype = qtypes[k], }
+  end
+  local dst = assert(lQDF.read_csv(M, infile, optargs))
   local K = assert(dst:keys())
   assert(type(K) == "table")
   assert(dst:num_keys() == #cols)
@@ -34,7 +38,11 @@ tests.t1  = function(
   local infile  = srcfile
   local optargs = { is_hdr = true }
   print("READING ", infile)
-  local src = assert(lQDF.read_csv(cols, qtypes, infile, optargs))
+  local M = {}
+  for k, v in ipairs(cols) do
+    M[k] = { name = cols[k], qtype = qtypes[k], }
+  end
+  local src = assert(lQDF.read_csv(M, infile, optargs))
 
   -- extract fields of interest
   local src_key = src:get("key")
@@ -49,7 +57,11 @@ tests.t1  = function(
   local infile  = rsltsfile
   local optargs = { is_hdr = true }
   print("READING ", infile)
-  local rslt = assert(lQDF.read_csv(cols, qtypes, infile, optargs))
+  local M = {}
+  for k, v in ipairs(cols) do
+    M[k] = { name = cols[k], qtype = qtypes[k], }
+  end
+  local rslt = assert(lQDF.read_csv(M, infile, optargs))
   -- compare rslt with dst_val
   local chk_val = rslt:get("val")
   assert(chk_val:num_elements() == dst_val:num_elements())

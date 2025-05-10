@@ -1,8 +1,8 @@
 local ffi = require 'ffi'
-local lRBC = require 'lRBC'
+local lWDF = require 'lWDF'
 local function demo_sum()
   local x = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }
-  local y = assert(lRBC(x))
+  local y = assert(lQDF(x))
   local n, dptr = y:get_arr_ptr()
   assert(n == #x)
   dptr = ffi.cast("double *", dptr)

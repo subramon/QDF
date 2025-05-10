@@ -28,12 +28,13 @@ UNIT_TESTS += ut_pr
 UNIT_TESTS += ut_qdf_makers 
 UNIT_TESTS += ut_csv_to_df 
 UNIT_TESTS += ut_squeeze 
+UNIT_TESTS += ut_where   
 UNIT_TESTS += ut_unique 
 UNIT_TESTS += ut_tm 
 UNIT_TESTS += ut_df_to_Rserve
 
 LUA_HDRS := ../lua/qdf_hdrs.lua 
-UTIL_HDRS := ../lua/util_hdrs.lua 
+# TODO P1 THINK UTIL_HDRS := ../lua/util_hdrs.lua 
 
 CLI += cli_get_dataset 
 CLI += cli_get_stats 
@@ -111,10 +112,12 @@ _stripped_sclr.h : ${SCLR_SRC_ROOT}/inc/sclr_struct.h
 		../inc/qdf_smear.h \
 		../inc/qdf_sort.h \
 		../inc/qdf_squeeze_where.h \
+		../inc/qdf_where.h \
 		../inc/qdf_tm.h \
 		../inc/qdf_write.h \
 		../inc/qdf_resize_df.h \
 		../inc/qdf_append.h \
+		../inc/qdf_add_col_to_df.h  \
 		../inc/qdf_uq.h 
 	echo "return [["       > ../lua/qdf_hdrs.lua
 	grep -v "^#" ${RSUTILS_SRC_ROOT}/inc/qtypes.h >> ../lua/qdf_hdrs.lua
@@ -150,6 +153,7 @@ _stripped_sclr.h : ${SCLR_SRC_ROOT}/inc/sclr_struct.h
 	grep -v "^#" ../inc/qdf_coalesce.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_setters.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_squeeze_where.h >> ../lua/qdf_hdrs.lua
+	grep -v "^#" ../inc/qdf_where.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_pr.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_prefix_sums.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_resize_df.h >> ../lua/qdf_hdrs.lua
@@ -164,6 +168,7 @@ _stripped_sclr.h : ${SCLR_SRC_ROOT}/inc/sclr_struct.h
 	grep -v "^#" ../inc/qdf_next_prev.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_tm.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_write.h >> ../lua/qdf_hdrs.lua
+	grep -v "^#" ../inc/qdf_add_col_to_df.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_uq.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_nop.h >> ../lua/qdf_hdrs.lua
 	echo "]]"             >> ../lua/qdf_hdrs.lua
@@ -220,7 +225,9 @@ QDF_SRC += qdf_next_prev.c
 QDF_SRC += qdf_smear.c 
 QDF_SRC += qdf_sort.c 
 QDF_SRC += qdf_squeeze_where.c 
+QDF_SRC += qdf_where.c 
 QDF_SRC += qdf_tm.c 
+QDF_SRC += qdf_add_col_to_df.c 
 QDF_SRC += qdf_uq.c 
 QDF_SRC += qdf_write.c 
 QDF_SRC += add_nn_keys.c 
@@ -299,6 +306,11 @@ ut_named_vec: ../test/C/ut_named_vec.c  libqdf.so
 ut_unique:  ../test/C/ut_unique.c  libqdf.so 
 	gcc ${QCFLAGS} $(INCS) ../test/C/ut_unique.c   \
 		-o ut_unique libqdf.so \
+		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
+
+ut_where:  ../test/C/ut_where.c  libqdf.so 
+	gcc ${QCFLAGS} $(INCS) ../test/C/ut_where.c   \
+		-o ut_where libqdf.so  \
 		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
 ut_squeeze:  ../test/C/ut_squeeze.c  libqdf.so 

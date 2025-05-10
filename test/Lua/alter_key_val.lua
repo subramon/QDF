@@ -40,11 +40,14 @@ assert(new_vec:qtype() == "F4")
 assert(new_vec:num_elements() == x:obj_arr_len())
 -- STOP : load a vector from CSV file 
 
+new_vec:pr_csv()
 -- over-write QDF with new data 
 x:place_in_data_frame(key, new_vec)
 assert(x:check())
+local y = x:get(key)
+-- y:pr_csv()
 -- restore data 
-cutils.copyfile(bak_qdf_file, qdf_file)
-cutils.unlink(bak_qdf_file)
+-- cutils.copyfile(bak_qdf_file, qdf_file)
+-- cutils.unlink(bak_qdf_file)
 
 print("Completed")

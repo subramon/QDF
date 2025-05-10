@@ -10,7 +10,11 @@ tests.smear = function(infile, outfile)
   local in_col_names =  { "x1", "off1", }
   local in_qtypes = { "I4", "I4",  }
   local optargs = { is_hdr = true }
-  local indf = assert(lQDF.read_csv(in_col_names, in_qtypes, infile, optargs))
+  local M = {}
+  for k, v in ipairs(in_col_names) do
+    M[k] = { name = in_col_names[k], qtype = in_qtypes[k], }
+  end
+  local indf = assert(lQDF.read_csv(M, infile, optargs))
   assert(type(indf) == "lQDF")
   local x = indf:get("x1")
   local o = indf:get("off1")
