@@ -12,7 +12,11 @@ tests.coalesce = function ()
   assert(#qtypes == #col_names)
   local infile = "data_coalesce.csv"
   local optargs = { is_hdr = true }
-  local x = assert(lQDF.read_csv(col_names, qtypes, infile, optargs))
+  local M = {}
+  for k, v in ipairs(col_names) do
+    M[k] = { name = col_names[k], qtype = qtypes[k], }
+  end
+  local x = assert(lQDF.read_csv(M, infile, optargs))
   assert(type(x) == "lQDF")
   
   -- print(x)

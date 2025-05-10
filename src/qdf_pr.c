@@ -125,9 +125,10 @@ pr_df_as_csv(
         status = get_key_val(ptr_qdf, -1, nn_key, &nn_col, NULL); 
         cBYE(status);
         qtype_t qtype = get_qtype(nn_col.data); 
-        if ( qtype != BL ) { go_BYE(-1); }
+        if ( ( qtype != BL ) && ( qtype != I1 ) ) { go_BYE(-1); }
         nn_ptr = get_arr_ptr(nn_col.data); 
       }
+      free_if_non_null(nn_key);
       // STOP : for potential nn column 
       QDF_REC_TYPE col; memset(&col, 0, sizeof(QDF_REC_TYPE));
       status = get_key_val(ptr_qdf, -1, keys[j], &col, NULL); cBYE(status);

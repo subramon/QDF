@@ -1,4 +1,5 @@
 #include "incs.h"
+#include "multiple.h"
 #include "qdf_struct.h"
 #include "qdf_helpers.h"
 #include "qdf_checkers.h"
@@ -25,6 +26,7 @@ qdf_const(
   //==============================
   if ( sz == 0 ) { sz = n; }
   if ( sz < n ) { go_BYE(-1); }
+  // now for numbers 
   status = make_num_array(NULL, n, sz, ptr_sclr->qtype, dst); cBYE(status);
   void *dstptr  = get_arr_ptr(dst->data);
   switch ( ptr_sclr->qtype ) { 
@@ -50,6 +52,29 @@ qdf_const(
       go_BYE(-1);
       break;
   }
+BYE:
+  return status;
+}
+
+int
+qdf_const_str(
+    const char * const str,
+    uint32_t n,
+    uint32_t sz,
+    QDF_REC_TYPE *dst // output 
+   )
+{
+  int status = 0;
+  if ( str == NULL ) { go_BYE(-1); }
+  size_t len = strlen(str); 
+  size_t width = multiple_n(len+1, 8);
+  status = make_SC_array(NULL, NULL, width, n, sz, dst); cBYE(status);
+  char *cptr = get_arr_ptr(dst->data); if ( cptr == NULL ) { go_BYE(-1); }
+  for ( uint32_t i = 0; i < n; i++ ) { 
+    memcpy(cptr, str, len);
+    cptr += width;
+  }
+
 BYE:
   return status;
 }

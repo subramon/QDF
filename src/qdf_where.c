@@ -134,6 +134,13 @@ qdf_where(
           }
         }
         break;
+      case BL : 
+        for ( uint32_t src_idx = 0; src_idx < num_src; src_idx++ ) { 
+          if ( wptr[src_idx] == 1 ) { 
+            ((bool *)dst_ptr)[dst_idx++] = ((bool *)src_ptr)[src_idx];
+          }
+        }
+        break;
       case I1 : 
         for ( uint32_t src_idx = 0; src_idx < num_src; src_idx++ ) { 
           if ( wptr[src_idx] == 1 ) { 

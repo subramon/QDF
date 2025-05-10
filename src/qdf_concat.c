@@ -108,8 +108,10 @@ qdf_concat(
       if ( srcptr == NULL ) { go_BYE(-1); }
       memcpy(dstptr, srcptr, n_rows[i] * width);
       dstptr += (n_rows[i] * width);
+      set_arr_len(dst_qdf.data, total_n_rows);
     }
   }
+  set_obj_arr_len(ptr_out_qdf->data, total_n_rows);
 BYE:
   free_if_non_null(qtypes);
   free_if_non_null(widths);

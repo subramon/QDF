@@ -102,3 +102,7 @@ x_set_num_val(
     const QDF_REC_TYPE * const ptr_qdf,
     double num_val
     );
+int
+x_set_foreign(
+    QDF_REC_TYPE * ptr_qdf
+    );

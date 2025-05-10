@@ -12,7 +12,11 @@ tests.t1 = function ()
   local infile    = "../data/in2.csv"
   local optargs   = { is_hdr = true }
 
-  local x = assert(lQDF.read_csv(col_names, qtypes, infile, optargs))
+  local M = {}
+  for k, v in ipairs(col_names) do
+    M[k] = { name = col_names[k], qtype = qtypes[k], }
+  end
+  local x = assert(lQDF.read_csv(M, infile, optargs))
   assert(type(x) == "lQDF")
   assert(x:jtype() == "j_object")
   -- print(x)

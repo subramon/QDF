@@ -9,7 +9,11 @@ tests.set_nn = function ()
   local qtypes = { "F4", "I1", }
   local infile = "data_set_nn.csv"
   local optargs = { is_hdr = true }
-  local x = assert(lQDF.read_csv(col_names, qtypes, infile, optargs))
+  local M = {}
+  for k, v in ipairs(col_names) do
+    M[k] = { name = col_names[k], qtype = qtypes[k], }
+  end
+  local x = assert(lQDF.read_csv(M, infile, optargs))
   assert(type(x) == "lQDF")
   local f1 = x:get("f1")
   local nn_f1 = x:get("nn_f1")

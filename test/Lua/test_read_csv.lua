@@ -1,17 +1,40 @@
 G = {}
-local plpath = require 'pl.path'
-require 'strict' -- put this after penlight because of problem in penlight
+require 'strict' 
 local ffi    = require 'ffi'
 local lQDF   = require 'lQDF'
 local cutils = require 'libcutils'
 local mk_c_qtypes = require 'mk_c_qtypes'
 local alloc_csv_out = require 'alloc_csv_out'
+ffi.cdef([[
+extern int
+read_csv(
+    const char * const infile,
+    char *in_X,
+    size_t in_nX,
+
+    const qtype_t * qtypes, // [ncols]
+    const uint32_t * const widths, // [ncols] (needed for SC)
+    char ** const formats, // [ncols] (needed for TM)
+    const bool * const is_load, // [ncols] whether col has nulls
+    const bool * const has_nulls, // [ncols] whether col to be loadde
+
+    char ** const out, // [ncols][nrows]
+    bool ** const nn_out, // [ncols][nrows]
+
+    uint32_t nrows,
+    uint32_t ncols,
+    const char * const str_fld_sep,
+    const char * const str_fld_delim,
+    const char * const str_rec_sep,
+    bool is_hdr
+    );]]
+    )
 local rsutils = ffi.load("librsutils.so")
 
 local tests = {}
 tests.read_csv_1 = function ()
   local infile = "in1.csv"
-  assert(plpath.isfile(infile))
+  assert(cutils.isfile(infile))
   local is_hdr = true
   local nrows = cutils.num_lines(infile)
   assert(nrows >= 1)
@@ -82,7 +105,7 @@ tests.read_csv_1 = function ()
 end
 tests.read_csv_2 = function ()
   local infile = "../data/in2.csv"
-  assert(plpath.isfile(infile))
+  assert(cutils.isfile(infile))
   local is_hdr = true
   local nrows = cutils.num_lines(infile)
   if ( is_hdr ) then nrows = nrows - 1 end

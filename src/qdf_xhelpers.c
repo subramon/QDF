@@ -252,6 +252,18 @@ BYE:
 }
 //-------------------------------------
 int
+x_set_foreign(
+    QDF_REC_TYPE * ptr_qdf
+    )
+{
+  int status = 0; 
+  mcr_chk_non_null(ptr_qdf, -1); 
+  ptr_qdf->is_foreign = true;
+BYE:
+  return status;
+}
+//-------------------------------------
+int
 x_set_obj_arr_size(
     const QDF_REC_TYPE * const ptr_qdf,
     uint32_t arr_size

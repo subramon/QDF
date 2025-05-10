@@ -49,7 +49,16 @@ tests.t3  = function()
 
   print("Completed test t3 successfully")
 end
+tests.const_str  = function()
+  local n = 10
+
+  local y = lQDF.const("abc", "SC", 4, 8)
+  -- y:pr_csv()
+  assert(y:check())
+  print("Completed test const_str successfully")
+end
 tests.t1()
 tests.t2()
 tests.t3()
+tests.const_str()
 -- return tests
