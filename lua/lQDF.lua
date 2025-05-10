@@ -1092,7 +1092,6 @@ function lQDF:set_lags(lag_start, lag_stop, lag_prefix, grpby, val, tim)
   return true 
 end
 
---- REVEIWED BELOW BUT STILL TO BE TESTED 
 function lQDF:where(where)
   assert(type(where) == "lQDF")
   assert(where:jtype() == "j_array")
@@ -1110,6 +1109,27 @@ function lQDF:where(where)
   newqdf._cmem        = df_qdf
   return newqdf, tonumber(num_good[0])
 end
+--- REVEIWED BELOW BUT STILL TO BE TESTED 
+<<<<<<< HEAD
+function lQDF:where(where)
+  assert(type(where) == "lQDF")
+  assert(where:jtype() == "j_array")
+  assert(where:qtype() == "I1")
+  local num_good = ffi.new("uint32_t[?]", 1)
+
+  local df_qdf = lqdfmem(0)
+  local df_qdf_mem = ffi.cast("QDF_REC_TYPE *", df_qdf._qdfmem)
+
+  local status = cQDF.qdf_where(self:cmem_ptr(), 
+    where:cmem_ptr(), df_qdf_mem, num_good)
+  assert(status == 0)
+
+  local newqdf = setmetatable({}, lQDF)
+  newqdf._cmem        = df_qdf
+  return newqdf, tonumber(num_good[0])
+end
+=======
+>>>>>>> ba316f7f8b5dbde773513f5d0f30b0ffcac02c66
 
 function lQDF:squeeze_where(where)
   assert(type(where) == "lQDF")
