@@ -847,6 +847,7 @@ get_qdf_size(
     )
 {
   if ( x == NULL ) { return 0; } 
+  if ( ~((uint64_t)x) == 0 ) { return 0; } // pointer is all 1's
   jtype_t jtype = get_jtype(x);
   switch ( jtype ) {
     case j_nil     : case j_bool    : 

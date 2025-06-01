@@ -27,7 +27,8 @@ pr_df_as_csv(
     const QDF_REC_TYPE * const ptr_qdf,
     char ** const keys_to_pr,
     uint32_t n_keys_to_pr,
-    const char * const file_name
+    const char * const file_name,
+    bool as_html
     )
 {
   int status = 0;
@@ -94,10 +95,21 @@ pr_df_as_csv(
   //------------------------------------------------------
   fp = fopen(file_name, "w");
   return_if_fopen_failed(fp, file_name, "w");
-  // print header line 
+
+  if ( as_html ) { 
+    fprintf(fp, "  <table border =\"1\">\n    <thead>      <tr>\n"); 
+  }
   for ( uint32_t i = 0; i < n_keys; i++ ) { 
-    if ( i > 0 ) { fprintf(fp, ","); }
-    fprintf(fp, "%s", keys[i]);
+    if ( as_html ) { 
+      fprintf(fp, "<th> %s </th>", keys[i]);
+    }
+    else {
+      if ( i > 0 ) { fprintf(fp, ","); }
+      fprintf(fp, "%s", keys[i]);
+    }
+  }
+  if ( as_html ) { 
+    fprintf(fp, "      </tr>\n    </thead>\n    <tbody>\n"); 
   }
   fprintf(fp, "\n");
   //------------------------------------------
@@ -109,9 +121,15 @@ pr_df_as_csv(
       (char ** const )keys, n_keys, &are_keys);
   cBYE(status);
   if ( !are_keys ) { go_BYE(-1); }
-  for ( uint32_t i = 0; i < n_rows; i++ ) { 
+  for ( uint32_t i = 0; i < n_rows; i++ ) {
+    if ( as_html ) { fprintf(fp, "      <tr>\n"); }
     for ( uint32_t j = 0; j < n_keys; j++ ) {
-      if ( j > 0 ) { fprintf(fp, ","); }
+      if ( as_html ) { 
+        fprintf(fp, "        <th>\n");
+      }
+      else {
+        if ( j > 0 ) { fprintf(fp, ","); }
+      }
       // START: for potential nn column 
       const char * nn_ptr = NULL;
       QDF_REC_TYPE nn_col; memset(&nn_col, 0, sizeof(QDF_REC_TYPE));
@@ -139,9 +157,18 @@ pr_df_as_csv(
       }
       const char * const valptr = get_arr_ptr(col.data); 
       status = pr_1(valptr, nn_ptr, qtype, width, i, fp); cBYE(status);
+      if ( as_html ) { 
+        fprintf(fp, "        </th>\n");
+      }
     }
+    if ( as_html ) { fprintf(fp, "      </tr>"); }
     fprintf(fp, "\n");
   }
+  if ( as_html ) { 
+    fprintf(fp, "      </tbody>\n  </table>\n");
+  }
+
+
 BYE:
   if ( keys != NULL ) { 
     for ( uint32_t i = 0; i < n_keys; i++ ) { 
@@ -699,3 +726,59 @@ BYE:
   free_qdf(&str_qdf); // No longer needed, we have out_file
   return status;
 }
+
+/*
+ * <table>
+  <thead>
+    <tr>
+      <th>Month</th>
+      <th>Savings</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>January</td>
+      <td>$100</td>
+    </tr>
+    <tr>
+      <td>February</td>
+      <td>$80</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td>Sum</td>
+      <td>$180</td>
+    </tr>
+  </tfoot>
+</table>
+
+<html>
+<head>
+<style>
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+</style>
+</head>
+<body>
+
+<table>
+  <tr>
+    <th>Month</th>
+    <th>Savings</th>
+  </tr>
+  <tr>
+    <td>January</td>
+    <td>$100</td>
+  </tr>
+  <tr>
+    <td>February</td>
+    <td>$80</td>
+  </tr>
+</table>
+
+</body>
+</html>
+*/

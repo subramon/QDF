@@ -67,7 +67,8 @@ main(
   }
   uint32_t nrows = x_get_obj_arr_len(&qdf); 
   if ( chk_nrows != nrows ) { go_BYE(-1); }
-  status = pr_df_as_csv(&qdf, NULL, 0, opfile); cBYE(status);
+  status = pr_df_as_csv(&qdf, NULL, 0, opfile, false);
+  cBYE(status);
   jqdf.size = 65536;
   jqdf.data = malloc(65536);
   memset(jqdf.data,0,  65536);

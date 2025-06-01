@@ -1110,7 +1110,6 @@ function lQDF:where(where)
   return newqdf, tonumber(num_good[0])
 end
 --- REVEIWED BELOW BUT STILL TO BE TESTED 
-<<<<<<< HEAD
 function lQDF:where(where)
   assert(type(where) == "lQDF")
   assert(where:jtype() == "j_array")
@@ -1128,8 +1127,6 @@ function lQDF:where(where)
   newqdf._cmem        = df_qdf
   return newqdf, tonumber(num_good[0])
 end
-=======
->>>>>>> ba316f7f8b5dbde773513f5d0f30b0ffcac02c66
 
 function lQDF:squeeze_where(where)
   assert(type(where) == "lQDF")
@@ -1170,7 +1167,12 @@ function lQDF:pr_df_as_csv(keys, file_name)
     K, nK = tbl_of_str_to_C_array(keys)
   end
   K = ffi.cast("char ** const", K)
-  local status = cQDF.pr_df_as_csv(self:cmem_ptr(), K, nK, file_name)
+  local as_html = false
+  local title = ffi.NULL
+  local tbl_name = ffi.NULL
+  local status = 
+    cQDF.pr_df_as_csv(self:cmem_ptr(), K, nK, file_name, as_html,
+      title, tbl_name)
   assert(status == 0)
   return true
 end

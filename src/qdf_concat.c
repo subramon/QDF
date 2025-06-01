@@ -98,6 +98,7 @@ qdf_concat(
     cBYE(status);
     status = chk_qdf(&dst_qdf); cBYE(status);
     char * dstptr = get_arr_ptr(dst_qdf.data); 
+    uint32_t dst_sz = dst_qdf.size; uint32_t dst_occupied = 0;
 
     for ( uint32_t i = 0; i < n_qdfs; i++ ) { 
       // figure out source for writes 
@@ -106,10 +107,12 @@ qdf_concat(
       cBYE(status);
       const char * const srcptr = get_arr_ptr(src_qdf.data);
       if ( srcptr == NULL ) { go_BYE(-1); }
+      dst_occupied += n_rows[i] * width;
+      if ( dst_occupied > dst_sz ) { go_BYE(-1); } 
       memcpy(dstptr, srcptr, n_rows[i] * width);
       dstptr += (n_rows[i] * width);
-      set_arr_len(dst_qdf.data, total_n_rows);
     }
+    set_arr_len(dst_qdf.data, total_n_rows);
   }
   set_obj_arr_len(ptr_out_qdf->data, total_n_rows);
 BYE:

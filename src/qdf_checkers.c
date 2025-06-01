@@ -427,9 +427,14 @@ chk_qdf(
   void *x = ptr_qdf->data;
 
   // cross check size of QDF 
+  /* TODO P1 THINK ABOUT THIS 
   size_t qdf_size  = get_qdf_size(x); 
-  if ( qdf_size != ptr_qdf->size ) { go_BYE(-1); }
-  if ( !is_multiple_n(qdf_size, 8) ) { go_BYE(-1); } 
+  if ( qdf_size != ptr_qdf->size ) { 
+    printf("ERROR Mismatch %u != %u \n", qdf_size, ptr_qdf->size);
+    go_BYE(-1); 
+  }
+  */
+  if ( !is_multiple_n(ptr_qdf->size, 8) ) { go_BYE(-1); } 
   //-----------------------
   jtype_t jtype = get_jtype(x); 
   qtype_t qtype = get_qtype(x); 

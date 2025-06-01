@@ -94,8 +94,13 @@ binld(
   int status = 0;
   char *X = NULL; size_t nX = 0;
 
+#ifdef DEBUG
+  if ( file_name == NULL ) { go_BYE(-1); }
+  if ( !isfile(file_name) ) { go_BYE(-1); }
+#endif
   status = rs_mmap(file_name, &X, &nX, is_writable); cBYE(status);
   ptr_qdf->data = X;
+  if ( nX == 0 ) { go_BYE(-1); }
   if ( nX > UINT_MAX ) { go_BYE(-1); }
   ptr_qdf->size = (uint32_t)nX;
   ptr_qdf->is_mmap = true;
