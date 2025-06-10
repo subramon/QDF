@@ -252,7 +252,7 @@ typedef struct _qdf_rec_type {
   bool is_mmap; // we have mmapped data not malloc'd it 
   bool is_foreign; // true => do not delete 
   bool is_read_only; // true => don't modify
-  bool junk; // just for padding 
+  bool is_err; // used when C creates empty QDF 
   char *name; // for debugging  TODO DELETE LATER 
   int id; // for debugging TODO DELETE LATER 
 } QDF_REC_TYPE;
@@ -1325,11 +1325,17 @@ qdf_where(
     uint32_t *ptr_num_good
    );
 extern int
+qdf_nullify(
+    QDF_REC_TYPE *ptr_qdf, // data frame containing col to be null'ed
+    const char * const col_name
+    );
+extern int
 pr_df_as_csv(
     const QDF_REC_TYPE * const qdf,
     char **  const keys,
     uint32_t n_keys,
-    const char * const file_name
+    const char * const file_name,
+    bool as_html
     );
 extern int
 pr_json(
@@ -1513,6 +1519,10 @@ extern int
 qdf_I4_to_TM1(
     const QDF_REC_TYPE *const ptr_src,
     QDF_REC_TYPE * restrict ptr_dst
+    );
+extern int
+qdf_mk_df(
+    QDF_REC_TYPE *ptr_qdf
     );
 extern int
 qdf_write(

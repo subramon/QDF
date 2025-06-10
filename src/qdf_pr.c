@@ -36,7 +36,6 @@ pr_df_as_csv(
   char ** keys = NULL; uint32_t n_keys = 0;
 
   mcr_chk_non_null(ptr_qdf, -1); 
-  if ( file_name == NULL ) { go_BYE(-1); }
   // There are 2 kinds of invocations. We will figure them out below
   if ( keys_to_pr == NULL ) {
     // print all keys 
@@ -93,8 +92,13 @@ pr_df_as_csv(
     }
   }
   //------------------------------------------------------
-  fp = fopen(file_name, "w");
-  return_if_fopen_failed(fp, file_name, "w");
+  if ( ( file_name == NULL ) || ( *file_name == '\0' ) ) {
+    fp = stdout;
+  }
+  else { 
+    fp = fopen(file_name, "w");
+    return_if_fopen_failed(fp, file_name, "w");
+  }
 
   if ( as_html ) { 
     fprintf(fp, "  <table border =\"1\">\n    <thead>      <tr>\n"); 
@@ -176,7 +180,9 @@ BYE:
     }
   }
   free_if_non_null(keys);
-  fclose_if_non_null(fp);
+  if ( file_name != NULL ) { 
+    fclose_if_non_null(fp);
+  }
   return status;
 }
 

@@ -88,7 +88,7 @@ qdf_concat(
   for ( uint32_t j = 0; j < n_keys; j++ ) { 
     QDF_REC_TYPE dst_qdf; memset(&dst_qdf, 0, sizeof(QDF_REC_TYPE));
     const char * const key = keys[j];
-    qtype_t qtype = qtypes[j];
+    // qtype_t qtype = qtypes[j];
     uint32_t width = widths[j];
     if ( width == 0 ) { 
       go_BYE(-1); }
@@ -115,6 +115,7 @@ qdf_concat(
     set_arr_len(dst_qdf.data, total_n_rows);
   }
   set_obj_arr_len(ptr_out_qdf->data, total_n_rows);
+  set_is_df(ptr_out_qdf->data, true);
 BYE:
   free_if_non_null(qtypes);
   free_if_non_null(widths);

@@ -1105,29 +1105,17 @@ function lQDF:where(where)
     where:cmem_ptr(), df_qdf_mem, num_good)
   assert(status == 0)
 
-  local newqdf = setmetatable({}, lQDF)
-  newqdf._cmem        = df_qdf
-  return newqdf, tonumber(num_good[0])
-end
---- REVEIWED BELOW BUT STILL TO BE TESTED 
-function lQDF:where(where)
-  assert(type(where) == "lQDF")
-  assert(where:jtype() == "j_array")
-  assert(where:qtype() == "I1")
-  local num_good = ffi.new("uint32_t[?]", 1)
-
-  local df_qdf = lqdfmem(0)
-  local df_qdf_mem = ffi.cast("QDF_REC_TYPE *", df_qdf._qdfmem)
-
-  local status = cQDF.qdf_where(self:cmem_ptr(), 
-    where:cmem_ptr(), df_qdf_mem, num_good)
-  assert(status == 0)
+  num_good = tonumber(num_good[0])
+  if ( num_good == 0 ) then 
+    -- print("where returns nothing ")
+    df_qdf_mem[0].is_err = true
+    return nil, 0 
+  end 
 
   local newqdf = setmetatable({}, lQDF)
   newqdf._cmem        = df_qdf
-  return newqdf, tonumber(num_good[0])
+  return newqdf, num_good
 end
-
 function lQDF:squeeze_where(where)
   assert(type(where) == "lQDF")
   assert(where:jtype() == "j_array")
@@ -1159,7 +1147,12 @@ end
 
 function lQDF:pr_df_as_csv(keys, file_name)
   assert(self:is_df())
-  assert(type(file_name) == "string")
+  if ( file_name ) then 
+    assert(type(file_name) == "string")
+  else
+    file_name = ffi.NULL
+  end 
+
   -- create a char ** vals array 
   local K = ffi.NULL
   local nK = 0
@@ -1168,11 +1161,8 @@ function lQDF:pr_df_as_csv(keys, file_name)
   end
   K = ffi.cast("char ** const", K)
   local as_html = false
-  local title = ffi.NULL
-  local tbl_name = ffi.NULL
   local status = 
-    cQDF.pr_df_as_csv(self:cmem_ptr(), K, nK, file_name, as_html,
-      title, tbl_name)
+    cQDF.pr_df_as_csv(self:cmem_ptr(), K, nK, file_name, as_html)
   assert(status == 0)
   return true
 end
@@ -2035,6 +2025,16 @@ function lQDF:I4_to_TM1()
   newqdf._cmem = cqdf
   return newqdf
 end
+-- Ideally, nullify should be on an array not a dataframe
+-- However, the way we store the nn vector today necessitates
+-- this kludge
+function lQDF:nullify(col) -- makes modification in place
+  assert(type(col) == "string")
+  status = cQDF.qdf_nullify(self:cmem_ptr(), col)
+  assert(status == 0)
+  return self 
+end
+
 function lQDF:add_col_to_df(new_col_name, new_col)
   assert(type(new_col_name) == "string")
   assert(#new_col_name > 0)
@@ -2045,6 +2045,15 @@ function lQDF:add_col_to_df(new_col_name, new_col)
   local cqdf_ptr = ffi.cast("QDF_REC_TYPE *", cqdf._qdfmem)
   local status = cQDF.add_col_to_df(self:cmem_ptr(), 
     new_col_name, new_col:cmem_ptr(), cqdf_ptr)
+  assert(status == 0)
+  local newqdf = setmetatable({}, lQDF)
+  newqdf._cmem = cqdf
+  return newqdf
+end
+function lQDF.mk_df() -- useful utility for testing 
+  local cqdf = lqdfmem(0)
+  local cqdf_ptr = ffi.cast("QDF_REC_TYPE *", cqdf._qdfmem)
+  local status = cQDF.qdf_mk_df(cqdf_ptr)
   assert(status == 0)
   local newqdf = setmetatable({}, lQDF)
   newqdf._cmem = cqdf

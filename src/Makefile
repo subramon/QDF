@@ -104,6 +104,7 @@ _stripped_sclr.h : ${SCLR_SRC_ROOT}/inc/sclr_struct.h
 		../inc/qdf_srt_grp_cnt.h \
 		../inc/qdf_coalesce.h \
 		../inc/qdf_nop.h \
+		../inc/qdf_nullify.h \
 		../inc/qdf_pr.h \
 		../inc/qdf_prefix_sums.h \
 		../inc/qdf_setters.h \
@@ -113,6 +114,7 @@ _stripped_sclr.h : ${SCLR_SRC_ROOT}/inc/sclr_struct.h
 		../inc/qdf_sort.h \
 		../inc/qdf_squeeze_where.h \
 		../inc/qdf_where.h \
+		../inc/qdf_test.h \
 		../inc/qdf_tm.h \
 		../inc/qdf_write.h \
 		../inc/qdf_resize_df.h \
@@ -154,6 +156,7 @@ _stripped_sclr.h : ${SCLR_SRC_ROOT}/inc/sclr_struct.h
 	grep -v "^#" ../inc/qdf_setters.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_squeeze_where.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_where.h >> ../lua/qdf_hdrs.lua
+	grep -v "^#" ../inc/qdf_nullify.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_pr.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_prefix_sums.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_resize_df.h >> ../lua/qdf_hdrs.lua
@@ -167,6 +170,7 @@ _stripped_sclr.h : ${SCLR_SRC_ROOT}/inc/sclr_struct.h
 	grep -v "^#" ../inc/qdf_shift_up_down.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_next_prev.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_tm.h >> ../lua/qdf_hdrs.lua
+	grep -v "^#" ../inc/qdf_test.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_write.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_add_col_to_df.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_uq.h >> ../lua/qdf_hdrs.lua
@@ -216,6 +220,7 @@ QDF_SRC += qdf_coalesce.c
 QDF_SRC += qdf_named_vec.c 
 QDF_SRC += qdf_df_to_Rserve.c 
 QDF_SRC += qdf_nop.c 
+QDF_SRC += qdf_nullify.c 
 QDF_SRC += qdf_pr.c 
 QDF_SRC += qdf_csv_to_df.c 
 QDF_SRC += qdf_prefix_sums.c 
@@ -226,6 +231,7 @@ QDF_SRC += qdf_smear.c
 QDF_SRC += qdf_sort.c 
 QDF_SRC += qdf_squeeze_where.c 
 QDF_SRC += qdf_where.c 
+QDF_SRC += qdf_test.c 
 QDF_SRC += qdf_tm.c 
 QDF_SRC += qdf_add_col_to_df.c 
 QDF_SRC += qdf_uq.c 
@@ -316,6 +322,11 @@ ut_where:  ../test/C/ut_where.c  libqdf.so
 ut_squeeze:  ../test/C/ut_squeeze.c  libqdf.so 
 	gcc ${QCFLAGS} $(INCS) ../test/C/ut_squeeze.c   \
 		-o ut_squeeze libqdf.so  \
+		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
+
+ut_simple_df:  ../test/C/ut_simple_df.c  libqdf.so 
+	gcc ${QCFLAGS} $(INCS) ../test/C/ut_simple_df.c   \
+		-o ut_simple_df libqdf.so \
 		${RSUTILS_SRC_ROOT}/src/librsutils.so ${LIBS}
 
 ut_tm:  ../test/C/ut_tm.c  libqdf.so 

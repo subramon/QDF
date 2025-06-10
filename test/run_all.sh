@@ -21,6 +21,7 @@ bash ut_csv_to_df.sh
 bash ut_squeeze.sh
 bash ut_where.sh
 bash ut_tm.sh 
+bash ut_test_simple.sh 
 bash ut_unique.sh
 # DO MANUALLY bash ut_df_to_Rserve.sh
 
