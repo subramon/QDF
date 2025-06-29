@@ -101,7 +101,8 @@ pr_df_as_csv(
   }
 
   if ( as_html ) { 
-    fprintf(fp, "  <table border =\"1\">\n    <thead>      <tr>\n"); 
+    fprintf(fp, "<style> table, th, td { border: 1px solid black; }\n");
+    fprintf(fp, " <thead>      <tr>\n"); 
   }
   for ( uint32_t i = 0; i < n_keys; i++ ) { 
     if ( as_html ) { 
