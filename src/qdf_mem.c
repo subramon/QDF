@@ -66,14 +66,20 @@ qdf_cmem_free(
 
 {
   if ( x == NULL ) { WHEREAMI; /* unspected */ return -1; }
-  if ( x->is_err ) { return 0; } 
   // printf("Freeing %d of size %u\n", x->id, x->size); 
   // TODO P1 Following line looks suspicious????
   if ( x->is_foreign ) { free_if_non_null(x); return 0; } 
 
   //---------------------------------------------------
 
-  if ( x->data == NULL ) { WHEREAMI; return -1; }
+  if ( x->data == NULL ) { 
+    if ( x->is_err ) { // silent failure
+      memset(x, 0, sizeof(QDF_REC_TYPE)); return 0; 
+    }
+    else {
+      WHEREAMI; return -1; 
+    }
+  }
   //---------------------------------------------------
   if ( ( ( x->data == NULL ) && ( x->size != 0 ) )  ||
        ( ( x->data != NULL ) && ( x->size == 0 ) ) ) {
