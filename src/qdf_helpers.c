@@ -392,10 +392,16 @@ free_qdf(
   if ( ptr_qdf->is_foreign == false ) { 
     if ( ptr_qdf->is_mmap ) { 
       mcr_rs_munmap(ptr_qdf->data, ptr_qdf->size);
+      /* ONLY FOR DEBUGGING
+      if ( ptr_qdf->name != NULL ) { 
+        printf("YYY munmap %s \n", ptr_qdf->name);
+      }
+      */
     }
     else {
       free_if_non_null(ptr_qdf->data);;
     }
+   free_if_non_null(ptr_qdf->name);;
   }
   memset(ptr_qdf, 0, sizeof(QDF_REC_TYPE));
 BYE:
@@ -807,7 +813,6 @@ zero_qdf(
   ptr_qdf->is_mmap = false;
   ptr_qdf->is_foreign = false;
   ptr_qdf->is_read_only = false;
-  ptr_qdf->is_err = false;
   //-- following for debugging 
   ptr_qdf->id = 0;
   ptr_qdf->name = NULL; 

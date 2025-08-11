@@ -116,7 +116,6 @@ typedef struct _qdf_rec_type {
   bool is_mmap; // we have mmapped data not malloc'd it 
   bool is_foreign; // true => do not delete 
   bool is_read_only; // true => don't modify
-  bool is_err; // used when C creates empty QDF 
   char *name; // for debugging  TODO DELETE LATER 
   int id; // for debugging TODO DELETE LATER 
 } QDF_REC_TYPE;

@@ -64,7 +64,8 @@ add_nn_keys(
     outidx++;
     if ( has_nulls[inidx] ) { 
       if ( outidx >= all_nK ) { go_BYE(-1); }
-      all_keys[outidx]   = rs_strcat("nn_", keys[inidx]);
+      status = rs_strcat("nn_", keys[inidx], &(all_keys[outidx])); 
+      cBYE(status);
       all_qtypes[outidx] = BL;
       all_widths[outidx] = sizeof(bool);
       outidx++;

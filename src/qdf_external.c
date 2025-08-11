@@ -97,6 +97,8 @@ binld(
 #ifdef DEBUG
   if ( file_name == NULL ) { go_BYE(-1); }
   if ( !isfile(file_name) ) { go_BYE(-1); }
+  // ONLY FOR DEBUGGING printf("XXX mmap %s \n", file_name); 
+  // ONLY FOR DEBUGGING ! ptr_qdf->name = strdup(file_name); 
 #endif
   status = rs_mmap(file_name, &X, &nX, is_writable); cBYE(status);
   ptr_qdf->data = X;

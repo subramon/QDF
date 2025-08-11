@@ -1105,10 +1105,9 @@ function lQDF:where(where)
     where:cmem_ptr(), df_qdf_mem, num_good)
   assert(status == 0)
 
-  num_good = tonumber(num_good[0])
+  local num_good = tonumber(num_good[0])
   if ( num_good == 0 ) then 
     -- print("where returns nothing ")
-    df_qdf_mem[0].is_err = true
     return nil, 0 
   end 
 
