@@ -300,201 +300,207 @@ pr_json(
       break;
     case j_string : 
       {
-      char * cptr = get_str_val(x); 
-      mcr_pr_dquote();
-      status = cat_to_buf(&buf, &bufsz, ptr_len, cptr, 0);
-      cBYE(status);
-      mcr_pr_dquote();
+        char * cptr = get_str_val(x); 
+        mcr_pr_dquote();
+        status = cat_to_buf(&buf, &bufsz, ptr_len, cptr, 0);
+        cBYE(status);
+        mcr_pr_dquote();
       }
       break;
     case j_array : 
       {
-      uint32_t n_elem = get_arr_len(x); 
-      uint32_t width  = get_arr_width(x); 
-      status = cat_to_buf(&buf, &bufsz, ptr_len, "[", 1); // start of array
-      cBYE(status);
-      switch ( qtype ) { //
-        case BL : 
+        uint32_t n_elem = get_arr_len(x); 
+        uint32_t width  = get_arr_width(x); 
+        status = cat_to_buf(&buf, &bufsz, ptr_len, "[", 1); // start of array
+        cBYE(status);
+        switch ( qtype ) { //
+          case BL : 
 
-        case I1 : 
-        case I2 : 
-        case I4 : 
-        case I8 : 
+          case I1 : 
+          case I2 : 
+          case I4 : 
+          case I8 : 
 
-        case UI1 : 
-        case UI2 : 
+          case UI1 : 
+          case UI2 : 
 
-        case F4 : 
-        case F8 : 
-        case TM1 : 
-          {
-          const char * const valptr = get_arr_ptr(x); 
-          switch ( qtype ) {
-            case BL : 
-              for ( uint32_t i = 0; i < n_elem; i++ ) { 
-                mcr_pr_comma();
-                snprintf(valbuf, vblen-1, "%s", 
-                    ((const int8_t * const )valptr)[i] ? "true" : "false");
-                status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
-                cBYE(status);
+          case F4 : 
+          case F8 : 
+          case TM1 : 
+            {
+              const char * const valptr = get_arr_ptr(x); 
+              switch ( qtype ) {
+                case BL : 
+                  for ( uint32_t i = 0; i < n_elem; i++ ) { 
+                    mcr_pr_comma();
+                    snprintf(valbuf, vblen-1, "%s", 
+                        ((const int8_t * const )valptr)[i] ? "true" : "false");
+                    status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
+                    cBYE(status);
+                  }
+                  break;
+                case I1 : 
+                  for ( uint32_t i = 0; i < n_elem; i++ ) { 
+                    mcr_pr_comma();
+                    snprintf(valbuf, vblen-1, "%d", ((const int8_t *)valptr)[i]);
+                    status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
+                    cBYE(status);
+                  }
+                  break;
+                case UI1 : 
+                  for ( uint32_t i = 0; i < n_elem; i++ ) { 
+                    mcr_pr_comma();
+                    snprintf(valbuf, vblen-1, "%d", ((const uint8_t *)valptr)[i]);
+                    status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
+                    cBYE(status);
+                  }
+                  break;
+                case I2 : 
+                  for ( uint32_t i = 0; i < n_elem; i++ ) { 
+                    mcr_pr_comma();
+                    snprintf(valbuf, vblen-1, "%d", ((const int16_t *)valptr)[i]);
+                    status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
+                    cBYE(status);
+                  }
+                  break;
+                case UI2 : 
+                  for ( uint32_t i = 0; i < n_elem; i++ ) { 
+                    mcr_pr_comma();
+                    snprintf(valbuf, vblen-1, "%u", ((const uint16_t *)valptr)[i]);
+                    status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
+                    cBYE(status);
+                  }
+                  break;
+                case I4 : 
+                  for ( uint32_t i = 0; i < n_elem; i++ ) { 
+                    mcr_pr_comma();
+                    snprintf(valbuf, vblen-1, "%d", ((const int32_t *)valptr)[i]);
+                    status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
+                    cBYE(status);
+                  }
+                  break;
+                case I8 : 
+                  for ( uint32_t i = 0; i < n_elem; i++ ) { 
+                    mcr_pr_comma();
+                    snprintf(valbuf, vblen-1, "%" PRIi64 "", ((const int64_t *)valptr)[i]);
+                    status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
+                    cBYE(status);
+                  }
+                  break;
+                case F4 : 
+                  {
+                    const float * const F4ptr = (const float * const )valptr;
+                    for ( uint32_t i = 0; i < n_elem; i++ ) { 
+                      mcr_pr_comma();
+                      if ( ceil(F4ptr[i]) == floor(F4ptr[i]) ) { 
+                        valI8 = (int64_t)F4ptr[i];
+                        snprintf(valbuf, vblen-1, "%" PRIi64 "", valI8);
+                      }
+                      else {
+                        snprintf(valbuf, vblen-1, "%lf", F4ptr[i]);
+                      }
+                      status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
+                      cBYE(status);
+                    }
+                  }
+                  break;
+                case F8 : 
+                  {
+                    const double * const F8ptr = (const double * const)valptr;
+                    for ( uint32_t i = 0; i < n_elem; i++ ) { 
+                      mcr_pr_comma();
+                      if ( trunc(F8ptr[i]) == F8ptr[i] ) { 
+                        valI8 = (int64_t)F8ptr[i];
+                        snprintf(valbuf, vblen-1, "%" PRIi64 "", valI8);
+                      }
+                      else {
+                        snprintf(valbuf, vblen-1, "%lf", F8ptr[i]);
+                      }
+                      status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
+                      cBYE(status);
+                    }
+                  }
+                  break;
+                case TM1 : 
+                  {
+                    const tm_t * const tptr = (const tm_t * const )valptr;
+                    for ( uint32_t i = 0; i < n_elem; i++ ) { 
+                      mcr_pr_comma();
+                      snprintf(valbuf, vblen-1, "\"%d-%02d-%02d\"",
+                          tptr[i].tm_year + 1900,
+                          tptr[i].tm_mon + 1,
+                          tptr[i].tm_mday);
+                      /* TODO P2 Think about how to set format programmatically
+                         snprintf(valbuf, vblen-1, "\"%d:%02d:%02d:%d:%d:%d\"",
+                         tptr[i].tm_year + 1900,
+                         tptr[i].tm_mon + 1,
+                         tptr[i].tm_mday,
+                         tptr[i].tm_hour,
+                         tptr[i].tm_wday,
+                      // tptr[i].tm_min,
+                      // tptr[i].tm_sec,
+                      tptr[i].tm_yday);
+                      */
+                      status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
+                      cBYE(status);
+                    }
+                  }
+                  break;
+                default : 
+                  go_BYE(-1);
+                  break;
               }
               break;
-            case I1 : 
-              for ( uint32_t i = 0; i < n_elem; i++ ) { 
-                mcr_pr_comma();
-                snprintf(valbuf, vblen-1, "%d", ((const int8_t *)valptr)[i]);
-                status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
-                cBYE(status);
-              }
-              break;
-            case UI1 : 
-              for ( uint32_t i = 0; i < n_elem; i++ ) { 
-                mcr_pr_comma();
-                snprintf(valbuf, vblen-1, "%d", ((const uint8_t *)valptr)[i]);
-                status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
-                cBYE(status);
-              }
-              break;
-            case I2 : 
-              for ( uint32_t i = 0; i < n_elem; i++ ) { 
-                mcr_pr_comma();
-                snprintf(valbuf, vblen-1, "%d", ((const int16_t *)valptr)[i]);
-                status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
-                cBYE(status);
-              }
-              break;
-            case UI2 : 
-              for ( uint32_t i = 0; i < n_elem; i++ ) { 
-                mcr_pr_comma();
-                snprintf(valbuf, vblen-1, "%u", ((const uint16_t *)valptr)[i]);
-                status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
-                cBYE(status);
-              }
-              break;
-            case I4 : 
-              for ( uint32_t i = 0; i < n_elem; i++ ) { 
-                mcr_pr_comma();
-                snprintf(valbuf, vblen-1, "%d", ((const int32_t *)valptr)[i]);
-                status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
-                cBYE(status);
-              }
-              break;
-            case I8 : 
-              for ( uint32_t i = 0; i < n_elem; i++ ) { 
-                mcr_pr_comma();
-                snprintf(valbuf, vblen-1, "%" PRIi64 "", ((const int64_t *)valptr)[i]);
-                status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
-                cBYE(status);
-              }
-              break;
-            case F4 : 
-              {
-              const float * const F4ptr = (const float * const )valptr;
-              for ( uint32_t i = 0; i < n_elem; i++ ) { 
-                mcr_pr_comma();
-                if ( ceil(F4ptr[i]) == floor(F4ptr[i]) ) { 
-                  valI8 = (int64_t)F4ptr[i];
-                  snprintf(valbuf, vblen-1, "%" PRIi64 "", valI8);
-                }
-                else {
-                  snprintf(valbuf, vblen-1, "%lf", F4ptr[i]);
-                }
-                status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
-                cBYE(status);
-              }
-              }
-              break;
-            case F8 : 
-              {
-              const double * const F8ptr = (const double * const)valptr;
-              for ( uint32_t i = 0; i < n_elem; i++ ) { 
-                mcr_pr_comma();
-                if ( trunc(F8ptr[i]) == F8ptr[i] ) { 
-                  valI8 = (int64_t)F8ptr[i];
-                  snprintf(valbuf, vblen-1, "%" PRIi64 "", valI8);
-                }
-                else {
-                  snprintf(valbuf, vblen-1, "%lf", F8ptr[i]);
-                }
-                status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
-                cBYE(status);
-              }
-              }
-              break;
-            case TM1 : 
-              {
-              const tm_t * const tptr = (const tm_t * const )valptr;
-              for ( uint32_t i = 0; i < n_elem; i++ ) { 
-                mcr_pr_comma();
-                snprintf(valbuf, vblen-1, "\"%d:%02d:%02d:%d:%d:%d\"", 
-                    tptr[i].tm_year + 1900,
-                    tptr[i].tm_mon + 1,
-                    tptr[i].tm_mday,
-                    tptr[i].tm_hour,
-                    tptr[i].tm_wday,
-                    // tptr[i].tm_min,
-                    // tptr[i].tm_sec,
-                    tptr[i].tm_yday);
-                status = cat_to_buf(&buf, &bufsz, ptr_len, valbuf, 0);
-                cBYE(status);
-              }
-              }
-              break;
-            default : 
-              go_BYE(-1);
-              break;
-          }
-          break;
-          }
-        case SC :
-          {
-            const char * cptr = get_arr_ptr(x); 
-            for ( uint32_t i = 0; i < n_elem; i++ ) { 
-              mcr_pr_comma();
-              mcr_pr_dquote();
-              status = cat_to_buf(&buf, &bufsz, ptr_len, cptr, 0);
-              cBYE(status);
-              mcr_pr_dquote();
-              cptr += width;
             }
-          }
-          break;
-        case Q0 : 
-          {
-            void * ox = get_offsets_in_arr(x); 
-            if ( ox == NULL ) { go_BYE(-1); }
-            qdf_array_hdr_t *oxp = (qdf_array_hdr_t *)ox;
-            if ( oxp->jtype != j_array ) { go_BYE(-1); }
-            if ( oxp->qtype != I4      ) { go_BYE(-1); }
-            for ( uint32_t i = 0; i < n_elem; i++ ) {
-              SCLR_REC_TYPE sclr; memset(&sclr, 0, sizeof(SCLR_REC_TYPE));
-              //            mcr_pr_comma();
-              if ( i > 0 ) {  
-                status = cat_to_buf(&buf, &bufsz, ptr_len, ", ", 2);  
-                cBYE(status); 
-              } 
-              status = get_arr_val(ox, i, &sclr, NULL); cBYE(status);
-              int offset = sclr.val.i4;
-              void * child_loc = (void *)((char *)x + offset);
-              uint32_t child_qdf_size = get_qdf_size(child_loc); 
-              QDF_REC_TYPE child = { .data = child_loc, .size = child_qdf_size };
+          case SC :
+            {
+              const char * cptr = get_arr_ptr(x); 
+              for ( uint32_t i = 0; i < n_elem; i++ ) { 
+                mcr_pr_comma();
+                mcr_pr_dquote();
+                status = cat_to_buf(&buf, &bufsz, ptr_len, cptr, 0);
+                cBYE(status);
+                mcr_pr_dquote();
+                cptr += width;
+              }
+            }
+            break;
+          case Q0 : 
+            {
+              void * ox = get_offsets_in_arr(x); 
+              if ( ox == NULL ) { go_BYE(-1); }
+              qdf_array_hdr_t *oxp = (qdf_array_hdr_t *)ox;
+              if ( oxp->jtype != j_array ) { go_BYE(-1); }
+              if ( oxp->qtype != I4      ) { go_BYE(-1); }
+              for ( uint32_t i = 0; i < n_elem; i++ ) {
+                SCLR_REC_TYPE sclr; memset(&sclr, 0, sizeof(SCLR_REC_TYPE));
+                //            mcr_pr_comma();
+                if ( i > 0 ) {  
+                  status = cat_to_buf(&buf, &bufsz, ptr_len, ", ", 2);  
+                  cBYE(status); 
+                } 
+                status = get_arr_val(ox, i, &sclr, NULL); cBYE(status);
+                int offset = sclr.val.i4;
+                void * child_loc = (void *)((char *)x + offset);
+                uint32_t child_qdf_size = get_qdf_size(child_loc); 
+                QDF_REC_TYPE child = { .data = child_loc, .size = child_qdf_size };
 #ifdef DEBUG
-              status = chk_qdf(&child); cBYE(status);
+                status = chk_qdf(&child); cBYE(status);
 #endif
-              ptr_out_str->data = buf; ptr_out_str->size = bufsz; 
-              status = pr_json(&child, ptr_out_str, ptr_len, fp); 
-              cBYE(status);
-              buf = ptr_out_str->data; bufsz = ptr_out_str->size;
+                ptr_out_str->data = buf; ptr_out_str->size = bufsz; 
+                status = pr_json(&child, ptr_out_str, ptr_len, fp); 
+                cBYE(status);
+                buf = ptr_out_str->data; bufsz = ptr_out_str->size;
+              }
             }
-          }
-          break;
-        default : 
-          go_BYE(-1);
-          break;
-      }
-      status = cat_to_buf(&buf, &bufsz, ptr_len, "]", 1); // end of array
-      cBYE(status);
-      break;
+            break;
+          default : 
+            go_BYE(-1);
+            break;
+        }
+        status = cat_to_buf(&buf, &bufsz, ptr_len, "]", 1); // end of array
+        cBYE(status);
+        break;
       }
 
     case j_object : 
