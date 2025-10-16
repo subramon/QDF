@@ -18,7 +18,14 @@ tests.test1 = function ()
   end
   local x = assert(lQDF.read_csv(M, infile, optargs))
   assert(type(x) == "lQDF")
-  x:pr_df_as_csv({"l1", "nn_l1", "l2", "nn_l2", }, "/tmp/foo.csv")
+  x:pr_df_as_csv({"l1", "nn_l1", "l2", "nn_l2", }, "/tmp/_foo.csv")
+  local aux = {}
+  aux.is_all_editable = false
+  aux.is_all_non_editable = false
+  aux.table_id = "my_table_id"
+  aux.caption = "my_caption"
+  
+  x:pr_df_as_html( "/tmp/_foo.html", aux)
   -- TODO Should test output 
   print("Test test1 completed successfully")
 end

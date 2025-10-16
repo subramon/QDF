@@ -551,7 +551,8 @@ pr_1(
   int status = 0;
   if ( fp == NULL ) { go_BYE(-1); }
   if ( ( nn_ptr != NULL ) && ( nn_ptr[idx] == 0 ) ) { 
-    fprintf(fp, "\"\"");
+    fprintf(fp, ""); 
+    // fprintf(fp, "\"\""); -- This was causing problems for HTML 
     return status;
   }
 

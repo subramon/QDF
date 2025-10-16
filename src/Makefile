@@ -106,6 +106,7 @@ _stripped_sclr.h : ${SCLR_SRC_ROOT}/inc/sclr_struct.h
 		../inc/qdf_nop.h \
 		../inc/qdf_nullify.h \
 		../inc/qdf_pr.h \
+		../inc/qdf_html.h \
 		../inc/qdf_prefix_sums.h \
 		../inc/qdf_setters.h \
 		../inc/qdf_shift_up_down.h \
@@ -158,6 +159,7 @@ _stripped_sclr.h : ${SCLR_SRC_ROOT}/inc/sclr_struct.h
 	grep -v "^#" ../inc/qdf_where.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_nullify.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_pr.h >> ../lua/qdf_hdrs.lua
+	grep -v "^#" ../inc/qdf_html.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_prefix_sums.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_resize_df.h >> ../lua/qdf_hdrs.lua
 	grep -v "^#" ../inc/qdf_append.h >> ../lua/qdf_hdrs.lua
@@ -222,6 +224,7 @@ QDF_SRC += qdf_df_to_Rserve.c
 QDF_SRC += qdf_nop.c 
 QDF_SRC += qdf_nullify.c 
 QDF_SRC += qdf_pr.c 
+QDF_SRC += qdf_html.c 
 QDF_SRC += qdf_csv_to_df.c 
 QDF_SRC += qdf_prefix_sums.c 
 QDF_SRC += qdf_setters.c 

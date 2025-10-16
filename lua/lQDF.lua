@@ -1166,6 +1166,105 @@ function lQDF:pr_df_as_csv(keys, file_name)
   return true
 end
 
+function lQDF:pr_df_as_html(file_name, aux)
+  assert(self:is_df())
+  if ( file_name ) then 
+    assert(type(file_name) == "string")
+  else
+    file_name = ffi.NULL
+  end 
+
+  if ( aux ) then 
+    assert(type(aux) == "table")
+  end
+
+  -- following are variables whose default values 
+  -- can be over-ridden by aux 
+  local K = ffi.NULL
+  local nK = 0
+  local V = ffi.NULL
+  local I = ffi.NULL
+  local E = ffi.NULL 
+  local D = ffi.NULL 
+  local nD = 0
+  local is_all_non_editable =  aux.is_all_non_editable
+  local is_all_editable =  aux.is_all_editable
+  local table_id = ffi.NULL
+  local caption = ffi.NULL
+  --============================================================
+  -- get keys to display 
+  if ( aux and aux.disp_keys ) then 
+    assert(type(aux.disp_keys) == "table")
+    for k, v in pairs(aux.disp_keys) do assert(type(v) == "string") end 
+    K, nK = tbl_of_str_to_C_array(aux.disp_keys)
+  else 
+    local tmp_keys = self:keys()
+    local disp_keys = {}
+    for k, key in ipairs(tmp_keys) do 
+      local n1, n2 = string.find(key, "nn_")
+      if ( ( n1 == 1 ) and ( n2 == 3 ) and ( #key >= 4 ) ) then
+        -- skip this because it is a nn key 
+      else
+        disp_keys[#disp_keys+1] = key
+      end 
+    end
+    K, nK = tbl_of_str_to_C_array(disp_keys)
+  end
+  K = ffi.cast("char ** const", K)
+  --=============================================================
+  if ( aux.is_all_editable ) then 
+    assert(type(aux.is_all_editable) == "boolean")
+    local is_all_editable =  aux.is_all_editable
+  end
+  --=============================================================
+  if ( aux.table_id ) then 
+    assert(type(aux.table_id) == "string")
+    local table_id =  aux.table_id
+  end
+  --=============================================================
+  if ( aux.caption ) then 
+    assert(type(aux.caption) == "string")
+    local caption =  aux.caption
+  end
+  --=============================================================
+  if ( aux.is_all_non_editable ) then 
+    assert(type(aux.is_all_non_editable) == "boolean")
+    local is_all_non_editable =  aux.is_all_non_editable
+  end
+  --=============================================================
+  if ( aux.is_editable ) then 
+    assert(type(aux.is_editable) == "table")
+    for k, v in pairs(aux.is_editable) do assert(type(v) == "boolean") end 
+    E = ffi.new("bool[?]", nK)
+    for k, v in pairs(aux.is_editable) do 
+      E[k-1] = v
+    end
+    E = ffi.cast("bool *", E)
+  end
+  --== repeat above for viz_keys
+  if ( aux.viz_keys ) then
+    assert(type(aux.viz_keys == "table"))
+    assert(#aux.viz_keys == nK)
+    for k, v in pairs(aux.viz_keys) do assert(type(v) == "string") end 
+    V, _= tbl_of_str_to_C_array(aux.viz_keys)
+  end
+  V = ffi.cast("char ** const", V)
+  --== repeat above for id_keys
+  if ( id_keys ) then
+    assert(type(aux.id_keys == "table"))
+    assert(#id_keys == nK)
+    for k, v in pairs(id_keys) do assert(type(v) == "string") end 
+    I, _= tbl_of_str_to_C_array(aux.id_keys)
+  end
+  I = ffi.cast("char ** const", I)
+  --============================================================
+  local status = 
+    cQDF.pr_df_as_html(self:cmem_ptr(), K, V, I, E, nK, D, nD,
+    is_all_non_editable, is_all_editable, table_id, caption, file_name)
+  assert(status == 0)
+  return true
+end
+
 function lQDF:bindmp(file_name)
   assert(type(file_name) == "string")
   local status = cQDF.bindmp(self:cmem_ptr(), file_name)
