@@ -130,11 +130,11 @@ pr_df_as_html(
     QDF_REC_TYPE col; memset(&col, 0, sizeof(QDF_REC_TYPE));
     status = get_key_val(ptr_qdf, -1, disp_keys[i], &col, NULL); 
     cBYE(status);
+    qtype[i] = get_qtype(col.data); 
     if ( qtype[i] == SC ) {
       width[i] = get_arr_width(col.data); if ( width[i] < 1 ) {go_BYE(-1);}
     }
     valptr[i] = get_arr_ptr(col.data);
-    qtype[i] = get_qtype(col.data); 
   }
   // get pointers to nn
   for  ( uint32_t i = 0; i < n_disp; i++ ) {
@@ -154,33 +154,8 @@ pr_df_as_html(
     }
     free_if_non_null(nn_key);
   }
-
-  //-------------------------------------------------------------
   // STOP: Create id, viz if needed and other auxiliary data structures
-#ifdef HANDLE_NN
-  // discount nn_ keys 
-  {
-    n_keys = 0;
-    uint32_t tmp_n_keys = n_keys_to_pr;
-    for ( uint32_t i = 0; i < tmp_n_keys; i++ ) { 
-      if ( strncmp(keys_to_pr[i], "nn_", strlen("nn_")) != 0 ) { 
-        n_keys++;
-      }
-    }
-    if ( n_keys == 0 ) { go_BYE(-1); }
-    keys = malloc(n_keys * sizeof(char *));
-    return_if_malloc_failed(keys);
-    memset(keys, 0,  n_keys * sizeof(char *));
-    uint32_t kidx = 0;
-    for ( uint32_t i = 0; i < tmp_n_keys; i++ ) { 
-      if ( strncmp(keys_to_pr[i], "nn_", strlen("nn_")) != 0 ) { 
-        if ( kidx == n_keys ) { go_BYE(-1); }
-        keys[kidx++] = strdup(keys_to_pr[i]);
-      }
-    }
-  }
-#endif 
-  //------------------------------------------------------
+  //-------------------------------------------------------------
   if ( as_str ) { 
     fp = open_memstream(ptr_outbuf, ptr_outlen);
   }
@@ -208,7 +183,7 @@ pr_df_as_html(
         id_keys[i], disp_keys[i]);
     // Do we need data-type?
   }
-  fprintf(fp, "  </tr>\n</thead>\n><tbody>\n");
+  fprintf(fp, "  </tr>\n</thead>\n<tbody>\n");
   //----- 
   if ( !x_get_is_df(ptr_qdf) ) { go_BYE(-1); }
   uint32_t n_rows = x_get_obj_arr_len(ptr_qdf); 
@@ -233,6 +208,9 @@ pr_df_as_html(
       fprintf(fp, " <td contenteditable = \"%s\" data-key = \"%s\" > ",
           is_editable_j ? "true" : "false", id_keys[j]);
       status = pr_1(valptr[j], nnptr[j], qtype[j], width[j], i, fp); 
+      if ( status != 0 ) {
+        printf("hhello world \n");
+      }
       cBYE(status);
       fprintf(fp, " </td>\n");
       // Do we need data-type?
