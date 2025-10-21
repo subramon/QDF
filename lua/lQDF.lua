@@ -1167,10 +1167,13 @@ function lQDF:pr_df_as_csv(keys, file_name)
 end
 
 function lQDF:pr_df_as_html(file_name, aux)
+  local as_str
   assert(self:is_df())
   if ( file_name ) then 
+    as_str = false
     assert(type(file_name) == "string")
   else
+    as_str = true
     file_name = ffi.NULL
   end 
 
@@ -1258,11 +1261,23 @@ function lQDF:pr_df_as_html(file_name, aux)
   end
   I = ffi.cast("char ** const", I)
   --============================================================
+  local outbuf = ffi.NULL
+  local outlen = ffi.NULL
+  if ( as_str ) then 
+    outbuf = ffi.new("char *[?]", 1)
+    outlen = ffi.new("size_t[?]", 1)
+  end
+  --============================================================
   local status = 
     cQDF.pr_df_as_html(self:cmem_ptr(), K, V, I, E, nK, D, nD,
-    is_all_non_editable, is_all_editable, table_id, caption, file_name)
+    is_all_non_editable, is_all_editable, table_id, caption, file_name,
+    outbuf, outlen, as_str)
   assert(status == 0)
-  return true
+  if ( as_str ) then 
+    return ffi.string(outbuf[0])
+  else
+    return true
+  end 
 end
 
 function lQDF:bindmp(file_name)

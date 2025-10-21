@@ -27,6 +27,9 @@ tests.test1 = function ()
   
   x:pr_df_as_html( "/tmp/_foo.html", aux)
   -- TODO Should test output 
+  -- Now get back a string 
+  local html_str = x:pr_df_as_html(nil, aux)
+  print(#html_str)
   print("Test test1 completed successfully")
 end
 tests.test1()

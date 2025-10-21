@@ -30,7 +30,10 @@ pr_df_as_html(
     bool is_all_editable, 
     const char * const table_id, 
     const char * const caption,
-    const char * const file_name
+    const char * const file_name,
+    char **ptr_outbuf,
+    size_t *ptr_outlen,
+    bool as_str // disregard file_name in this case
     )
 {
   int status = 0;
@@ -156,6 +159,7 @@ pr_df_as_html(
   // STOP: Create id, viz if needed and other auxiliary data structures
 #ifdef HANDLE_NN
   // discount nn_ keys 
+  {
     n_keys = 0;
     uint32_t tmp_n_keys = n_keys_to_pr;
     for ( uint32_t i = 0; i < tmp_n_keys; i++ ) { 
@@ -177,21 +181,26 @@ pr_df_as_html(
   }
 #endif 
   //------------------------------------------------------
-  if ( ( file_name == NULL ) || ( *file_name == '\0' ) ) {
-    fp = stdout;
+  if ( as_str ) { 
+    fp = open_memstream(ptr_outbuf, ptr_outlen);
   }
-  else { 
-    fp = fopen(file_name, "w");
-    return_if_fopen_failed(fp, file_name, "w");
+  else {
+    if ( ( file_name == NULL ) || ( *file_name == '\0' ) ) {
+      fp = stdout;
+    }
+    else { 
+      fp = fopen(file_name, "w");
+      return_if_fopen_failed(fp, file_name, "w");
+    }
   }
   //-------------------------------------------------------
   fprintf(fp, "<table "
       "id=\"%s\" "
       "role=\"grid\"  "
       "aria-describedby=\"table-help\">\n", 
-       table_id != NULL  ? table_id : "tbl_id");
+      table_id != NULL  ? table_id : "tbl_id");
   fprintf(fp, "<caption>%s</caption>\n", 
-       caption != NULL  ? caption : "Caption of Table");
+      caption != NULL  ? caption : "Caption of Table");
   //-------------------------------------------------------
   fprintf(fp, " <thead> \n  <tr> \n");
   for ( uint32_t i = 0; i < n_disp; i++ ) { 
@@ -233,13 +242,18 @@ pr_df_as_html(
   fprintf(fp, "  </tbody>\n</table>\n");
   //------------------------------------------
 
+  if ( as_str ) { 
+    fclose_if_non_null(fp);
+  }
+  else {
+    if ( file_name != NULL ) { 
+      fclose_if_non_null(fp);
+    }
+  }
 BYE:
   if ( in_viz_keys == NULL ) { free_2d_array(&viz_keys, n_disp); } 
   if ( in_id_keys == NULL ) { free_2d_array(&id_keys, n_disp); } 
   if ( in_edit_keys == NULL ) { free_2d_array(&edit_keys, n_disp); } 
-  if ( file_name != NULL ) { 
-    fclose_if_non_null(fp);
-  }
   free_if_non_null(width);
   free_if_non_null(qtype);
   free_if_non_null(valptr);

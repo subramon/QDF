@@ -1387,7 +1387,10 @@ pr_df_as_html(
     bool is_all_editable, 
     const char * const table_id, 
     const char * const caption,
-    const char * const file_name
+    const char * const file_name,
+    char **ptr_outbuf,
+    size_t *ptr_outlen,
+    bool as_str // disregard file_name in this case
     );
 extern int
 prefix_sums(
