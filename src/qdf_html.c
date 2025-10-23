@@ -169,10 +169,20 @@ pr_df_as_html(
     }
   }
   //-------------------------------------------------------
-  fprintf(fp, "<table "
+  const char *global_editable = "";
+  if ( is_all_editable && is_all_non_editable ) { go_BYE(-1); }
+  if ( is_all_editable ) { 
+    global_editable = "contenteditable = \"true\" ";
+  }
+  if ( is_all_non_editable ) { 
+    global_editable = "contenteditable = \"false\" ";
+  }
+
+  fprintf(fp, "<table %s"
       "id=\"%s\" "
       "role=\"grid\"  "
       "aria-describedby=\"table-help\">\n", 
+      global_editable,
       table_id != NULL  ? table_id : "tbl_id");
   fprintf(fp, "<caption>%s</caption>\n", 
       caption != NULL  ? caption : "Caption of Table");
@@ -205,8 +215,13 @@ pr_df_as_html(
         }
       }
       //--------------------------------------------
+      if ( is_all_editable || is_all_non_editable ) { 
+      fprintf(fp, " <td data-key = \"%s\" > ", id_keys[j]);
+      }
+      else {
       fprintf(fp, " <td contenteditable = \"%s\" data-key = \"%s\" > ",
           is_editable_j ? "true" : "false", id_keys[j]);
+      }
       status = pr_1(valptr[j], nnptr[j], qtype[j], width[j], i, fp); 
       if ( status != 0 ) {
         printf("hhello world \n");

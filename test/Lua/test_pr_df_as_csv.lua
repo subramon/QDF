@@ -26,6 +26,12 @@ tests.test1 = function ()
   aux.caption = "my_caption"
   
   x:pr_df_as_html( "/tmp/_foo.html", aux)
+  aux.is_all_non_editable = false
+  aux.is_all_editable = true
+  x:pr_df_as_html( "/tmp/_foo1.html", aux)
+  aux.is_all_non_editable = true
+  aux.is_all_editable = false
+  x:pr_df_as_html( "/tmp/_foo2.html", aux)
   -- TODO Should test output 
   -- Now get back a string 
   local html_str = x:pr_df_as_html(nil, aux)

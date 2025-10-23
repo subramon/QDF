@@ -1167,11 +1167,13 @@ function lQDF:pr_df_as_csv(keys, file_name)
 end
 
 function lQDF:pr_df_as_html(file_name, aux)
+  print("000000000000000000")
   local as_str
   assert(self:is_df())
   if ( file_name ) then 
     as_str = false
     assert(type(file_name) == "string")
+    assert(#file_name > 0)
   else
     as_str = true
     file_name = ffi.NULL
@@ -1180,6 +1182,7 @@ function lQDF:pr_df_as_html(file_name, aux)
   if ( aux ) then 
     assert(type(aux) == "table")
   end
+  print("1111111111111111")
 
   -- following are variables whose default values 
   -- can be over-ridden by aux 
@@ -1190,8 +1193,8 @@ function lQDF:pr_df_as_html(file_name, aux)
   local E = ffi.NULL 
   local D = ffi.NULL 
   local nD = 0
-  local is_all_non_editable =  aux.is_all_non_editable
-  local is_all_editable =  aux.is_all_editable
+  local is_all_non_editable = false
+  local is_all_editable =  false
   local table_id = ffi.NULL
   local caption = ffi.NULL
   --============================================================
@@ -1214,25 +1217,28 @@ function lQDF:pr_df_as_html(file_name, aux)
     K, nK = tbl_of_str_to_C_array(disp_keys)
   end
   K = ffi.cast("char ** const", K)
+  print("lQDF: Got keys to display")
   --=============================================================
   if ( aux.is_all_editable ) then 
     assert(type(aux.is_all_editable) == "boolean")
-    local is_all_editable =  aux.is_all_editable
-  end
-  --=============================================================
-  if ( aux.table_id ) then 
-    assert(type(aux.table_id) == "string")
-    local table_id =  aux.table_id
-  end
-  --=============================================================
-  if ( aux.caption ) then 
-    assert(type(aux.caption) == "string")
-    local caption =  aux.caption
+    is_all_editable =  aux.is_all_editable
   end
   --=============================================================
   if ( aux.is_all_non_editable ) then 
     assert(type(aux.is_all_non_editable) == "boolean")
-    local is_all_non_editable =  aux.is_all_non_editable
+    is_all_non_editable =  aux.is_all_non_editable
+  end
+  --=============================================================
+  local table_id = ffi.NULL
+  if ( aux.table_id ) then 
+    assert(type(aux.table_id) == "string")
+    table_id =  aux.table_id
+  end
+  --=============================================================
+  local caption = ffi.NULL
+  if ( aux.caption ) then 
+    assert(type(aux.caption) == "string")
+    caption =  aux.caption
   end
   --=============================================================
   if ( aux.is_editable ) then 
