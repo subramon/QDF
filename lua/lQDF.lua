@@ -1167,7 +1167,6 @@ function lQDF:pr_df_as_csv(keys, file_name)
 end
 
 function lQDF:pr_df_as_html(file_name, aux)
-  print("000000000000000000")
   local as_str
   assert(self:is_df())
   if ( file_name ) then 
@@ -1182,7 +1181,6 @@ function lQDF:pr_df_as_html(file_name, aux)
   if ( aux ) then 
     assert(type(aux) == "table")
   end
-  print("1111111111111111")
 
   -- following are variables whose default values 
   -- can be over-ridden by aux 
