@@ -1,0 +1,36 @@
+\documentclass[letterpaper,12pt]{article}
+\input{hdr}
+\newcommand{\qt}{{\tt qtype\_t} }
+\newcommand{\jt}{{\tt qtype\_t} }
+\newcommand{\qdf}{{\tt qdf\_rec\_type}}
+
+\begin{document}
+\title{QDF}
+\author{Ramesh Subramonian }
+\maketitle
+
+\section{Introduction}
+
+\section{QDF Data Layout}
+
+This section defines the layout of data in a QDF
+
+\subsection{qtype}
+
+The enum \qt is defined as 
+\verbatiminput{_qtype}
+
+\subsection{q2c}
+
+The Lua table q2c is a mapping between a value of type \qt and a C type.
+\verbatiminput{_q2c}
+
+\subsection{jtype}
+
+The enum \jt is defined as follows
+\verbatiminput{_jtype}
+
+\subsection{QDF struct} 
+The struct \qdf is defined as follows
+\verbatiminput{_qdf_rec_type}
+
