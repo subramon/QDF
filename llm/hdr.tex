@@ -1,3 +1,4 @@
+\documentclass[letterpaper,12pt]{article}
 \usepackage{geometry}
  \geometry{
  a4paper,
@@ -7,6 +8,7 @@
  right=20mm,
  bottom=20mm,
  }
+\usepackage{verbatim}
 \usepackage{courier}
 \usepackage{fancyheadings}
 \usepackage{hyperref}
@@ -35,3 +37,15 @@
 \lfoot{}
 \cfoot{}
 \rfoot{{\small \thepage}}
+\newcommand{\qt}{{\tt qtype\_t} }
+\newcommand{\jt}{{\tt jtype\_t} }
+\newcommand{\qdf}{{\tt qdf\_rec\_type}}
+
+\newcommand{\getq}{{\tt get\_qtype()}}
+\newcommand{\getj}{{\tt get\_jtype()}}
+\newcommand{\getn}{{\tt get\_length()}}
+\newcommand{\getr}{{\tt get\_read\_arr\_ptr()}}
+\newcommand{\getw}{{\tt get\_write\_arr\_ptr()}}
+\newcommand{\getnk}{{\tt get\_num\_keys()}}
+\newcommand{\chk}{{\tt chk\_qdf()}}
+

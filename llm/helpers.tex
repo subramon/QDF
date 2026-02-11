@@ -1,0 +1,50 @@
+\newcommand{\getq}{{\tt get\_qtype()}}
+\newcommand{\getj}{{\tt get\_jtype()}}
+\newcommand{\getn}{{\tt get\_length()}}
+\newcommand{\getr}{{\tt get\_read\_arr\_ptr()}}
+\newcommand{\getw}{{\tt get\_write\_arr\_ptr()}}
+\newcommand{\getnk}{{\tt get\_num\_keys()}}
+\newcommand{\chk}{{\tt chk\_qdf()}}
+
+\section{Read only helper functions}
+\label{qdf_read_helpers}
+Table~\ref{tbl_qdf_read_helpers} lists helper functions that have been provided to
+you. They take as an argument an immutable pointer to \qdf\ and do {\bf not}
+modify the location pointed to.
+\begin{table}
+  \centering 
+\begin{tabular}{|l|l|l|l|} \hline \hline 
+  {\bf Return} & {\bf Name} & {\bf Args} \\ \hline  \hline
+  bool & \chk & ( const \qdf\ * const x) \\ \hline 
+  \qt\ & getq & ( const \qdf\ * const x) \\ \hline 
+  \jt\ & \getj & ( const \qdf\ * const x) \\ \hline 
+  UI4  & \getn & ( const \qdf\ * const x) \\ \hline 
+  const char * & \getr & ( const \qdf\ * const x) \\ \hline 
+  UI4  & \getnk & ( const \qdf\ * const x) \\ \hline 
+\hline
+\end{tabular}
+\caption{List of read only helper functions}
+\label{tbl_qdf_read_helpers}
+\end{table}
+
+\subsection{\chk}
+Returns {\tt true} if x is syntactically valid; {\tt false}, otherwise
+
+\subsection{\getq}
+Returns \qt\  of x 
+
+\subsection{\getj}
+Returns \jt\ of x 
+
+\subsection{\getn}
+If \jt\ of x is {\tt j\_array}, then returns length of array; else, returns 0.
+
+\subsection{\getr}
+If \jt\ of x is {\tt j\_array}, then returns {\tt NULL}.
+If \qt\ of x is Qerr or Q0, then returns {\tt NULL}.
+Else, returns a pointer to the \(0^{th}\) element of the array. 
+The data pointed to cannot be modified. 
+
+\subsection{\getnk}
+If \jt\ x is {\tt j\_object}, then returns number of keys; else, returns 0.
+
