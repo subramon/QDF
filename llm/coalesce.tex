@@ -1,120 +1,26 @@
-Define the enum qtype_t as follows:
-typedef enum { 
-  Qerr = 0,
-  Q0,
-  B1, // boolean stored as bit
-  BL, // boolean stored as bool
-  I8, // signed 1-byte intege
-  I16, // signed 2-byte intege
-  I32, // signed 4-byte intege
-  I64, // signed 8-byte intege
-  BF16, // bfloat16 floating point 
-  FP32, // single precision floating point 
-  FP64, // double prevision floating point 
-  UI8, // unsigned 1-byte integer
-  UI16, // unsigned 2-byte integer
-  UI32, // unsigned 4-byte integer
-  UI64, // unsigned 8-byte integer
-  SC,  // consatnt length string 
-  TM, // struct tm as defined in time.h
-} qtype_t;
+\section{Coalesce}
 
-Let q2c be a mapping between a value of type qtype_t and a C type.
-It is specified as a Lua table.
 
-q2c = { 
-  "Q0" : "void",
-  "I32 : "int32_t",
-  "FP32 : "float"
-  "TM : "struct tm", 
-  }
+\begin{itemize}
+  \item Let x be a read only immutable pointer to \qdf.
+  \item Let y be a read only immutable pointer to \qdf.
+  \item Let z be a                     pointer to \qdf.
+  \item qx  :=  \getq(x)
+  \item qy  :=  \getq(y)
+  \item cqx := q2c[qx] 
+  \item cqy := q2c[qy] 
+\end{itemize}
 
-Define an enum jtype_t as follows
-typedef enum { 
-  j_error = 0, 
-  j_undef,
-  j_nil, 
-  j_bool, 
-  j_string,
-  j_number, 
-  j_date, 
-  j_array, 
-  j_object,
-  // j_hashtable
-} jtype_t;
+\begin{verbatim}
+T = { "coalesce", "_", qx, "_", qy }
+func = string.concat(T)
+\end{verbatim}
 
-The QDF struct is defined in QDF_REC_TYPE as follows:
+Create a function with name func specified as above 
 
-typedef struct _qdf_rec_type {
-  void *data;
-  uint32_t size; // must be a multiple of 8 
-  bool is_mmap; // true => we have mmapped data not malloc'd it 
-  bool is_foreign; // true => do not free() or munmap() 
-  bool is_read_only; // true => don't modify
-} QDF_REC_TYPE;
+\end{document}
 
-\section{Read only helper functions}
-\label{qdf_read_helpers}
-Table~\ref{tbl_qdf_read_helpers} lists helper functions that have been provided to
-you. They take as an argument a pointer to QDF_REC_TYPE and do {\bf not}
-modify the location pointed to.
-\begin{table}
-\begin{tabular}{|l|l|l|} 
-{\bf Signature} & {\bf Section} \\ \hline  \hline
-bool chk_qdf( const QDF_REC_TYPE * const x) & \\ \hline 
-qtype_t get_qtype( const QDF_REC_TYPE * const x) & \\ \hline 
-jtype_t get_jtype( const QDF_REC_TYPE * const x) & \\ \hline 
-uint32_t get_length( const QDF_REC_TYPE * const x) & \\ \hline 
-const char * get_read_arr_ptr( const QDF_REC_TYPE * const x) & \\ \hline 
-\hline
-\end{tabular}
-\caption{List of read only helper functions}
-\label{tbl_qdf_read_helpers}
-\end{table}
 
-\subsection{chk_qdf}
-chk_qdf() returns true if x is syntactically valid; false, otherwise
-
-\subsection{get_qtype}
-Returns qtype_t of x 
-
-\subsection{get_jtype}
-Returns jtype_t of x 
-
-\subsection{get_length}
-If jtype_t of x is j_array, then returns length of array; else, returns 0.
-
-\subsection{get_read_arr_ptr}
-If jtype_t of x is j_array, then returns NULL.
-If qtype_t of x is Qerr or Q0, then returns NULL.
-Else, returns a pointer to the 0th element of the array. 
-The data pointed to by the pointer cannot be modified. 
-
-\subsection{get_write_arr_ptr}
-If jtype_t of x is j_array, then returns NULL.
-If qtype_t of x is Qerr or Q0, then returns NULL.
-Else, returns a pointer to the 0th element of the array. 
-The data pointed to by the pointer can be modified. 
-
-\subsection{get_num_keys}
-If jtype_t of x is j_object, then returns number of keys; else, returns 0.
-
-\section{Macro Definitions}
-
-The macro cBYE(x) defined as follows
-
-#define go_BYE(x) { printf(stderr, "%s: %d\n", __FILE__, __LINE__); status = x;
-goto BYE; } 
-
-%--------------------------------------------
-
-Let x be a read only immutable pointer to QDF_REC_TYPE
-Let y be a read only immutable pointer to QDF_REC_TYPE
-Let z be a                     pointer to QDF_REC_TYPE
-
-Let 
-qtype_t qx  := get_qtype(X)
-qtype_t qy  := get_qtype(Y)
 jtype_t jx  := get_jtype(X)
 jtype_t jy  := get_jtype(Y)
 uint32_t nx := get_length(X)

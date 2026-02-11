@@ -1,11 +1,3 @@
-\newcommand{\getq}{{\tt get\_qtype()}}
-\newcommand{\getj}{{\tt get\_jtype()}}
-\newcommand{\getn}{{\tt get\_length()}}
-\newcommand{\getr}{{\tt get\_read\_arr\_ptr()}}
-\newcommand{\getw}{{\tt get\_write\_arr\_ptr()}}
-\newcommand{\getnk}{{\tt get\_num\_keys()}}
-\newcommand{\chk}{{\tt chk\_qdf()}}
-
 \section{Read only helper functions}
 \label{qdf_read_helpers}
 Table~\ref{tbl_qdf_read_helpers} lists helper functions that have been provided to
@@ -16,7 +8,7 @@ modify the location pointed to.
 \begin{tabular}{|l|l|l|l|} \hline \hline 
   {\bf Return} & {\bf Name} & {\bf Args} \\ \hline  \hline
   bool & \chk & ( const \qdf\ * const x) \\ \hline 
-  \qt\ & getq & ( const \qdf\ * const x) \\ \hline 
+  \qt\ & \getq & ( const \qdf\ * const x) \\ \hline 
   \jt\ & \getj & ( const \qdf\ * const x) \\ \hline 
   UI4  & \getn & ( const \qdf\ * const x) \\ \hline 
   const char * & \getr & ( const \qdf\ * const x) \\ \hline 

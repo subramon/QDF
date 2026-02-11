@@ -21,6 +21,7 @@ _qdf_rec_type.tex : qdf_rec_type.h
 
 qdf_definition.pdf : qdf_definition.tex \
 	helpers.tex \
+	coalesce.tex \
 	_qtype.tex _jtype.tex _q2c.tex
 	pdflatex qdf_definition.tex
 	pdflatex qdf_definition.tex
