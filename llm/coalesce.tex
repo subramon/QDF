@@ -7,8 +7,16 @@
   \item Let z be a                     pointer to \qdf.
   \item qx  :=  \getq(x)
   \item qy  :=  \getq(y)
-  \item cqx := q2c[qx] 
-  \item cqy := q2c[qy] 
+  \item cqx := q2c[qx] C type corresponding to qx as defined in Lua table q2c
+  \item cqy := q2c[qy] C type corresponding to qy as defined in Lua table q2c
+\item jx  := \getj(X)
+\item jy  := \getj(Y)
+\item nx := \getn(X)
+\item ny := \getn(Y)
+\item const cqx * const vx = \getrv(x)
+\item const cqy * const vy = \getrv(y)
+\item const bool * const nnx = \getnn(x)
+\item const bool * const nny = \getnn(y)
 \end{itemize}
 
 \begin{verbatim}
@@ -16,53 +24,28 @@ T = { "coalesce", "_", qx, "_", qy }
 func = string.concat(T)
 \end{verbatim}
 
-Create a function with name func specified as above 
+Function signature is 
+\begin{enumerate}
+  \item name is func, specified above. 
+  \item Return value is of type integer. 
+    Return value is 0 on success, -1 on failure.
+  \item Arguments are x, y, z specified above
+\end{enumerate}
 
-\end{document}
-
-
-jtype_t jx  := get_jtype(X)
-jtype_t jy  := get_jtype(Y)
-uint32_t nx := get_length(X)
-uint32_t ny := get_length(Y)
-// Let cqx be the C type corresponding to qx as defined in Lua table q2c
-// Let cqy be the C type corresponding to qy as defined in Lua table q2c
-
-
-Assume that qx == I32 and that qy == I32.
-Create a function with the signature shown below, 
-replacing <qx> with the value of qx and 
-replacing <qy> with the value of qy 
-
-int
-coalesce_<qx>_<qy>(
-    const QDF_REC_TYPE * const x,
-    const QDF_REC_TYPE * const y,
-    QDF_REC_TYPE * restrict z
-   )
-{
-  int status = 0;
-  // FILL IN THE BLANKS
-BYE:
-  return status;
-}
-
-
-It returns 0 if success, -1 if any failure
-It takes 3 arguments: x, Y, Z 
+Function logic is as follows.
 
 Function fails under the conditions listed below
-Fails if x == NULL
-Fails if y == NULL
-Fails if x == y
-Fails if qx != qy
-Fails if jx != j_array
-Fails if jy != j_array
-Fails if nx != ny
-Fails if nx == 0
+\be
+\item Fails if x == NULL
+\item Fails if y == NULL
+\item Fails if x == y
+\item Fails if qx \(\neq\) qy
+\item Fails if jx \(\neq \jarr\) 
+\item Fails if jy \(\neq \jarr\) 
+\item Fails if nx \(\neq\) ny
+\item Fails if nx == 0
+  \ee
 
-   const cqx * const vx = get_read_arr_ptr(x)
-   const cqy * const vy = get_read_arr_ptr(y)
 
    Let nz := nx 
    Let jz := jx 
@@ -72,25 +55,28 @@ Fails if nx == 0
 
    Execute the following for all values of i in [0 .. nz-1]
 
-   if ( is_null(X[i] == true ) then
-     if is_null(Y[i]) == true) then 
-       vz[i] := 0
-       nnz[i] := false
-     else
-       vz[i] := vy[i]
-       nnz[i] := true
-     endif
-   else
+   if ( not nnx == or nnx[i] ) then 
      vz[i] := vx[i]
      nnz[i] := true
-   end
+   else
+     if ( not nny == or nny[i] ) then 
+       vz[i] := vy[i]
+       nnz[i] := true
+     else
+       vz[i] := 0
+       nnz[i] := false
+     endif
+   endif
 
   // Execute the following setter functions
   // All setters return a int status. If status is not 0, then
   // calling function executes macro cBYE(-1)
-  set_jtype(z, jz)
-  set_qtype(z, qz)
-  set_length(z, nz)
-  set_array(z, vz)
-  set_nn(z, nnz)
+  \begin{enumerate}
+    \item   \setj(z, jz)
+    \item   \setq(z, qz)
+    \item   \setn(z, nz)
+    \item   \setv(z, vz)
+    \item   \setnn(z, nnz)
+  \end{enumerate}
 
+\end{document}

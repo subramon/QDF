@@ -11,7 +11,8 @@ modify the location pointed to.
   \qt\ & \getq & ( const \qdf\ * const x) \\ \hline 
   \jt\ & \getj & ( const \qdf\ * const x) \\ \hline 
   UI4  & \getn & ( const \qdf\ * const x) \\ \hline 
-  const char * & \getr & ( const \qdf\ * const x) \\ \hline 
+  const char * & \getrv & ( const \qdf\ * const x) \\ \hline 
+  const bool * & \getnn & ( const \qdf\ * const x) \\ \hline 
   UI4  & \getnk & ( const \qdf\ * const x) \\ \hline 
 \hline
 \end{tabular}
@@ -31,10 +32,22 @@ Returns \jt\ of x
 \subsection{\getn}
 If \jt\ of x is {\tt j\_array}, then returns length of array; else, returns 0.
 
-\subsection{\getr}
+\subsection{\getrv}
 If \jt\ of x is {\tt j\_array}, then returns {\tt NULL}.
 If \qt\ of x is Qerr or Q0, then returns {\tt NULL}.
 Else, returns a pointer to the \(0^{th}\) element of the array. 
+The data pointed to cannot be modified. 
+
+\subsection{\getnn}
+If \jt\ of x is {\tt j\_array}, then returns {\tt NULL}.
+If \qt\ of x is Qerr or Q0, then returns {\tt NULL}.
+If x does not have null values, then return {\tt NULL}.
+Else, returns a pointer to the \(0^{th}\) element of the bool array, nnx,
+such that 
+\begin{displaymath}
+  nnx[i] \Rightarrow x[i] \neq \bot
+  \neg nnx[i] \Rightarrow x[i] = \bot
+\end{displaymath}
 The data pointed to cannot be modified. 
 
 \subsection{\getnk}
