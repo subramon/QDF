@@ -8,12 +8,12 @@ modify the location pointed to.
 \begin{tabular}{|l|l|l|l|} \hline \hline 
   {\bf Return} & {\bf Name} & {\bf Args} \\ \hline  \hline
   bool & \chk & ( const \qdf\ * const x) \\ \hline 
-  \qt\ & \getq & ( const \qdf\ * const x) \\ \hline 
-  \jt\ & \getj & ( const \qdf\ * const x) \\ \hline 
-  UI4  & \getn & ( const \qdf\ * const x) \\ \hline 
+  \qt & \getq & ( const \qdf\ * const x) \\ \hline 
+  \jt & \getj & ( const \qdf\ * const x) \\ \hline 
+  uint32\_t  & \getn & ( const \qdf\ * const x) \\ \hline 
   const char * & \getrv & ( const \qdf\ * const x) \\ \hline 
-  const bool * & \getnn & ( const \qdf\ * const x) \\ \hline 
-  UI4  & \getnk & ( const \qdf\ * const x) \\ \hline 
+  const bool * & \getrnn & ( const \qdf\ * const x) \\ \hline 
+  uint32\_t  & \getnk & ( const \qdf\ * const x) \\ \hline 
 \hline
 \end{tabular}
 \caption{List of read only helper functions}
@@ -24,23 +24,23 @@ modify the location pointed to.
 Returns {\tt true} if x is syntactically valid; {\tt false}, otherwise
 
 \subsection{\getq}
-Returns \qt\  of x 
+Returns \qt  of x 
 
 \subsection{\getj}
-Returns \jt\ of x 
+Returns \jt of x 
 
 \subsection{\getn}
-If \jt\ of x is {\tt j\_array}, then returns length of array; else, returns 0.
+If \jt of x is {\tt j\_array}, then returns length of array; else, returns 0.
 
 \subsection{\getrv}
-If \jt\ of x is {\tt j\_array}, then returns {\tt NULL}.
-If \qt\ of x is Qerr or Q0, then returns {\tt NULL}.
+If \jt of x is {\tt j\_array}, then returns {\tt NULL}.
+If \qt of x is Qerr or Q0, then returns {\tt NULL}.
 Else, returns a pointer to the \(0^{th}\) element of the array. 
 The data pointed to cannot be modified. 
 
-\subsection{\getnn}
-If \jt\ of x is {\tt j\_array}, then returns {\tt NULL}.
-If \qt\ of x is Qerr or Q0, then returns {\tt NULL}.
+\subsection{\getrnn}
+If \jt of x is {\tt j\_array}, then returns {\tt NULL}.
+If \qt of x is Qerr or Q0, then returns {\tt NULL}.
 If x does not have null values, then return {\tt NULL}.
 Else, returns a pointer to the \(0^{th}\) element of the bool array, nnx,
 such that 
@@ -51,5 +51,24 @@ such that
 The data pointed to cannot be modified. 
 
 \subsection{\getnk}
-If \jt\ x is {\tt j\_object}, then returns number of keys; else, returns 0.
+If \jt x is {\tt j\_object}, then returns number of keys; else, returns 0.
+
+
+\section{Maker helper functions}
+\label{qdf_maker_helpers}
+Table~\ref{tbl_qdf_maker_helpers} lists helper functions that 
+have been provided to you to populate a \qdf.
+
+\begin{table}
+  \centering 
+\begin{tabular}{|l|l|l|l|} \hline \hline 
+{\bf Name} & {\bf Args} \\ \hline  \hline
+\mknnUA & \qdf x, \qt  q, \uint  n \\ \hline 
+\mkUA & \qdf x, \qt  q, \uint n \\ \hline 
+\hline
+\end{tabular}
+\caption{List of maker helper functions}
+\label{tbl_qdf_maker_helpers}
+\end{table}
+
 

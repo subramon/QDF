@@ -3,7 +3,7 @@ all : _qtype.tex \
 	_jtype.tex \
 	_q2c.tex \
 	_qdf_rec_type.tex  \
-	qdf_definition.pdf 
+	coalesce.pdf 
 
 
 _qtype.tex : qtype.h
@@ -19,12 +19,13 @@ _jtype.tex : jtype.h
 _qdf_rec_type.tex : qdf_rec_type.h
 	grep -v "^#" qdf_rec_type.h > _qdf_rec_type.tex
 
-qdf_definition.pdf : qdf_definition.tex \
+coalesce.pdf : coalesce.tex \
 	helpers.tex \
 	coalesce.tex \
+	macros.tex \
 	_qtype.tex _jtype.tex _q2c.tex
-	pdflatex qdf_definition.tex
-	pdflatex qdf_definition.tex
+	pdflatex coalesce.tex
+	pdflatex coalesce.tex
 
 clean : 
 	rm -f  \
@@ -32,4 +33,4 @@ clean :
 	_jtype.tex \
 	_q2c.tex \
 	_qdf_rec_type.tex  \
-	qdf_definition.pdf 
+	coalesce.pdf 

@@ -1,0 +1,51 @@
+unset RSUTILS_SRC_ROOT
+unset CMEM_SRC_ROOT
+unset Q_SRC_ROOT
+unset Q_ROOT
+unset SCLR_SRC_ROOT
+unset C2R_SRC_ROOT
+unset QDF_SRC_ROOT
+unset LUA_PATH
+unset LUA_CPATH
+
+export RSUTILS_SRC_ROOT=$HOME/RSUTILS/
+export CMEM_SRC_ROOT=$HOME/CMEM/
+export Q_SRC_ROOT=$HOME/Q/
+export Q_ROOT=$HOME/local/Q/
+export SCLR_SRC_ROOT=$HOME/SCLR/
+export C2R_SRC_ROOT=$HOME/C2R/
+export QDF_SRC_ROOT=$HOME/QDF/
+export LUA_PATH="$HOME/?.lua;$QDF_SRC_ROOT/llm/?.lua;$QDF_SRC_ROOT/lua/?.lua;;"
+export LUA_CPATH="$RSUTILS_SRC_ROOT/binding/src/?.so;$QDF_SRC_ROOT/src/?.so;;"
+export LD_LIBRARY_PATH="$QDF_SRC_ROOT/src/:$QDF_SRC_ROOT/src/gen/:$RSUTILS_SRC_ROOT/src/"
+
+unset QCFLAGS
+QCFLAGS=" -std=gnu99  -fPIC     "
+QCFLAGS+=" -g " # Comment for speed 
+QCFLAGS+=" -DDEBUG " # Comment for speed 
+QCFLAGS+=" -O0 " 
+# QCFLAGS+=" -O3 " # UnComment for speed 
+# QCFLAGS+=" -Ofast " # UnComment for speed 
+
+QCFLAGS+=" -Wall -W -Waggregate-return -Wcast-align -Wmissing-prototypes"
+QCFLAGS+=" -Wnested-externs -Wshadow -Wwrite-strings -Wunused-variable "
+QCFLAGS+=" -Wunused-parameter -Wno-pedantic -fopenmp -Wno-unused-label " 
+QCFLAGS+=" -Wmissing-declarations -Wredundant-decls -Wnested-externs "
+QCFLAGS+=" -Wstrict-prototypes -Wmissing-prototypes -Wpointer-arith "
+QCFLAGS+=" -Wshadow -Wcast-qual -Wcast-align -Wwrite-strings "
+QCFLAGS+=" -Wold-style-definition -Wsuggest-attribute=noreturn "
+
+set +e
+lscpu | grep "Architecture" | grep "arm" 1>/dev/null 2>&1
+IS_ARM_32="`echo $?`"
+lscpu | grep "Architecture" | grep "aarch64" 1>/dev/null 2>&1
+IS_ARM_64="`echo $?`"
+if [ $IS_ARM_32 == 0 ] || [ $IS_ARM_64 == 0 ]; then 
+  QCFLAGS+=" -DARM "
+  QCFLAGS+=" -Wno-cast-align " # too many warnings produced
+  export Q_IS_ARM="true"
+fi
+set -e
+export QCFLAGS="$QCFLAGS"
+echo "Source done in $PWD"
+set +e

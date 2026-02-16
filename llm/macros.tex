@@ -1,0 +1,10 @@
+\section{Macros}
+\label{macros}
+The following macros should be used when possible
+
+\begin{verbatim}
+#define mcr_WHEREAMI { fprintf(stderr, "Line %3d of File %s \n", __LINE__, __FILE__);  }
+#define mcr_go_BYE(x) { WHEREAMI; status = x ; goto BYE; }
+#define mcr_cBYE(x) { if ( (x) != 0 ) { go_BYE((x)) } }
+#define mcr_is_null(x, i) ( ( x != NULL ) && (x[i] == false) )
+\end{verbatim}

@@ -37,6 +37,7 @@
 \lfoot{}
 \cfoot{}
 \rfoot{{\small \thepage}}
+\newcommand{\uint}{{\tt uint32\_t} }
 \newcommand{\qt}{{\tt qtype\_t} }
 \newcommand{\jt}{{\tt jtype\_t} }
 \newcommand{\qdf}{{\tt qdf\_rec\_type}}
@@ -44,19 +45,23 @@
 \newcommand{\jarr}{{\tt j\_array}}
 \newcommand{\jobj}{{\tt j\_object}}
 
-\newcommand{\getq}{{\tt get\_qtype()}}
-\newcommand{\getj}{{\tt get\_jtype()}}
-\newcommand{\getn}{{\tt get\_length()}}
-\newcommand{\getrv}{{\tt get\_read\_arr\_ptr()}}
-\newcommand{\getwv}{{\tt get\_write\_arr\_ptr()}}
-\newcommand{\getnk}{{\tt get\_num\_keys()}}
-\newcommand{\getnn}{{\tt get\_nulls()}}
-\newcommand{\chk}{{\tt chk\_qdf()}}
+\newcommand{\getq}{{\tt get\_qtype}}
+\newcommand{\getj}{{\tt get\_jtype}}
+\newcommand{\getn}{{\tt get\_length}}
+\newcommand{\getrv}{{\tt get\_read\_arr\_ptr}}
+\newcommand{\getwv}{{\tt get\_write\_arr\_ptr}}
+\newcommand{\getnk}{{\tt get\_num\_keys}}
+\newcommand{\getrnn}{{\tt get\_read\_nulls}}
+\newcommand{\getwnn}{{\tt get\_write\_nulls}}
+\newcommand{\chk}{{\tt chk\_qdf}}
 
-\newcommand{\setq}{{\tt set\_qtype()}}
-\newcommand{\setj}{{\tt set\_jtype()}}
-\newcommand{\setn}{{\tt set\_length()}}
+\newcommand{\setq}{{\tt set\_qtype}}
+\newcommand{\setj}{{\tt set\_jtype}}
+\newcommand{\setn}{{\tt set\_length}}
 
-\newcommand{\setv}{{\tt set\_arr\_ptr()}}
-\newcommand{\setnn}{{\tt set\_nn()}}
+\newcommand{\mkUA}{{\tt make\_uniform\_array}}
+\newcommand{\mknnUA}{{\tt make\_uniform\_array\_with\_nulls}}
+
+\newcommand{\setv}{{\tt set\_arr\_ptr}}
+\newcommand{\setnn}{{\tt set\_nn}}
 

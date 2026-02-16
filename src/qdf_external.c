@@ -1,6 +1,7 @@
 #include "incs.h"
 #include "qdf_struct.h"
 #include "rs_mmap.h"
+#include "isfile.h"
 #include "qdf_external.h"
 #include "qdf_helpers.h"
 #ifdef DEBUG

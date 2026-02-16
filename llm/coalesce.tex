@@ -1,12 +1,19 @@
+% \renewcommand{\cfunc}{coalesce\_F4\_F4}
+\newcommand{\cfunc}{__CFUNC__}
+\newcommand{\qtypex}{__QTYPEX__}
+\newcommand{\qtypey}{__QTYPEY__}
 \section{Coalesce}
+\label{coalesce}
 
+Create optimized C code for the function defined in this section.
+Note that the name of the function {\tt func} is provided below.
 
 \begin{itemize}
-  \item Let x be a read only immutable pointer to \qdf.
-  \item Let y be a read only immutable pointer to \qdf.
+  \item Let x be an immutable pointer to immutable \qdf.
+  \item Let y be an immutable pointer to immutable \qdf.
   \item Let z be a                     pointer to \qdf.
-  \item qx  :=  \getq(x)
-  \item qy  :=  \getq(y)
+  \item qx  :=  \qtypex
+  \item qy  :=  \qtypey
   \item cqx := q2c[qx] C type corresponding to qx as defined in Lua table q2c
   \item cqy := q2c[qy] C type corresponding to qy as defined in Lua table q2c
 \item jx  := \getj(X)
@@ -15,26 +22,27 @@
 \item ny := \getn(Y)
 \item const cqx * const vx = \getrv(x)
 \item const cqy * const vy = \getrv(y)
-\item const bool * const nnx = \getnn(x)
-\item const bool * const nny = \getnn(y)
+\item const bool * const nnx = \getrnn(x)
+\item const bool * const nny = \getrnn(y)
 \end{itemize}
 
-\begin{verbatim}
-T = { "coalesce", "_", qx, "_", qy }
-func = string.concat(T)
-\end{verbatim}
+% \begin{verbatim}
+% T = { "coalesce", "_", qx, "_", qy }
+% func = string.concat(T)
+% \end{verbatim}
 
 Function signature is 
 \begin{enumerate}
-  \item name is func, specified above. 
+  \item name is \cfunc
   \item Return value is of type integer. 
     Return value is 0 on success, -1 on failure.
   \item Arguments are x, y, z specified above
 \end{enumerate}
 
-Function logic is as follows.
 
-Function fails under the conditions listed below
+Function fails under the conditions listed below. Upon failure, 
+execute macro \verb+mcr_go_BYE(-1)+ specified in Section~\ref{macros}
+
 \be
 \item Fails if x == NULL
 \item Fails if y == NULL
@@ -46,37 +54,29 @@ Function fails under the conditions listed below
 \item Fails if nx == 0
   \ee
 
-
-   Let nz := nx 
-   Let jz := jx 
-   Let qz := qx 
-   Create vz  as an array of type cqx and length nz
-   Create nnz as an array of type bool and length nz
+Function logic is as follows.
+\be
+\item Set \(nz \leftarrow nx \)
+\item Set \(qz \leftarrow qx \)
+\item Execute \mkUA(z, qz, nz)
+\item cqx *vz := \getwv(z) 
+\item bool *nnz := \getwnn(z) 
+  \ee
 
    Execute the following for all values of i in [0 .. nz-1]
-
-   if ( not nnx == or nnx[i] ) then 
-     vz[i] := vx[i]
-     nnz[i] := true
-   else
-     if ( not nny == or nny[i] ) then 
-       vz[i] := vy[i]
-       nnz[i] := true
-     else
-       vz[i] := 0
-       nnz[i] := false
-     endif
-   endif
-
-  // Execute the following setter functions
-  // All setters return a int status. If status is not 0, then
-  // calling function executes macro cBYE(-1)
-  \begin{enumerate}
-    \item   \setj(z, jz)
-    \item   \setq(z, qz)
-    \item   \setn(z, nz)
-    \item   \setv(z, vz)
-    \item   \setnn(z, nnz)
-  \end{enumerate}
+\begin{verbatim}
+if ( not mcr_is_null(nnx, i) ) then 
+  vz[i] := vx[i]
+  nnz[i] := true
+else
+  if ( not mcr_is_null(nny, i) ) then 
+    vz[i] := vy[i]
+    nnz[i] := true
+  else
+    vz[i] := 0
+    nnz[i] := false
+  endif
+endif
+\end{verbatim}
 
 \end{document}

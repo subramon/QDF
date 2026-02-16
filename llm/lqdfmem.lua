@@ -51,8 +51,8 @@ setmetatable(lqdfmem, {
       return cls.new(...)
    end,
 })
-
 register_type(lqdfmem, "lqdfmem")
+
 function lqdfmem.new(args)
   local qdfmem = setmetatable({}, lqdfmem)
   qdfmem._meta = {} -- for meta data stored in qdfmem
