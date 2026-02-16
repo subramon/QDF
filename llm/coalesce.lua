@@ -1,12 +1,13 @@
 -- Provide a PDF containing the specification of the operator
 local cutils = require 'libcutils'
 local specialize_tex_spec = require 'specialize_tex_spec'
+local make_pdf_spec = require 'make_pdf_spec'
 
 local C = {}
 
 --== START: Following Created at run time by system
-local specializations = {}  -- specializations
-specializations.build_so = "command to build .so file "
+C.build_so = "command to build .so file "
+C.specializations  = {}
 -- Each specialization contains
 -- (1) substitutions made
 -- (2) LaTeX file containing spec
@@ -15,7 +16,6 @@ specializations.build_so = "command to build .so file "
 -- (5) doth file 
 --== STOP : Above created at run time by system
 --=======================================
-C.specializations  = specializations 
 -- Created at authoring time 
 -- START: Following created when operator is authored
 local function get_subs(x, y)
@@ -33,23 +33,6 @@ C.generic_tex_spec = "coalesce.tex"
 C.lua_calling_spec = "bogus spec for now"
 -- STOP: Above created when operator is authored
 
-local make_pdf_spec = function(
-  infile,
-  outfile
-)
-  assert(type(infile) == "string")
-  assert(type(outfile) == "string")
-  assert(cutils.isfile(infile), "File not found " .. infile)
-  assert(infile ~= outfile)
-
-  local tmpfile = "/tmp/_xx.tex"  -- TODO IMPROVE 
-  specialize_tex_spec(infile, { __OPERATOR__ = "XXX", }, tmpfile)
-  local cmd = string.format("pdflatex %s -o %s ", tmpfile, outfile)
-  print("cmd = ", cmd)
-  error("XXXX")
-  os.execute(cmd)
-  cutils.unlink(tmpfile)
-end
 
 local call_llm = function() return nil end -- TODO 
 
@@ -60,19 +43,19 @@ C.run = function (x, y)
   assert(type(y) == "lQDF")
   local subs = get_subs(x, y)
   local cfunc = assert(subs.__CFUNC__)
-  if ( rawget(specializations, cfunc) == nil ) then 
-    specializations[cfunc] = {} 
+  if ( rawget(C.specializations, cfunc) == nil ) then 
+    C.specializations[cfunc] = {} 
   end
-  specializations[cfunc].subs = subs
+  C.specializations[cfunc].subs = subs
 
   local specific_tex_spec = "_" .. cfunc .. ".tex"
-  specialize_tex_spec(C.generic_tex_spec, subs, specific_tex_spec)
-  specializations[cfunc].tex_spec = specific_tex_spec
+  specialize_tex_spec(C.generic_tex_spec, subs, specific_tex_spec, true)
+  C.specializations[cfunc].tex_spec = specific_tex_spec
 
   local specific_pdf_spec = "_" .. cfunc .. ".pdf"
-  make_pdf_spec(specific_tex_spec, specific_pdf_spec)
-  error("XXXX")
-  specializations[cfunc].pdf_spec = specific_pdf_spec
+  assert(make_pdf_spec(specific_tex_spec, cfunc, specific_pdf_spec))
+  C.specializations[cfunc].pdf_spec = specific_pdf_spec
+  error("XXX")
 
   local doth, dotc, build_so = call_llm(pdf_spec)
 

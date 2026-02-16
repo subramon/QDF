@@ -63,11 +63,14 @@ Function logic is as follows.
 \item bool *nnz := \getwnn(z) 
   \ee
 
-   Execute the following for all values of i in [0 .. nz-1]
-\begin{verbatim}
-if ( not mcr_is_null(nnx, i) ) then 
-  vz[i] := vx[i]
-  nnz[i] := true
+Execute following code in Figure~\ref{spec}
+\begin{figure}
+  \centering
+  \begin{tabbing} \hspace*{0.25in} \= \hspace*{0.25in} \hspace*{0.25in} \= \hspace*{0.25in} \= \kill
+    \(\forall i \in [0 \ldots nz-1]\) \+ \\
+    {\bf if} ( {\bf not} mcr\_is\_null(nnx, i) ) {\bf then } \+ \\ 
+      \(vz[i] \leftarrow vx[i] \) \\ 
+      \(nnz[i] \leftarrow \True\) \- \\
 else
   if ( not mcr_is_null(nny, i) ) then 
     vz[i] := vy[i]
