@@ -2,9 +2,29 @@
 \label{macros}
 The following macros should be used when possible
 
+\begin{enumerate}
+%-----------------------------------
+  \item Print file and line number 
 \begin{verbatim}
-#define mcr_WHEREAMI { fprintf(stderr, "Line %3d of File %s \n", __LINE__, __FILE__);  }
+#define mcr_WHEREAMI{fprintf(stderr, "Line %3d, File %s\n", __LINE__, __FILE__);}
+\end{verbatim}
+%-----------------------------------
+\item Print file and line number, set status to {\tt x} and jump to label {\tt BYE}
+\begin{verbatim}
 #define mcr_go_BYE(x) { WHEREAMI; status = x ; goto BYE; }
+\end{verbatim}
+%-----------------------------------
+\item If value of {\tt x} is not 0, then 
+print file and line number and jump to label {\tt BYE}
+\begin{verbatim}
 #define mcr_cBYE(x) { if ( (x) != 0 ) { go_BYE((x)) } }
+\end{verbatim}
+
+%-----------------------------------
+\item Used to determine whether \(i^{th}\) element of \(x\) is null
+\begin{verbatim}
 #define mcr_is_null(x, i) ( ( x != NULL ) && (x[i] == false) )
 \end{verbatim}
+%-----------------------------------
+
+\end{enumerate}

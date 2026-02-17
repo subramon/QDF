@@ -6,30 +6,33 @@
 
 \section{QDF Data Layout}
 
-This section defines the layout of data in a QDF
+This section defines the layout of data in a QDF. 
+
+\input{notations}
 
 \subsection{qtype}
 
-The enum \qt is defined as 
+The enum \qt is defined in file \verb+qtype.h+ as 
 \verbatiminput{_qtype}
 
 \subsection{q2c}
 
-The Lua table q2c is a mapping between a value of type \qt and a C type.
+The Lua table q2c, defined in \verb+q2c.lua+,  is a mapping between a value of type \qt and a C type.
 \input{_q2c}
 
 \subsection{jtype}
 
-The enum \jt is defined as follows
+The enum \jt is defined in file \verb+jtype.h+ as follows
 \verbatiminput{_jtype}
 
 \subsection{QDF struct} 
-The struct \qdf is defined as follows
+The struct \qdf is defined in file \verb+qdf_rec_type.h+ as follows
 \verbatiminput{_qdf_rec_type}
 
 \input{helpers}
 
 \input{macros}
 \input{__OPERATOR__}
+\input{llm_instructions}
 
 \end{document}

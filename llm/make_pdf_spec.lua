@@ -20,6 +20,8 @@ local make_pdf_spec = function(
   -- could not get pdflatex to send pdf file to desired directory
   -- string.format("pdflatex %s -output-directory /tmp/ ", tmpfile)
   os.execute(string.format("pdflatex %s ", tmpfile))
+  -- execute twice to resolve labels 
+  os.execute(string.format("pdflatex %s ", tmpfile)) 
   local pdffile = string.gsub(tmpfile, ".tex", ".pdf")
   assert(cutils.rename(pdffile, outfile))
   -- cleanup

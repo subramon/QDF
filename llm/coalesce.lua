@@ -6,7 +6,6 @@ local make_pdf_spec = require 'make_pdf_spec'
 local C = {}
 
 --== START: Following Created at run time by system
-C.build_so = "command to build .so file "
 C.specializations  = {}
 -- Each specialization contains
 -- (1) substitutions made
@@ -34,7 +33,7 @@ C.lua_calling_spec = "bogus spec for now"
 -- STOP: Above created when operator is authored
 
 
-local call_llm = function() return nil end -- TODO 
+local call_llm = function() return true end -- TODO 
 
 -- this should be created programmatically 
 C.run = function (x, y)
@@ -55,24 +54,21 @@ C.run = function (x, y)
   local specific_pdf_spec = "_" .. cfunc .. ".pdf"
   assert(make_pdf_spec(specific_tex_spec, cfunc, specific_pdf_spec))
   C.specializations[cfunc].pdf_spec = specific_pdf_spec
-  error("XXX")
 
-  local doth, dotc, build_so = call_llm(pdf_spec)
+  -- local doth, dotc, build_so = call_llm(pdf_spec) TODO FAKING
+  local doth = "coalesce_F8_F8.h" 
+  local dotc = "coalesce_F8_F8.c" 
+  local dotso = "libcoalesce_F8_F8.so" 
+  local build_so = "gcc -fPIC -shared  coalesce_F8_F8.c -Wno-implicit-function-declaration -Wno-int-conversion -o libcoalesce_F8_F8.so" 
+  C.specializations[cfunc].doth     = doth
+  C.specializations[cfunc].dotc     = dotc
+  C.specializations[cfunc].build_so = build_so
+  cutils.delete(dotso)
+  os.execute(build_so)
+  assert(cutils.isfile(dotso))
+  -- Now to call C from Lua 
+  return true 
 
- --[[
-  local xqtype = x:qtype()
-  local yqtype = y:qtype()
-  assert(xqtype == yqtype)
-  local func_name = coalesce .. "_" .. xqtype 
-  local subs = { 
-    xqtype = xqtype, 
-    yqtype = yqtype, 
-    func_name = func_name
-  }
-  local custom_spec = substitute(spec, subs)
-  local dotc, doth = call_llm(custom_spec)
-  --]]
-  print(spec)
 end
 C.set_spec = function(spec)
   assert(type(spec) == "string")

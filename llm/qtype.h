@@ -19,4 +19,4 @@ typedef enum {
   SC,  // consatnt length string 
   TM, // struct tm as defined in time.h
 } qtype_t;
-#endif __QTYPE_H
+#endif // __QTYPE_H

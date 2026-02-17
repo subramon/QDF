@@ -33,19 +33,25 @@ Returns \jt of x
 If \jt of x is {\tt j\_array}, then returns length of array; else, returns 0.
 
 \subsection{\getrv}
-If \jt of x is {\tt j\_array}, then returns {\tt NULL}.
-If \qt of x is Qerr or Q0, then returns {\tt NULL}.
-Else, returns a pointer to the \(0^{th}\) element of the array. 
+\bi
+\item If \jt of x is {\tt j\_array}, then returns {\tt NULL}.
+\item If \qt of x is Q0, then returns {\tt NULL}.
+\item Else, returns a pointer to the \(0^{th}\) element of the array. 
+  \ei
 The data pointed to cannot be modified. 
 
 \subsection{\getrnn}
-If \jt of x is {\tt j\_array}, then returns {\tt NULL}.
-If \qt of x is Qerr or Q0, then returns {\tt NULL}.
-If x does not have null values, then return {\tt NULL}.
+\bi
+\item If \jt of x is {\tt j\_array}, then returns {\tt NULL}.
+\item If \qt of x is Qerr or Q0, then returns {\tt NULL}.
+\item If x does not have null values, then return {\tt NULL}.
+  \ei
 Else, returns a pointer to the \(0^{th}\) element of the bool array, nnx,
 such that 
 \begin{displaymath}
   nnx[i] \Rightarrow x[i] \neq \bot
+\end{displaymath}
+\begin{displaymath}
   \neg nnx[i] \Rightarrow x[i] = \bot
 \end{displaymath}
 The data pointed to cannot be modified. 
@@ -62,9 +68,13 @@ have been provided to you to populate a \qdf.
 \begin{table}
   \centering 
 \begin{tabular}{|l|l|l|l|} \hline \hline 
-{\bf Name} & {\bf Args} \\ \hline  \hline
-\mknnUA & \qdf x, \qt  q, \uint  n \\ \hline 
-\mkUA & \qdf x, \qt  q, \uint n \\ \hline 
+  {\bf Name} & {\bf Number of Args} {\bf Arguments} \\ \hline  \hline
+  \mknnUA 3 & & \qdf x\\ \hline 
+         & & \qt  q \\ \hline 
+         & & \uint  n \\ \hline 
+  \mkUA & 3 & \qdf x\\ \hline 
+         & & \qt  q \\ \hline 
+         & & \uint  n \\ \hline 
 \hline
 \end{tabular}
 \caption{List of maker helper functions}
