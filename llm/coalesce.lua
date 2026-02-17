@@ -72,7 +72,7 @@ C.run = function (x, y)
     C.specializations[cfunc].dotso    = dotso
     lQDF.q_add(cfunc, dotso, doth)
     print("XXXXXX")
-    lQDF.q_rec_spec(cfunc, C.specializations)
+    lQDF.q_rec_spec(cfunc, C.specializations[cfunc])
   else
     print("Specializations for " .. cfunc .. " exist.")
   end

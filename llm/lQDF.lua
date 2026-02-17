@@ -20,6 +20,7 @@ typedef struct {
 local QDF_hdrs = require 'qdf_hdrs' -- created by ../src/Makefile 
 ffi.cdef(QDF_hdrs)
 --================================
+local q_registry  = {}
 local specializations = {} -- TODO document 
 local known_functions = {} -- function that have been cdef'd and loaded
 local libs_loaded = {} -- libraries that have been loaded. 
@@ -51,6 +52,7 @@ local widths           = require 'widths'
 local mk_c_qtypes      = require 'mk_c_qtypes'
 local trim_qtype       = require 'trim_qtype'
 local tbl_of_str_to_C_array = require 'RSUTILS/lua/tbl_of_str_to_C_array'
+local serialize  = require 'RSUTILS/lua/serialize_table'
 local assemble_keys    = require 'assemble_keys'
 local sclr_as_lua_num  = require 'sclr_as_lua_num'
 local lua_num_as_sclr  = require 'lua_num_as_sclr'
@@ -2183,18 +2185,17 @@ function lQDF.mk_df() -- useful utility for testing
   newqdf._cmem = cqdf
   return newqdf
 end
-lQDF.qfns  = {}
 lQDF.register = function(fname, tbl)
   assert(type(fname) == "string")
   assert(#fname > 0)
-  assert(not rawget(lQDF.qfns, fname))
+  assert(not rawget(q_registry, fname))
 
   assert(type(tbl) == "table")
   assert(type(tbl.run) == "function") -- must exist 
   assert(type(tbl.get_subs) == "function") -- must exist 
   assert(type(tbl.test) == "function") -- must exist 
 
-  lQDF.qfns[fname] = tbl
+  q_registry[fname] = tbl
   lQDF[fname] = tbl.run
   return tbl
 end
@@ -2230,7 +2231,7 @@ lQDF.q_get = function(cfunc)
   return libs_loaded[cfunc]
 end
 
-lQDF.list = function()
+lQDF.q_list = function()
   print("START known functions")
   for k, v in pairs(known_functions) do 
     print("Operator " .. k)
@@ -2243,11 +2244,43 @@ lQDF.list = function()
   return true 
 end 
 
-lQDF.hydrate = function()
+lQDF.q_dump = function()
+  -- START: Save stuff given to you by user 
+  local X = {}
+  for k, v in pairs(q_registry) do 
+    local Y = {}
+    print("Dumping info for operator " .. k)
+    assert(type(v) == "table")
+
+    local fn_get_subs = v.get_subs
+    assert(type(fn_get_subs) == "function")
+    Y.str_fn_get_subs = string.dump(fn_get_subs)
+
+    local fn_run = v.run
+    assert(type(fn_run) == "function")
+    Y.str_fn_run = string.dump(fn_run)
+
+    local fn_test = v.test
+    assert(type(fn_test) == "function")
+    Y.str_fn_test = string.dump(fn_test)
+
+    X[k] = Y
+  end 
+  assert(serialize.save_tbl("_static.lua", X))
+  -- STOP: Save stuff given to you by user 
+  -- START: Save stuff created at run time  
+  -- STOP: Save stuff  created at run time 
+end
+lQDF.q_restore = function()
   -- empty existing knowledge if any 
   known_functions = {} -- function that have been cdef'd and loaded
   libs_loaded = {} -- libraries that have been loaded. 
   for k, v in pairs(known_functions) do 
+    print("Restoring static data for " .. k)
+    print("FAKE FOR NOW")
+
+    print("Restoring dynamic data for " .. k)
+    print("FAKE FOR NOW")
     --[[
     coalesce_F8_F8.c   -- function definition
     coalesce_F8_F8.h   -- function declaration
@@ -2284,3 +2317,12 @@ return Account
 --]]
 
 return lQDF
+
+
+--[[
+Judy Jackson SunnyView $6400 a month, they have availability
+
+Agnes and Betty, Section 8 HUD housing 10 year waiting list
+408-252-4902
+
+--]]
