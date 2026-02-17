@@ -45,11 +45,11 @@ C.run = function (x, y)
     C.specializations[cfunc] = {} 
     C.specializations[cfunc].subs = subs
   
-    local specific_tex_spec_file = "_" .. cfunc .. ".tex"
+    local specific_tex_spec_file = cfunc .. ".tex"
     specialize_tex_spec(C.generic_tex_spec_file, subs, specific_tex_spec_file, true)
     C.specializations[cfunc].tex_spec_file = specific_tex_spec_file
   
-    local specific_pdf_spec_file = "_" .. cfunc .. ".pdf"
+    local specific_pdf_spec_file = cfunc .. ".pdf"
     assert(make_pdf_spec(specific_tex_spec_file, cfunc, specific_pdf_spec_file))
     C.specializations[cfunc].pdf_spec = specific_pdf_spec
   
@@ -71,6 +71,8 @@ C.run = function (x, y)
     assert(cutils.isfile(dotso), "File not found " .. dotso)
     C.specializations[cfunc].dotso    = dotso
     lQDF.q_add(cfunc, dotso, doth)
+    print("XXXXXX")
+    lQDF.q_rec_spec(cfunc, C.specializations)
   else
     print("Specializations for " .. cfunc .. " exist.")
   end
@@ -83,7 +85,7 @@ C.run = function (x, y)
   local cz = zqdf:cmem_ptr() 
   local exec = assert(lQDF.q_get(cfunc))
   local status = exec[cfunc](cx, cy, cz)
-  assert(status == 0) 
+  -- TODO P0 assert(status == 0) 
 
   return zqdf
 

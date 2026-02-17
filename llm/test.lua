@@ -4,13 +4,10 @@ lQDF.register('coalesce', C)
 
 -- for k, v in pairs(lQDF) do print(k, type(v)) end 
 
-local J = { 1, 2, 3, }
-local x = lQDF(J)
-print(x:qtype())
-print(x:jtype())
-print(x)
-local y = lQDF.coalesce(x, x)
-assert(type(y) == "lQDF")
+local x = lQDF({ 1, 2, 3, })
+local y = lQDF({ 4, 5, 6, })
+local z = lQDF.coalesce(x, y)
+assert(type(z) == "lQDF")
 lQDF.list()
 
 lQDF.qfns.coalesce.test()

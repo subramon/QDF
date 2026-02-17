@@ -14,8 +14,7 @@ local make_pdf_spec = function(
 
   local tmpfile = assert(cutils.mk_temp_file("_XXXXXX", ".tex"))
   specialize_tex_spec("qdf_definition.tex", 
-    -- we have a convention that all temporary files start with uscore
-    { __OPERATOR__ = "_" .. specialized_operator, }, 
+    { __OPERATOR__ = specialized_operator, }, 
     tmpfile, false)
   -- could not get pdflatex to send pdf file to desired directory
   -- string.format("pdflatex %s -output-directory /tmp/ ", tmpfile)

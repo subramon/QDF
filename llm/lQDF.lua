@@ -20,6 +20,7 @@ typedef struct {
 local QDF_hdrs = require 'qdf_hdrs' -- created by ../src/Makefile 
 ffi.cdef(QDF_hdrs)
 --================================
+local specializations = {} -- TODO document 
 local known_functions = {} -- function that have been cdef'd and loaded
 local libs_loaded = {} -- libraries that have been loaded. 
 -- kept here to Avoids garbage collection
@@ -2197,6 +2198,13 @@ lQDF.register = function(fname, tbl)
   lQDF[fname] = tbl.run
   return tbl
 end
+-- record specializations 
+lQDF.q_rec_spec = function(cfunc, spec_tbl)
+  assert(type(spec_tbl) == "table")
+  assert(not specializations[cfunc])
+  specializations[cfunc] = spec_tbl
+end
+
 lQDF.q_add = function(cfunc, dotso, doth)
   assert(type(cfunc) == "string"); assert(#cfunc > 0)
   if ( known_functions[cfunc] ) then
@@ -2223,7 +2231,31 @@ lQDF.q_get = function(cfunc)
 end
 
 lQDF.list = function()
-  for k, v in pairs(known_functions) do print(k) end 
+  print("START known functions")
+  for k, v in pairs(known_functions) do 
+    print("Operator " .. k)
+    assert(specializations[k])
+    for k2, v2 in pairs(specializations[k]) do 
+      print(k, k2, type(v2))
+    end
+  end 
+  print(" STOP known functions")
+  return true 
+end 
+
+lQDF.hydrate = function()
+  -- empty existing knowledge if any 
+  known_functions = {} -- function that have been cdef'd and loaded
+  libs_loaded = {} -- libraries that have been loaded. 
+  for k, v in pairs(known_functions) do 
+    --[[
+    coalesce_F8_F8.c   -- function definition
+    coalesce_F8_F8.h   -- function declaration
+    libcoalesce_F8_F8.so -- .so file 
+    coalesce_F8_F8.pdf   -- full specification sent to LLM
+    coalesce_F8_F8.tex -- specialized LaTeX spec of operator 
+    --]]
+  end
 end 
 
 --[[ some sample code that was used for testing while developing above
