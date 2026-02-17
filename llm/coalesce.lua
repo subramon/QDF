@@ -1,9 +1,10 @@
 -- Provide a PDF containing the specification of the operator
-local cutils = require 'libcutils'
+local cutils   = require 'libcutils'
 local specialize_tex_spec = require 'specialize_tex_spec'
 local make_pdf_spec = require 'make_pdf_spec'
 local call_llm = function() return true end -- TODO 
-local lQDF = require 'lQDF'
+local lQDF     = require 'lQDF'
+local lqdfmem  = require 'lqdfmem'
 
 local C = {}
 
@@ -56,16 +57,18 @@ C.run = function (x, y)
     local doth  = cfunc .. ".h" 
     local dotc  = cfunc .. ".c" 
     local dotso = "lib" .. cfunc .. ".so" 
-    assert(cutils.isfile(doth))
-    assert(cutils.isfile(dotc))
+    assert(cutils.isfile(doth), "File not found " .. doth)
+    assert(cutils.isfile(dotc), "File not found " .. dotc)
     -- TODO build_so comes back from call_llm
-    local build_so = "gcc -fPIC -shared  coalesce_F8_F8.c -Wno-implicit-function-declaration -Wno-int-conversion -o libqdf.so libcoalesce_F8_F8.so" 
+    local build_so = "gcc -fPIC -shared  coalesce_F8_F8.c -Wno-implicit-function-declaration -Wno-int-conversion -o libcoalesce_F8_F8.so" 
+    -- TODO Verify that build_so command links libqdf.so 
     C.specializations[cfunc].doth     = doth
     C.specializations[cfunc].dotc     = dotc
     C.specializations[cfunc].build_so = build_so
     cutils.delete(dotso)
+    print("Executing ", build_so)
     os.execute(build_so)
-    assert(cutils.isfile(dotso))
+    assert(cutils.isfile(dotso), "File not found " .. dotso)
     C.specializations[cfunc].dotso    = dotso
     lQDF.q_add(cfunc, dotso, doth)
   else
@@ -75,13 +78,13 @@ C.run = function (x, y)
   local cx = x:cmem_ptr() 
   local cy = y:cmem_ptr() 
   local z = lqdfmem(0)
-  local cz = z:cmem_ptr() 
-  local exec = XXXX
-  exec(cx, cy, cz)
   local zqdf = setmetatable({}, lQDF)
-  zqdf._cmem = cqdf
+  zqdf._cmem = z
+  local cz = zqdf:cmem_ptr() 
+  -- local exec = XXXX
+  -- exec(cx, cy, cz)
 
-  return true 
+  return zqdf
 
 end
 C.test = function()

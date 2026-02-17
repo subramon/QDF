@@ -1,6 +1,7 @@
 #include "incs.h"
 #include "auxil.h"
 #include "get_time_usec.h"
+#include "rdstc.h"
 #include "q_helpers.h"
 
 int 
@@ -19,7 +20,7 @@ find_a_spot_write(
   for ( bool found_a_spot = false; !found_a_spot; ) {
     // start looking from spot j
     // int j; lrand48_r(ptr_rbuf, &j); j = j % qsz; 
-    uint32_t j = (uint32_t)(RDTSC() % qsz); // TODO P1 
+    uint32_t j = (uint32_t)(rdstc() % qsz); // TODO P1 
     for ( uint32_t k = 0; ((k < qsz) && (!found_a_spot)); k++,j++) {
       int l_expected = expected; // TODO P3 Why is this needed?
       int l_desired  = desired;
@@ -60,7 +61,7 @@ find_a_spot_read(
 
   // start looking from spot j
   // int j; lrand48_r(ptr_rbuf, &j); j = j % qsz; 
-  uint32_t j = (uint32_t)(RDTSC() % qsz); // TODO P1 
+  uint32_t j = (uint32_t)(rdstc() % qsz); // TODO P1 
   for ( uint32_t k = 0; k < qsz; k++,j++) {
     int l_expected = expected; // TODO P3 Why is this needed?
     int l_desired  = desired;
