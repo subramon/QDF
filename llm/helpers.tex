@@ -1,4 +1,14 @@
-\section{Read only helper functions}
+\section{Helper functions}
+Helper functions are provided in {\tt libqdf.so}.
+All function declarations are available in {\tt qdf.h}
+There are three kinds of helpers
+\be
+\item readers or getters --- Section~\ref{qdf_read_helpers}
+\item writers or setters --- Section~\ref{qdf_write_helpers}
+\item makers --- Section~\ref{qdf_make_helpers}
+  \ee
+
+\subsection{Read only helper functions}
 \label{qdf_read_helpers}
 Table~\ref{tbl_qdf_read_helpers} lists helper functions that have been provided to
 you. They take as an argument an immutable pointer to \qdf\ and do {\bf not}
@@ -20,19 +30,19 @@ modify the location pointed to.
 \label{tbl_qdf_read_helpers}
 \end{table}
 
-\subsection{\chk}
+\subsubsection{\chk}
 Returns {\tt true} if x is syntactically valid; {\tt false}, otherwise
 
-\subsection{\getq}
+\subsubsection{\getq}
 Returns \qt  of x 
 
-\subsection{\getj}
+\subsubsection{\getj}
 Returns \jt of x 
 
-\subsection{\getn}
+\subsubsection{\getn}
 If \jt of x is {\tt j\_array}, then returns length of array; else, returns 0.
 
-\subsection{\getrv}
+\subsubsection{\getrv}
 \bi
 \item If \jt of x is {\tt j\_array}, then returns {\tt NULL}.
 \item If \qt of x is Q0, then returns {\tt NULL}.
@@ -40,7 +50,7 @@ If \jt of x is {\tt j\_array}, then returns length of array; else, returns 0.
   \ei
 The data pointed to cannot be modified. 
 
-\subsection{\getrnn}
+\subsubsection{\getrnn}
 \bi
 \item If \jt of x is {\tt j\_array}, then returns {\tt NULL}.
 \item If \qt of x is Qerr or Q0, then returns {\tt NULL}.
@@ -56,29 +66,71 @@ such that
 \end{displaymath}
 The data pointed to cannot be modified. 
 
-\subsection{\getnk}
+\subsubsection{\getnk}
 If \jt x is {\tt j\_object}, then returns number of keys; else, returns 0.
 
 
-\section{Maker helper functions}
-\label{qdf_maker_helpers}
-Table~\ref{tbl_qdf_maker_helpers} lists helper functions that 
-have been provided to you to populate a \qdf.
+\subsection{Maker helper functions}
+\label{qdf_make_helpers}
+Table~\ref{tbl_qdf_make_helpers} lists helper functions that 
+have been provided to you to create or make a \qdf.
+\be
+\item The first argument is always a pointer to \qdf, the elements of which will
+  be set by this function
+\item The return value is an integer status which is 0 for success 
+  and non-zero for failure. 
+\item They may have other arguments as well. 
+  \ee
 
 \begin{table}
   \centering 
 \begin{tabular}{|l|l|l|l|} \hline \hline 
-  {\bf Name} & {\bf Number of Args} {\bf Arguments} \\ \hline  \hline
-  \mknnUA 3 & & \qdf x\\ \hline 
-         & & \qt  q \\ \hline 
-         & & \uint  n \\ \hline 
-  \mkUA & 3 & \qdf x\\ \hline 
-         & & \qt  q \\ \hline 
-         & & \uint  n \\ \hline 
+  {\bf Name} & {\bf Arguments} \\ \hline  \hline
+  \mknnUA & \qdf x\\ \hline 
+         & \qt  q \\ \hline 
+         & \uint  n \\ \hline 
+  \mkUA &  \qdf x\\ \hline 
+         & \qt  q \\ \hline 
+         & \uint  n \\ \hline 
 \hline
 \end{tabular}
 \caption{List of maker helper functions}
-\label{tbl_qdf_maker_helpers}
+\label{tbl_qdf_make_helpers}
 \end{table}
 
+\subsection{\mkUA}
+\label{mkUA}
+
+Creates an empty QDF meant to store a uniform array that does 
+{\bf not} have null values. 
+
+
+\subsection{\mknnUA}
+\label{mkUA}
+
+Creates an empty QDF meant to store a uniform array that 
+{\bf does} have null values. 
+
+\subsection{Writable helper functions}
+\label{qdf_write_helpers}
+Table~\ref{tbl_qdf_write_helpers} 
+lists helper functions that have been provided to you to modify the elements of a variable of type \qdf. 
+\be
+\item The first argument is always a pointer to \qdf\ which can be used to
+modify the location pointed to. 
+\item The return value is an integer status which is 0 for success 
+  and non-zero for failure. 
+\item They may have other arguments as well. 
+  \ee
+\begin{table}
+  \centering 
+\begin{tabular}{|l|l|l|l|} \hline \hline 
+  {\bf Name} & Argument 2 & Argument 3 \\ \hline 
+  TODO & TODO & TODO \\ \hline
+  TODO & TODO & TODO \\ \hline
+\hline
+\end{tabular}
+\caption{List of read only helper functions}
+\label{tbl_qdf_write_helpers}
+\end{table}
 

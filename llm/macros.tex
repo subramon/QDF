@@ -26,5 +26,15 @@ print file and line number and jump to label {\tt BYE}
 #define mcr_is_null(x, i) ( ( x != NULL ) && (x[i] == false) )
 \end{verbatim}
 %-----------------------------------
+\item Used to determine whether variable {\tt x} of type pointer to \qdf is empty 
+\begin{verbatim}
+#define is_empty(x) ( ( x->data == NULL ) && ( x->size == 0 ) ) 
+\end{verbatim}
+%-----------------------------------
+\item Used to determine whether variable {\tt x} of type pointer to \qdf is not empty 
+\begin{verbatim}
+#define is_not_empty(x) ( ( x->data != NULL ) && ( x->size != 0 ) ) 
+\end{verbatim}
+%-----------------------------------
 
 \end{enumerate}

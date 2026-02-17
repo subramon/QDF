@@ -1,5 +1,6 @@
 local ffi           = require 'ffi'
 local register_type = require 'RSUTILS/lua/register_type'
+local strip_pound   = require 'RSUTILS/lua/strip_pound'
 local cutils        = require 'libcutils'
 local cQDF          = ffi.load("libqdf.so")
 ffi.cdef([[
@@ -18,6 +19,11 @@ typedef struct {
 ]])
 local QDF_hdrs = require 'qdf_hdrs' -- created by ../src/Makefile 
 ffi.cdef(QDF_hdrs)
+--================================
+local known_functions = {} -- function that have been cdef'd and loaded
+local libs_loaded = {} -- libraries that have been loaded. 
+-- kept here to Avoids garbage collection
+
 --================================
 local lqdfmem       = require 'lqdfmem'
 --================== 
@@ -1995,7 +2001,7 @@ function lQDF:junk()
   x:junk()
   lQDF.junk()
   --]]
-  print("hello world")
+  print("junk function hello world")
 end
 --======================================================
 -- Let m = by
@@ -2191,6 +2197,29 @@ lQDF.register = function(fname, tbl)
   lQDF[fname] = tbl.run
   return tbl
 end
+lQDF.q_add = function(cfunc, dotso, doth)
+  assert(type(cfunc) == "string"); assert(#cfunc > 0)
+  if ( known_functions[cfunc] ) then
+    -- Nothing to do
+    assert(libs_loaded[cfunc])
+    return true
+  end 
+  -- cdef the function declaration
+  local fn_decl = assert(strip_pound(doth))
+  ffi.cdef(fn_decl)
+  -- load .so file 
+  local L = assert(ffi.load(dotso))
+  assert(L[cfunc]) -- check that cfunc exists in .so file 
+  assert(not libs_loaded[cfunc])
+  libs_loaded[cfunc] = L
+
+  known_functions[cfunc] = true 
+  return true
+end 
+lQDF.list = function()
+  for k, v in pairs(known_functions) do print(k) end 
+end 
+
 --[[ some sample code that was used for testing while developing above
 local A = require 'account'
 A:report()

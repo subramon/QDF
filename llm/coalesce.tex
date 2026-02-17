@@ -1,4 +1,4 @@
-% \renewcommand{\cfunc}{coalesce\_F4\_F4}
+% \renewcommand{\cfunc}{coalesce\_F4\_F4} as an example 
 \newcommand{\cfunc}{__CFUNC__}
 \newcommand{\qtypex}{__QTYPEX__}
 \newcommand{\qtypey}{__QTYPEY__}
@@ -44,8 +44,12 @@ execute macro \verb+mcr_go_BYE(-1)+ specified in Section~\ref{macros}
 
 \be
 \item Fails if x == NULL
+\item Fails if \verb+is_empty(x)+ 
 \item Fails if y == NULL
+\item Fails if \verb+is_empty(y)+ 
 \item Fails if x == y
+\item Fails if z == NULL
+\item Fails if \verb+is_not_empty(z)+ 
 \item Fails if qx \(\neq\) qy
 \item Fails if jx \(\neq \jarr\) 
 \item Fails if jy \(\neq \jarr\) 

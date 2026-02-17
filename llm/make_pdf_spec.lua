@@ -19,7 +19,10 @@ local make_pdf_spec = function(
     tmpfile, false)
   -- could not get pdflatex to send pdf file to desired directory
   -- string.format("pdflatex %s -output-directory /tmp/ ", tmpfile)
-  os.execute(string.format("pdflatex %s ", tmpfile))
+  local cmd = string.format("pdflatex %s 1>/dev/null 2>&1", tmpfile)
+  print("Executing " .. cmd)
+  os.execute(cmd) 
+  os.execute(cmd) 
   -- execute twice to resolve labels 
   os.execute(string.format("pdflatex %s ", tmpfile)) 
   local pdffile = string.gsub(tmpfile, ".tex", ".pdf")

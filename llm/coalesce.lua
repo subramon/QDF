@@ -2,6 +2,8 @@
 local cutils = require 'libcutils'
 local specialize_tex_spec = require 'specialize_tex_spec'
 local make_pdf_spec = require 'make_pdf_spec'
+local call_llm = function() return true end -- TODO 
+local lQDF = require 'lQDF'
 
 local C = {}
 
@@ -27,15 +29,11 @@ local function get_subs(x, y)
   }
 end
 C.get_subs         = get_subs -- function
-
-C.generic_tex_spec = "coalesce.tex"
+C.generic_tex_spec_file = "coalesce.tex"
 C.lua_calling_spec = "bogus spec for now"
 -- STOP: Above created when operator is authored
 
-
-local call_llm = function() return true end -- TODO 
-
--- this should be created programmatically 
+-- C.run should be created programmatically 
 C.run = function (x, y)
   -- check types
   assert(type(x) == "lQDF")
@@ -44,47 +42,49 @@ C.run = function (x, y)
   local cfunc = assert(subs.__CFUNC__)
   if ( rawget(C.specializations, cfunc) == nil ) then 
     C.specializations[cfunc] = {} 
+    C.specializations[cfunc].subs = subs
+  
+    local specific_tex_spec_file = "_" .. cfunc .. ".tex"
+    specialize_tex_spec(C.generic_tex_spec_file, subs, specific_tex_spec_file, true)
+    C.specializations[cfunc].tex_spec_file = specific_tex_spec_file
+  
+    local specific_pdf_spec_file = "_" .. cfunc .. ".pdf"
+    assert(make_pdf_spec(specific_tex_spec_file, cfunc, specific_pdf_spec_file))
+    C.specializations[cfunc].pdf_spec = specific_pdf_spec
+  
+    -- local doth, dotc, build_so = call_llm(pdf_spec) TODO FAKING
+    local doth  = cfunc .. ".h" 
+    local dotc  = cfunc .. ".c" 
+    local dotso = "lib" .. cfunc .. ".so" 
+    assert(cutils.isfile(doth))
+    assert(cutils.isfile(dotc))
+    -- TODO build_so comes back from call_llm
+    local build_so = "gcc -fPIC -shared  coalesce_F8_F8.c -Wno-implicit-function-declaration -Wno-int-conversion -o libqdf.so libcoalesce_F8_F8.so" 
+    C.specializations[cfunc].doth     = doth
+    C.specializations[cfunc].dotc     = dotc
+    C.specializations[cfunc].build_so = build_so
+    cutils.delete(dotso)
+    os.execute(build_so)
+    assert(cutils.isfile(dotso))
+    C.specializations[cfunc].dotso    = dotso
+    lQDF.q_add(cfunc, dotso, doth)
+  else
+    print("Specializations for " .. cfunc .. " exist.")
   end
-  C.specializations[cfunc].subs = subs
-
-  local specific_tex_spec = "_" .. cfunc .. ".tex"
-  specialize_tex_spec(C.generic_tex_spec, subs, specific_tex_spec, true)
-  C.specializations[cfunc].tex_spec = specific_tex_spec
-
-  local specific_pdf_spec = "_" .. cfunc .. ".pdf"
-  assert(make_pdf_spec(specific_tex_spec, cfunc, specific_pdf_spec))
-  C.specializations[cfunc].pdf_spec = specific_pdf_spec
-
-  -- local doth, dotc, build_so = call_llm(pdf_spec) TODO FAKING
-  local doth = "coalesce_F8_F8.h" 
-  local dotc = "coalesce_F8_F8.c" 
-  local dotso = "libcoalesce_F8_F8.so" 
-  local build_so = "gcc -fPIC -shared  coalesce_F8_F8.c -Wno-implicit-function-declaration -Wno-int-conversion -o libcoalesce_F8_F8.so" 
-  C.specializations[cfunc].doth     = doth
-  C.specializations[cfunc].dotc     = dotc
-  C.specializations[cfunc].build_so = build_so
-  cutils.delete(dotso)
-  os.execute(build_so)
-  assert(cutils.isfile(dotso))
   -- Now to call C from Lua 
+  local cx = x:cmem_ptr() 
+  local cy = y:cmem_ptr() 
+  local z = lqdfmem(0)
+  local cz = z:cmem_ptr() 
+  local exec = XXXX
+  exec(cx, cy, cz)
+  local zqdf = setmetatable({}, lQDF)
+  zqdf._cmem = cqdf
+
   return true 
 
 end
-C.set_spec = function(spec)
-  assert(type(spec) == "string")
-  assert(#spec > 0)
-  generic_tex_spec = spec
-end
-C.get_spec = function(cfunc)
-  if ( cfunc ) then 
-    -- return specialized specification
-    assert(type(cfunc) == "string")
-    return specializations[cfunc].tex_spec
-  else
-    return generic_tex_spec
-  end
-end
 C.test = function()
-  print("hello world")
+  print("test function hello world")
 end 
 return C
