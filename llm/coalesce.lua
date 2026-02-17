@@ -4,20 +4,9 @@ local specialize_tex_spec = require 'specialize_tex_spec'
 local make_pdf_spec = require 'make_pdf_spec'
 local call_llm = function() return true end -- TODO 
 local lQDF     = require 'lQDF'
-local lqdfmem  = require 'lqdfmem'
 
 local C = {}
 
---== START: Following Created at run time by system
-C.specializations  = {}
--- Each specialization contains
--- (1) substitutions made
--- (2) LaTeX file containing spec
--- (3) pdf file containing spec
--- (4) dotc file 
--- (5) doth file 
---== STOP : Above created at run time by system
---=======================================
 -- Created at authoring time 
 -- START: Following created when operator is authored
 local function get_subs(x, y)
@@ -36,22 +25,26 @@ C.lua_calling_spec = "bogus spec for now"
 
 -- C.run should be created programmatically 
 C.run = function (x, y)
+  -- TODO Document why require is needed here as well
+  local lQDF     = require 'lQDF' 
+  local lqdfmem  = require 'lqdfmem'
   -- check types
   assert(type(x) == "lQDF")
   assert(type(y) == "lQDF")
-  local subs = get_subs(x, y)
+  local fn_get_subs 
+  if ( get_subs ) then 
+    fn_get_subs = get_subs
+  else 
+    fn_get_subs = lQDF.get_get_subs("coalesce")
+  end
+  assert(type(fn_get_subs) == "function")
+  local subs = fn_get_subs(x, y)
   local cfunc = assert(subs.__CFUNC__)
-  if ( rawget(C.specializations, cfunc) == nil ) then 
-    C.specializations[cfunc] = {} 
-    C.specializations[cfunc].subs = subs
-  
+  if ( not lQDF.q_is_spec(cfunc) ) then 
     local specific_tex_spec_file = cfunc .. ".tex"
     specialize_tex_spec(C.generic_tex_spec_file, subs, specific_tex_spec_file, true)
-    C.specializations[cfunc].tex_spec_file = specific_tex_spec_file
-  
     local specific_pdf_spec_file = cfunc .. ".pdf"
     assert(make_pdf_spec(specific_tex_spec_file, cfunc, specific_pdf_spec_file))
-    C.specializations[cfunc].pdf_spec = specific_pdf_spec
   
     -- local doth, dotc, build_so = call_llm(pdf_spec) TODO FAKING
     local doth  = cfunc .. ".h" 
@@ -62,17 +55,20 @@ C.run = function (x, y)
     -- TODO build_so comes back from call_llm
     local build_so = "gcc -fPIC -shared  coalesce_F8_F8.c -Wno-implicit-function-declaration -Wno-int-conversion -o libcoalesce_F8_F8.so" 
     -- TODO Verify that build_so command links libqdf.so 
-    C.specializations[cfunc].doth     = doth
-    C.specializations[cfunc].dotc     = dotc
-    C.specializations[cfunc].build_so = build_so
     cutils.delete(dotso)
-    print("Executing ", build_so)
     os.execute(build_so)
     assert(cutils.isfile(dotso), "File not found " .. dotso)
-    C.specializations[cfunc].dotso    = dotso
+    -- START record specializations
+    local specializations = {} 
+    specializations.subs = subs
+    specializations.tex_spec_file = specific_tex_spec_file
+    specializations.pdf_spec = specific_pdf_spec_file
+    specializations.doth     = doth
+    specializations.dotc     = dotc
+    specializations.build_so = build_so
+    specializations.dotso    = dotso
     lQDF.q_add(cfunc, dotso, doth)
-    print("XXXXXX")
-    lQDF.q_rec_spec(cfunc, C.specializations[cfunc])
+    lQDF.q_rec_spec(cfunc, specializations)
   else
     print("Specializations for " .. cfunc .. " exist.")
   end

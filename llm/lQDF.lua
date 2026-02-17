@@ -2186,6 +2186,7 @@ function lQDF.mk_df() -- useful utility for testing
   return newqdf
 end
 lQDF.register = function(fname, tbl)
+  print("Registering " .. fname)
   assert(type(fname) == "string")
   assert(#fname > 0)
   assert(not rawget(q_registry, fname))
@@ -2198,6 +2199,19 @@ lQDF.register = function(fname, tbl)
   q_registry[fname] = tbl
   lQDF[fname] = tbl.run
   return tbl
+end
+lQDF.get_get_subs = function(fname)
+  assert(type(fname) == "string")
+  assert(#fname > 0)
+  local tbl = assert(q_registry[fname])
+
+  assert(type(tbl.get_subs) == "function") -- must exist 
+  return tbl.get_subs
+end
+-- does specializations exist for this function?
+lQDF.q_is_spec = function(cfunc)
+  assert(type(cfunc) == "string")
+  if ( specializations[cfunc] ) then return true else return false end 
 end
 -- record specializations 
 lQDF.q_rec_spec = function(cfunc, spec_tbl)
@@ -2220,7 +2234,6 @@ lQDF.q_add = function(cfunc, dotso, doth)
   local L = assert(ffi.load(dotso))
   assert(L[cfunc]) -- check that cfunc exists in .so file 
   assert(not libs_loaded[cfunc])
-  print("type(L) = ", type(L))
   libs_loaded[cfunc] = L
 
   known_functions[cfunc] = true 
@@ -2237,7 +2250,7 @@ lQDF.q_list = function()
     print("Operator " .. k)
     assert(specializations[k])
     for k2, v2 in pairs(specializations[k]) do 
-      print(k, k2, type(v2))
+      print(k, k2, type(v2), v2)
     end
   end 
   print(" STOP known functions")
@@ -2269,26 +2282,69 @@ lQDF.q_dump = function()
   assert(serialize.save_tbl("_static.lua", X))
   -- STOP: Save stuff given to you by user 
   -- START: Save stuff created at run time  
+  local X = {}
+  for k, v in pairs(known_functions) do 
+    local T = assert(specializations[k])
+    print("===")
+    for k2, v2 in pairs(T) do print(k2, v2) end 
+    print("===")
+    X[k] = T
+  end 
+  assert(serialize.save_tbl("_runtime.lua", X))
   -- STOP: Save stuff  created at run time 
 end
 lQDF.q_restore = function()
   -- empty existing knowledge if any 
   known_functions = {} -- function that have been cdef'd and loaded
   libs_loaded = {} -- libraries that have been loaded. 
-  for k, v in pairs(known_functions) do 
-    print("Restoring static data for " .. k)
-    print("FAKE FOR NOW")
-
-    print("Restoring dynamic data for " .. k)
-    print("FAKE FOR NOW")
-    --[[
-    coalesce_F8_F8.c   -- function definition
-    coalesce_F8_F8.h   -- function declaration
-    libcoalesce_F8_F8.so -- .so file 
-    coalesce_F8_F8.pdf   -- full specification sent to LLM
-    coalesce_F8_F8.tex -- specialized LaTeX spec of operator 
-    --]]
+  q_registry  = {}
+  specializations = {} -- created at run time 
+  --===============================
+  local x = cutils.file_as_str("_runtime.lua")
+  local y = loadstring(x)
+  assert(type(y) == "function")
+  specializations = y()
+  assert(type(specializations) == "table")
+  -- load static information
+  local X = serialize.load_tbl("_static.lua")
+  assert(type(X) == "table")
+  for k, v in pairs(X) do 
+    for k2, v2 in pairs(v) do 
+      if ( k2 == "str_fn_test" ) then
+        local x = load(v2)
+        assert(type(x) == "function")
+        X[k].test = x
+      end
+      if ( k2 == "str_fn_run" ) then
+        local x = load(v2)
+        assert(type(x) == "function")
+        X[k].run = x
+      end
+      if ( k2 == "str_fn_get_subs" ) then
+        local x = load(v2)
+        assert(type(x) == "function")
+        X[k].get_subs = x
+      end
+    end
   end
+  --[[
+  for k, v in pairs(X) do 
+    for k2, v2 in pairs(v) do 
+      print("XXX", k, k2, type(v2))
+    end
+  end
+  --]]
+  for k, v in pairs(X) do 
+    lQDF.register(k, v)
+  end
+  for k, v in pairs(specializations) do 
+    lQDF.q_add(k, v.dotso, v.doth)
+  end
+  -- do following after q_add()
+  for k, v in pairs(specializations) do 
+    known_functions[k] = true
+  end 
+
 end 
 
 --[[ some sample code that was used for testing while developing above
