@@ -2211,11 +2211,17 @@ lQDF.q_add = function(cfunc, dotso, doth)
   local L = assert(ffi.load(dotso))
   assert(L[cfunc]) -- check that cfunc exists in .so file 
   assert(not libs_loaded[cfunc])
+  print("type(L) = ", type(L))
   libs_loaded[cfunc] = L
 
   known_functions[cfunc] = true 
   return true
 end 
+lQDF.q_get = function(cfunc)
+  assert(type(cfunc) == "string")
+  return libs_loaded[cfunc]
+end
+
 lQDF.list = function()
   for k, v in pairs(known_functions) do print(k) end 
 end 

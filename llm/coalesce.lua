@@ -81,8 +81,9 @@ C.run = function (x, y)
   local zqdf = setmetatable({}, lQDF)
   zqdf._cmem = z
   local cz = zqdf:cmem_ptr() 
-  -- local exec = XXXX
-  -- exec(cx, cy, cz)
+  local exec = assert(lQDF.q_get(cfunc))
+  local status = exec[cfunc](cx, cy, cz)
+  assert(status == 0) 
 
   return zqdf
 
