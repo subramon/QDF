@@ -2185,21 +2185,52 @@ function lQDF.mk_df() -- useful utility for testing
   newqdf._cmem = cqdf
   return newqdf
 end
-lQDF.register = function(fname, tbl)
+-- When a new operator is registered (with name fname)
+-- we need to provide the following information in a table
+-- (1) run: function. This is what is invoked. For example
+-- if operator was vvadd, then invocation of lQDF.vvadd()
+-- is the invocation of run()
+-- (2) get_subs: function
+-- get_subs() will take the arguments to the operator as input
+-- and return all needed substitutions. As an example, 
+-- if operator was vvadd, then get_subs returns 
+-- (a) cfunc = vvadd_F4_F8
+-- (b) qtypex = F4
+-- (c) qtypey = F8
+-- (d) qtypez = F8
+-- (3) test: function -- can be deleted later, just for testing 
+-- (4) generic_tex_spec_file: string. 
+--   Name of LaTeX file containing generic specification of the operator 
+-- (4) lua_calling_spec: string. This is meant to replace run() 
+-- described above i.e., it will be used to generate run()
+lQDF.q_register = function(fname, tbl)
   print("Registering " .. fname)
   assert(type(fname) == "string")
   assert(#fname > 0)
   assert(not rawget(q_registry, fname))
 
   assert(type(tbl) == "table")
-  assert(type(tbl.run) == "function") -- must exist 
-  assert(type(tbl.get_subs) == "function") -- must exist 
-  assert(type(tbl.test) == "function") -- must exist 
+  assert(type(tbl.run) == "function") 
+  assert(type(tbl.get_subs) == "function") 
+  assert(type(tbl.test) == "function") 
+
+  assert(type(tbl.generic_tex_spec_file) == "string")
+  assert(cutils.isfile(tbl.generic_tex_spec_file), 
+    "File not found " .. tbl.generic_tex_spec_file)
+
+  assert(type(tbl.lua_calling_spec) == "string")
+  assert(#tbl.lua_calling_spec > 0)
 
   q_registry[fname] = tbl
   lQDF[fname] = tbl.run
   return tbl
 end
+lQDF.q_is_register = function(fname)
+  assert(type(fname) == "string")
+  if ( q_registry[fname] ) then return true else return false end 
+end 
+-- Returns the function get_subs() which is provided when
+-- the operator is registered
 lQDF.get_get_subs = function(fname)
   assert(type(fname) == "string")
   assert(#fname > 0)
@@ -2208,16 +2239,25 @@ lQDF.get_get_subs = function(fname)
   assert(type(tbl.get_subs) == "function") -- must exist 
   return tbl.get_subs
 end
--- does specializations exist for this function?
+-- Return true if specializations exist for this function?
+-- When operator has been registered for first time and never 
+-- been used, this will return false
 lQDF.q_is_spec = function(cfunc)
   assert(type(cfunc) == "string")
-  if ( specializations[cfunc] ) then return true else return false end 
+  print("Call to q_is_spec for ", cfunc)
+  for k, v in pairs(specializations) do print(k, v) end 
+  if ( specializations[cfunc] ) then 
+    return true 
+  else 
+    return false 
+  end 
 end
 -- record specializations 
 lQDF.q_rec_spec = function(cfunc, spec_tbl)
   assert(type(spec_tbl) == "table")
   assert(not specializations[cfunc])
   specializations[cfunc] = spec_tbl
+  print("Call to q_rec_spec for ", cfunc)
 end
 
 lQDF.q_add = function(cfunc, dotso, doth)
@@ -2249,9 +2289,6 @@ lQDF.q_list = function()
   for k, v in pairs(known_functions) do 
     print("Operator " .. k)
     assert(specializations[k])
-    for k2, v2 in pairs(specializations[k]) do 
-      print(k, k2, type(v2), v2)
-    end
   end 
   print(" STOP known functions")
   return true 
@@ -2277,7 +2314,10 @@ lQDF.q_dump = function()
     assert(type(fn_test) == "function")
     Y.str_fn_test = string.dump(fn_test)
 
+    Y.generic_tex_spec_file = v.generic_tex_spec_file
+    Y.lua_calling_spec = v.lua_calling_spec
     X[k] = Y
+
   end 
   assert(serialize.save_tbl("_static.lua", X))
   -- STOP: Save stuff given to you by user 
@@ -2335,7 +2375,7 @@ lQDF.q_restore = function()
   end
   --]]
   for k, v in pairs(X) do 
-    lQDF.register(k, v)
+    lQDF.q_register(k, v)
   end
   for k, v in pairs(specializations) do 
     lQDF.q_add(k, v.dotso, v.doth)
