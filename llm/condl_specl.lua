@@ -5,12 +5,13 @@ local make_pdf_spec = require 'make_pdf_spec'
 local call_llm = function() return true end -- TODO 
 local lQDF     = require 'lQDF'
 
-local function condl_spcl(subs)
-  asssert(type(subs) == "table")
+local function condl_specl(subs)
+  assert(type(subs) == "table")
   local cfunc = assert(subs.__CFUNC__)
   if ( not lQDF.q_is_spec(cfunc) ) then 
     local specific_tex_spec_file = cfunc .. ".tex"
-    specialize_tex_spec(C.generic_tex_spec_file, subs, specific_tex_spec_file, true)
+    local generic_tex_spec_file = lQDF.get_generic_tex_spec_file(subs.operator)
+    specialize_tex_spec(generic_tex_spec_file, subs, specific_tex_spec_file, true)
     local specific_pdf_spec_file = cfunc .. ".pdf"
     assert(make_pdf_spec(specific_tex_spec_file, cfunc, specific_pdf_spec_file))
   
@@ -41,6 +42,6 @@ local function condl_spcl(subs)
     print("Specializations for " .. cfunc .. " exist.")
   end
   local exec = assert(lQDF.q_get(cfunc))
-  return exec
+  return cfunc, exec
 end
 return condl_specl

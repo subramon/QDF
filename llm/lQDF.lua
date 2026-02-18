@@ -2229,6 +2229,14 @@ lQDF.q_is_register = function(fname)
   assert(type(fname) == "string")
   if ( q_registry[fname] ) then return true else return false end 
 end 
+lQDF.get_generic_tex_spec_file = function(fname)
+  assert(type(fname) == "string")
+  assert(#fname > 0)
+  local tbl = assert(q_registry[fname])
+
+  assert(type(tbl.generic_tex_spec_file) == "string") -- must exist 
+  return tbl.generic_tex_spec_file
+end
 -- Returns the function get_subs() which is provided when
 -- the operator is registered
 lQDF.get_get_subs = function(fname)
