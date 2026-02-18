@@ -4,11 +4,8 @@ local specialize_tex_spec = require 'specialize_tex_spec'
 local make_pdf_spec = require 'make_pdf_spec'
 local call_llm = function() return true end -- TODO 
 local lQDF     = require 'lQDF'
-
-local C = {}
-
+local C = {} -- table of stuff to return 
 -- Created at authoring time 
--- START: Following created when operator is authored
 local function get_subs(x, y)
   local operator = "coalesce"
   local cfunc = { operator , "_", x:qtype(), "_", y:qtype(), }
@@ -23,8 +20,6 @@ end
 C.get_subs         = get_subs -- function
 C.generic_tex_spec_file = "coalesce.tex"
 C.lua_calling_spec = "bogus spec for now"
--- STOP: Above created when operator is authored
-
 -- C.run should be created programmatically 
 C.run = function (x, y)
   -- Needed here as well because a dump() of function does not
@@ -48,9 +43,7 @@ C.run = function (x, y)
   local exec = assert(lQDF.q_get(cfunc))
   local status = exec[cfunc](cx, cy, cz)
   -- TODO P0 assert(status == 0) 
-
   return zqdf
-
 end
 C.test = function()
   print("test function hello world")
