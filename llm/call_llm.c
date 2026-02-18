@@ -1,7 +1,9 @@
+// gcc call_llm.c -I/home/subramon/RSUTILS/inc/ -lcur
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <curl/curl.h>
+#include "q_macros.h"
 
 // Replace with your actual API Key
 #define API_KEY "YOUR_GEMINI_API_KEY"
@@ -66,11 +68,16 @@ main(
     char *argv[]
     ) 
 {
+  int status = 0;
+  char *url = NULL;
   const char *api_key = getenv("GEMINI_API_KEY");
+  if ( api_key == NULL ) { go_BYE(-1); }
+  size_t len = strlen(URL) + strlen(api_key) + 16;
+  url = malloc(len); memset(url, 0, len);
   sprintf(url, "%s %s ", URL, api_key);
   if (argc < 2) {
     printf("Usage: %s file1.txt file2.txt ...\n", argv[0]);
-    return 1;
+    go_BYE(-1); 
   }
 
   curl_global_init(CURL_GLOBAL_ALL);
@@ -80,5 +87,7 @@ main(
   }
   curl_global_cleanup();
 
-  return 0;
+BYE:
+  free_if_non_null(url); 
+  return status;
 }
