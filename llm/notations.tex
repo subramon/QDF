@@ -18,3 +18,21 @@ The symbol \(\bot\) will be used to indicate undefined
   The {\tt gcc} compiler will be used to link {\tt .o} files and create a {\tt
   .so} file.
 \end{convention}
+
+\begin{convention}
+All calls to function that return an integer status should be followed by a
+  call to the macro \verb+cBYE(status);+ For example
+  {\tt status = foo(); } should be followed by {\tt cBYE(status); }
+\end{convention}
+
+\begin{convention}
+  For all functions that return an integer 
+  (with value 0 on success and non-zero on error) should start with the line
+  \begin{center}
+    int status = 0;
+  \end{center}
+  and end with the line
+  \begin{center}
+    return status; 
+  \end{center}
+\end{convention}

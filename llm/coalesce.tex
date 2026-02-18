@@ -11,8 +11,8 @@ Create optimized C code for the function defined in this section.
   \item Let x be an immutable pointer to immutable \qdf.
   \item Let y be an immutable pointer to immutable \qdf.
   \item Let z be a            pointer to           \qdf.
-  \item qx  :=  \qtypex
-  \item qy  :=  \qtypey
+  \item qx  :=  \qtypex // qtype(x)
+  \item qy  :=  \qtypey // qtype(y)
   \item cqx := q2c[qx] C type corresponding to qx as defined in Lua table q2c
   \item cqy := q2c[qy] C type corresponding to qy as defined in Lua table q2c
 \item jx  := \getj(X)

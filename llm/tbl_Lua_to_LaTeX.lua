@@ -13,7 +13,7 @@ assert(#headers == 2)
 local T = dofile(infile)
 assert(type(T) == "table")
 
-print("\\begin{table}")
+print("\\begin{table}[hb]")
 print("\\centering")
 print("\\begin{tabular}{|l|l|} \\hline \\hline ")
 local hdr = string.format("{\\bf %s } & {\\bf %s } \\\\ \\hline \\hline",

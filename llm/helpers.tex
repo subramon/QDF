@@ -10,10 +10,11 @@ There are three kinds of helpers
 
 \subsection{Read only helper functions}
 \label{qdf_read_helpers}
-Table~\ref{tbl_qdf_read_helpers} lists helper functions that have been provided to
-you. They take as an argument an immutable pointer to \qdf\ and do {\bf not}
+Functions listed in Table~\ref{tbl_qdf_read_helpers} provide read only access to
+portions of a qdf. They
+take as an argument an immutable pointer to \qdf\ and do {\bf not}
 modify the location pointed to.
-\begin{table}
+\begin{table}[hb]
   \centering 
 \begin{tabular}{|l|l|l|l|} \hline \hline 
   {\bf Return} & {\bf Name} & {\bf Args} \\ \hline  \hline
@@ -72,17 +73,16 @@ If \jt x is {\tt j\_object}, then returns number of keys; else, returns 0.
 
 \subsection{Maker helper functions}
 \label{qdf_make_helpers}
-Table~\ref{tbl_qdf_make_helpers} lists helper functions that 
-have been provided to you to create or make a \qdf.
+Functions listed in Table~\ref{tbl_qdf_make_helpers} help you create or make a \qdf.
 \be
 \item The first argument is always a pointer to \qdf, the elements of which will
   be set by this function
+\item They may have other arguments as well. 
 \item The return value is an integer status which is 0 for success 
   and non-zero for failure. 
-\item They may have other arguments as well. 
   \ee
 
-\begin{table}
+\begin{table}[hb]
   \centering 
 \begin{tabular}{|l|l|l|l|} \hline \hline 
   {\bf Name} & {\bf Arguments} \\ \hline  \hline
@@ -113,16 +113,16 @@ Creates an empty QDF meant to store a uniform array that
 
 \subsection{Writable helper functions}
 \label{qdf_write_helpers}
-Table~\ref{tbl_qdf_write_helpers} 
-lists helper functions that have been provided to you to modify the elements of a variable of type \qdf. 
+Functions listed in Table~\ref{tbl_qdf_write_helpers} 
+modify the elements of a variable of type \qdf. 
 \be
 \item The first argument is always a pointer to \qdf\ which can be used to
 modify the location pointed to. 
+\item They may have other arguments as well. 
 \item The return value is an integer status which is 0 for success 
   and non-zero for failure. 
-\item They may have other arguments as well. 
   \ee
-\begin{table}
+\begin{table}[hb]
   \centering 
 \begin{tabular}{|l|l|l|l|} \hline \hline 
   {\bf Name} & Argument 2 & Argument 3 \\ \hline 
