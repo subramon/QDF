@@ -1,6 +1,7 @@
 -- Creating a new operator involves writing a file like this 
 local C = {} -- table of stuff to return 
-local function get_subs(x, y)
+C.test = function() print("test function for coalesce") end 
+C.get_subs = function (x, y)
   local operator = "coalesce"
   local cfunc = { operator , "_", x:qtype(), "_", y:qtype(), }
   cfunc = table.concat(cfunc, "")
@@ -12,11 +13,22 @@ local function get_subs(x, y)
     __CFUNC__ = cfunc, 
   }
 end
-C.get_subs         = get_subs -- function
 C.generic_tex_spec_file = "coalesce.tex"
-C.lua_calling_spec = "bogus spec for now" 
+-- convention that in_args passed before out_args
+C.lua_calling_spec = {
+  operator = "coalesce", 
+  in_args =  {
+    { name = "x", qtype = "lQDF", rw = "read_only", },
+    { name = "y", qtype = "lQDF", rw = "read_only", },
+  },
+  out_args  = {
+    { name = "z", qtype = "lQDF", }
+  },
+}
+
 -- TODO C.run should be created programmatically from C.lua_calling_spec
 -- C.run() is invoked when lQDF.coalesce() is called 
+--[[
 C.run = function (x, y) 
   -- Needed here as well because a dump() of function does not
   -- capture upvalues 
@@ -41,5 +53,32 @@ C.run = function (x, y)
   -- TODO P0 assert(status == 0) 
   return zqdf
 end
-C.test = function() print("test function for coalesce") end 
+--]]
+
+--[[
+C.run = function(x, y)
+  local lQDF        = require 'lQDF'
+  local lqdfmem     = require 'lqdfmem'
+  local condl_specl = require 'condl_specl'
+--==========================================
+  assert(type(x) == 'lQDF')
+  local C_x = x:cmem_ptr()
+  assert(type(y) == 'lQDF')
+  local C_y = y:cmem_ptr()
+--==========================================
+  local get_subs = lQDF.get_get_subs('coalesce')
+  local subs = get_subs(x, y)
+  local cfunc, exec = condl_specl(subs)
+--==========================================
+  local z = lqdfmem(0)
+  local qdf_z = setmetatable({}, lQDF)
+  qdf_z._cmem = z
+  local C_z = qdf_z:cmem_ptr()
+--==========================================
+  local exec = assert(lQDF.q_get(cfunc))
+  local status = exec[cfunc](C_x, C_y, C_z)
+  return qdf_z
+end
+--]]
+
 return C

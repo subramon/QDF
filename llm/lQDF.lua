@@ -28,6 +28,7 @@ local libs_loaded = {} -- libraries that have been loaded.
 
 --================================
 local lqdfmem       = require 'lqdfmem'
+local mk_caller     = require 'mk_caller'
 --================== 
 local str_qtypes_to_c_qtypes_widths = 
   require 'str_qtypes_to_c_qtypes_widths'
@@ -396,6 +397,7 @@ function lQDF:has_nn()
 end
 
 function lQDF.coalesce(x1, x2)
+  print("XXXX coalesce")
   assert(type(x1) == "lQDF")
   assert(x1:jtype()  == "j_array")
   assert(x1:qtype()  == "F4")
@@ -2210,7 +2212,6 @@ lQDF.q_register = function(fname, tbl)
   assert(not rawget(q_registry, fname))
 
   assert(type(tbl) == "table")
-  assert(type(tbl.run) == "function") 
   assert(type(tbl.get_subs) == "function") 
   assert(type(tbl.test) == "function") 
 
@@ -2218,8 +2219,24 @@ lQDF.q_register = function(fname, tbl)
   assert(cutils.isfile(tbl.generic_tex_spec_file), 
     "File not found " .. tbl.generic_tex_spec_file)
 
-  assert(type(tbl.lua_calling_spec) == "string")
-  assert(#tbl.lua_calling_spec > 0)
+  assert(type(tbl.lua_calling_spec) == "table")
+  local x = mk_caller(tbl.lua_calling_spec)
+  assert(type(x) == "string")
+  local y = loadstring(x)
+  local z = y()
+
+  --[[ just for testing 
+  local x = "return function ( ) print('hello world') end "
+  local y = loadstring(x)
+  print(type(y))
+  local z = y()
+  print(type(z))
+  z()
+  --]]
+
+
+  tbl.run = z
+  assert(type(tbl.run) == "function") 
 
   q_registry[fname] = tbl
   lQDF[fname] = tbl.run
