@@ -1,0 +1,365 @@
+\documentclass[letterpaper,12pt]{article}
+\usepackage{helvet}
+\usepackage{fancyheadings}
+\usepackage{verbatim}
+\usepackage{hyperref}
+\pagestyle{fancy}
+\usepackage{graphicx}
+\setlength\textwidth{6.5in}
+\setlength\textheight{8.5in}
+\begin{document}
+\title{Literate Programming in the Era of LLMs}
+\author{Ramesh Subramonian }
+\maketitle
+\thispagestyle{fancy}
+\lhead{}
+\chead{}
+\rhead{}
+\lfoot{}
+\cfoot{}
+\rfoot{{\small \thepage}}
+
+\input{../abbreviations}
+
+\abstract{LLMs have taken the programming world by storm. 
+How does this change the role of the software engineer? 
+Assuming that the cost of writing code will approach zero,
+what does a software engineer do? 
+We posit that there are a few fundamental changes in the way we will 
+build software. (1) We will focus more on writing 
+unambiguous, semi-formal specifications than we have traditionally done.
+(2) We will deploy more custom code, tailored to the specific need of the
+application, thereby reducing code bloat. 
+(3) We will adopt just-in-time manufacturing approach to software deployment 
+In this paper, we will use an example of moderate complexity to 
+demonstrate how these principles are put into practice. 
+
+\section{Introduction}
+
+
+Traditionally, the cost of writing software 
+(and modifying it when new needs arose) was so high that the design of 
+code optimized for maintainability. Most seasoned software engineers will have
+experienced the sinking feeling when asked to add new requirements to a large
+code base, the fear of not fully understanding whether a fix here 
+would cause a blow out there. We would argue that assuming 
+zero cost of (bug-free) software development flips this paradigm on 
+its head. This moves the burden to making sure that the specifications are
+unambiguous and consistent and meet the business requirement precisely.
+
+Good software engineering was never about churning out lines of code. Instead,
+it was about designing systems that met the requirements 
+
+The answer is to be found in Djsktra's claim that
+``Computer science is no more about computers than astronomy is about
+telescopes''. Writing efficient code was a means to an end.
+There have been a series of improvements in that process, 
+LLMs representing the
+latest and admittedly most unexpected quantum jump in efficiency.
+Writing formal specifications is a declaration of intent. 
+Until the singularity arrives, specifications represent the safest 
+bet that 
+
+The author makes no claim for what AI will do in the longer term.
+
+\begin{center}
+{\em How much code should a coder code if Claude Code could code code?}
+\end{center}
+
+\section{Motivation}
+
+Earlier, 
+the author had built a column-oriented analytical database called \Q. 
+As with most such databases, greater efficiencies are possible
+when data is created and accessed within the database
+engine itself. 
+However, a database that doesn't share its data with other applications isn't of
+much use. This necessitated the development of \QDF\ (\Q's data format) for data
+exchange, not for bulk import/export.
+
+We considered several other formats, starting with the usual suspects,
+ CSV and JSON. For efficiency reasons, we narrowed our focus to binary formats, like BSON
+ and AVRO. Ultimately, we decided it best to roll our own format based on the
+ following requirements and usage patterns
+ \be
+ \item ease of adding fixed-width custom types
+ \item optimizing computations on the data without moving or
+   transforming it
+ \item allowing for in-situ operations,
+   although most operations are write-once.
+ \item optimizing for the case where data is read more 
+   often than it is written. 
+ \item ability to control whether a \QDF\ packet is ``write-once'' or not
+   \ee
+
+The development work could be broadly divided into two parts
+\be
+\item Definition of the data format and writing helper functions which allowed
+  the creation and modification of data packets in \QDF\ format and access to
+  elements of such a packet
+\item Definition and development of operators that read from (and occasionally
+  wrote to) the data packet.
+  A simple example of an operator is a dot product which
+accesses two numeric arrays of equal length and returns a number. 
+  \ee
+Over a period of four years, we found that the changes in
+the underlying data format were both infrequent and minor.
+As a consequence, the work on getters and setters was minimal. 
+Instead, most of the development work involved
+\be
+\item writing new operators. 
+\item optimizing the performance of existing operators 
+  \ee
+This led to the following questions
+\be
+\item Could the use of LLMs have reduced the development and maintenance cost?
+\item If so, what would the software architecture of such a system look like?
+  \ee
+
+Giving GenAI the benefit of the doubt, we assumed the answer to the first
+question would be Yes and proceeded to answer the second question. 
+
+\section{Designing for LLMs}
+
+\subsection{Choice of Language}
+
+We chose to build our system using C and Lua and \LaTeX.  
+There is nothing sacrosanct about these choices. Other 
+choices of compiled language and interpreted
+language and document formatting language are likely to work just as well. 
+The reasons for this choice were
+\be
+\item The Ousterhout dichotomy. This is a principle of software design that I
+  have found very useful. For those unfamiliar with the idea, 
+``Ousterhout's dichotomy claims that there are two general categories of programming languages:
+\be
+\item low-level, statically-typed systems languages
+\item high-level, dynamic scripting languages
+  \ee
+Systems languages are best for efficiently handling large quantities of data, implementing algorithms, and can handle significant internal complexity. Scripting languages are best for glueing other programs together, exploring a problem, and extending applications.
+''
+\footnote{\url{https://gist.github.com/nat-418/bdccb2428cde750c9f42bf9bbc1a50d3}}
+
+\item Completeness. 
+It was very much our intent to
+have a fully functional system of moderate complexity which would allow us to
+suss out any gotchas that a ``Hello World'' program might have glided by.
+The author is sufficiently conversant in these languages to meet this goal.
+
+\item Ease of exposition. 
+  The simple syntax of C and Lua make the code snippets widely
+  readable
+\item Ease of implementation.
+``Lua was designed since its inception to interoperate with
+other languages, both by extending --- allowing Lua code to call functions
+written in a foreign language --- and by embedding --- allowing foreign code to call functions written in Lua. Lua is
+thus implemented not as a standalone
+program but as a library with a C API.
+This library exports functions that cre ate a new Lua state, load code into a
+state, call functions loaded into a state,
+access global variables in a state, and
+perform other basic tasks. The stand alone Lua interpreter is a tiny application
+written on top of the library.'' \cite{Lua2019}
+\item \LaTeX, when combined with {\tt make}, allows us to ``compile''
+  documentation from disparate sources. It allows us to create 
+  different targets from common sources. 
+\ee
+
+
+
+\subsection{Control the Data}
+We took our inspiration from the quote attributed to Linus Torvalds --- 
+{\em ``Bad programmers worry
+about the code. Good programmers worry about data structures and their
+relationships.} Hence, we focused our efforts on designing an efficient data
+format  (Section~\ref{data_format_defn}) and 
+and defining how it would be accessed (Section~\ref{accessor_defn}).
+
+\subsubsection{Define the Data Format}
+\label{data_format_defn}
+
+We wanted the data format to resemble JSON but to have efficient 
+representations of commonly used types e.g., dataframes. Consider the JSON type
+{\tt number}. This is stored in QDF as a 16 byte packet where
+\be
+\item Byte 0 contains JSON type information --- {\tt number} in this example.
+\item Byte 1 contains data type information e.g., {\tt int32\_t} or {\tt double}
+\item Byte 2 is the successor offset. While this is usually 0, it helps tell us
+  where the successor QDF, if any, is located. This is used when we want to
+  make sure that certain data structures are memory aligned. 
+\item Byte 3 is unused.
+\item Bytes 4 to 7 contain an offset to the parent packet, if any. 
+  For example,
+  in the JSON array \verb+[ true, "abc", 123 ]+, the number 123 needs to 
+  know the start of the parent array of which it is a part.
+\item Bytes 8 to 15 contain the actual value
+  \ee
+\subsubsection{Define the Accessors}
+\label{accessor_defn}
+
+After defining the data format, we implemented a number of helper 
+functions which broadly fell into these categories
+\be
+\item readers or getters e.g., calling {\tt get\_jtype()} on a QDF packet tells
+  us what JSON type it is i.e., {\tt nil, number, string, \ldots}
+\item writers or setters
+\item makers or constructors e.g., calling {\tt make\_number()} with the 
+  type and value of the number to be created as arguments, 
+\item destructors were largely handled by Lua's garbage collection
+\item checkers, which validated the syntactic structure of a data packet.
+  These can be thought of as invariants that could be asserted before and after
+  an accessor was called. This was inspired by \cite{hoare1969axiomatic}.
+
+  \ee
+
+\subsubsection{Test the Accessors}
+Once the accessors were in place, it was necessary to write unit tests which
+would give us confidence in their implementation. We started by hand writing
+these tests but quickly transitioned as described in
+Section~\ref{llm_uint_tests}.
+
+\subsubsection{Define the Operators}
+
+We took our inspiration from Knuth: ``Let us change our traditional attitude to the construction of programs: 
+Instead of imagining that our main task is to 
+instruct a computer what to do, let us concentrate rather on explaining
+to human beings what we want a computer to do.'' \cite{knuth1984literate}.
+
+Taking this last sentence to its logical conclusion, we chose to 
+concentrate {\bf entirely} on the human explanation, 
+leaving the job of instructing the computer what to do to the LLM.
+
+In this paper, Knuth argues that the system he proposes, WEB, is 
+itself is chiefly a combination of two other languages: (1) a document formatting language and (2) a
+programming language. My prototype WEB system uses
+\TeX\ as the document formatting language and PASCAL
+as the programming language, but the same prin ciples would apply equally well if other languages were
+substituted. Instead of \TeX, one could use a language
+like Scribe or Troﬀ; instead of PASCAL, one could use
+ADA, ALGOL, LISP, COBOL, FORTRAN, APL, C, etc.,
+or even assembly language. The main point is that WEB
+is {\bf inherently bilingual}, and that such a combination of
+languages proves to be much more powerful than either
+single language by itself. WEB does not make the other
+languages obsolete; on the contrary, it enhances them.
+
+In our case, we chose to use \LaTeX\ for specifications 
+and have the LLM write the code in Lua, C and ISPC \cite{ISPC}
+The author's familiarity with these languages allowed for code review.
+If LLMs live up to the trajectory claimed for them, 
+we expect to gain confidence in them and reduce the need for oversight.
+
+\section{Making it concrete}
+
+We describe the implementation of the operator {\tt coalesce}
+\footnote{url{https://www.rdocumentation.org/packages/dplyr/versions/1.0.10/topics/coalesce}}.
+
+\subsection{Starting Out}
+\begin{verbatim}
+lQDF = require 'lQDF'
+\end{verbatim}
+This informs the system about the data definitions and data accessors.
+To those familiar with LuaJIT \cite{LuaJIT}, we have
+\be
+\item {\tt ffi.cdef}'d the function declarations
+\item {\tt ffi.load}'d the library that implements the accessors
+  \ee
+
+  \subsection{Registering an operator}
+\begin{verbatim}
+local C = require 'coalesce'
+lQDF.Q.register('coalesce', C)
+\end{verbatim}
+
+{\tt C} is a Lua table that contains the specification of the operator. 
+Details are in Section~\ref{coalesce_spec}. It consists of the following
+\be
+\item \verb+generic_tex_spec_file+: \LaTeX\ file containing specification 
+  See Appendix for an example %% TODO 
+\item \verb+get_subs+: a function which produces substitutions needed
+  to specialize the above \LaTeX\ file based on the types of the arguments
+\item \verb+lua_calling_spec+: table containing specification used to 
+  create a function {\tt
+  run()} which is used at runtime to create (if necesssary) 
+  and execute a C function
+  \ee
+
+The call to {\tt Q.register} causes the following
+\be
+\item Records the information provided
+\item Uses \verb+lua_calling_spec+ to create the code for function {\tt run()}.
+  Currently, this is done by a human authored script. Future work could see this
+  be passed to the LLM as well. 
+\item Uses Lua's {\tt loadstring()} to compile the code generated into a
+  function {\tt run()}
+\item Adds {\tt coalesce} as a key to the table {\tt lQDF}, the value of which
+  is the function {\tt run} created above
+  \ee
+
+  \subsection{Calling an operator}
+  \begin{verbatim}
+local x = lQDF({ 1, 2, 3, }
+local y = lQDF({ 4, 5, 6, })
+local z = lQDF.coalesce(x, y)
+  \end{verbatim}
+
+This creates {\tt z}, an object of type {\tt lQDF}. 
+Let's see take a peek under the covers. 
+\be
+\item Based on the types of the input arguments, {\tt x, y}, 
+  determine whether a specialized function for the job exists. Let's assume it
+  doesn't
+\item Make substitutions in the \LaTeX\ file e.g., this is where we 
+  would find that the {\tt qtype} of {\tt x,y} is {\tt FP64}, as 
+  a result of which we would need to create a function whose name is 
+  \verb+coalesece_FP64_FP64+
+\item Assemble a larger \LaTeX\ file which contains 
+  context which does not change across operators. 
+  This is the information in Sections~\ref{data_format_defn} and 
+  ~\ref{accessor_defn}.
+\item Use {\tt pdflatex} to create a PDF with detailed instructions for the LLM.
+  See Section~\ref{YYY} for an example.
+\item POST the PDF to the LLM and get back 
+  \be
+\item the function declaration {\tt .h} file 
+\item the function definition {\tt .c} file 
+\item commands needed to create a {\tt .o} file and a {\tt .so} file. 
+ Commands specify information such as
+  \be
+\item compiler to be used e..g, {\tt gcc} or {\tt ispc}
+\item include paths
+\item libraries that may need to be linked
+\item compiler/linker flags 
+  \ee
+  \ee
+\item Execute the commands above
+\item \verb+ffi.cdef+ the {\tt .h} file and \verb+ffi.load+ the {\tt .so} file
+  created above
+\item The previous steps are skipped over if they had been executed before. 
+The system remembers past work. Coming across a new symbol which necessitates
+the above work can be thought of as a cache miss. 
+This is an acceptable tradeoff {\bf if}
+\be
+\item these cache misses are infrequent 
+\item the system is not sensitive to the latency they introduce,
+  \ee
+\item Provide C access to the Lua objects {\tt x, y, z}
+\item Execute the C function using the pointers provided above as arguments
+\item Return the Lua objects specified as the {\tt out\_args} in
+  Section~\ref{XXX}.
+  \ee
+
+  \section{Conclusion}
+  \subsection{Future Work}
+
+\appendix
+\section{Coalesce specification}
+\label{coalesce_spec}
+\verbatiminput{doc_coalesce.lua}
+
+\input{doc_qdf_definition}
+\bibliographystyle{alpha}
+\bibliography{ref}
+
+\end{document}
+

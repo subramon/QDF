@@ -1,0 +1,9 @@
+Arvind Narayanan Princeton
+
+Why do coding agents work so well and what would it take to replicate their success in other domains? One important and under-appreciated reason is that agentic coding is a type of neurosymbolic AI.
+
+The main weakness of LLMs is that they are statistical machines and struggle at tasks involving long chains of logic / symbol manipulation. Of course, traditional code is the opposite. The magic of agentic coding is that it fuses the two — there is a lot of code *execution* during code generation. This is a subtle point so let me spell it out.
+
+* Most obviously, agents run the generated code itself, run tests, etc. This makes coding a verifiable domain. It is well known that in verifiable domains, inference scaling is highly effective as agents can fix their own mistakes. It also allows reinforcement learning to be highly effective.
+
+* Next, code generation often takes advantage of existing symbolic tools like compilers that have been optimized and perfected over decades. Imagine if LLMs had to directly output binary code instead. (They sometimes can, and it's a cool trick, but it's no way to do software engineering.)
