@@ -2,7 +2,6 @@
 \usepackage{helvet}
 \usepackage{fancyheadings}
 \usepackage{verbatim}
-\usepackage{color}
 \usepackage{hyperref}
 \pagestyle{fancy}
 \usepackage{graphicx}
@@ -34,6 +33,7 @@ application, thereby reducing code bloat
 (3) We will adopt just-in-time manufacturing approach to software deployment 
 In this paper, we use an example to demonstrate how these principles 
 are put into practice. 
+
 }
 
 \section{Introduction}
@@ -41,7 +41,7 @@ are put into practice.
 
 Traditionally, the cost of writing software 
 (and modifying it when new needs arose) was so high that the design of 
-code was optimized for maintainability. Most seasoned software engineers will have
+code optimized for maintainability. Most seasoned software engineers will have
 experienced the sinking feeling when asked to add new requirements to a large
 code base, the fear of not fully understanding whether a fix here 
 would cause a blow out there. We would argue that assuming 
@@ -65,14 +65,13 @@ bet that we will get what we want when we no longer control the
 translation from intent to a higher level programming language,
 en route to a further translation to machine instructions.
 
+
 Which brings us to the central question that this paper seeks to answer.
 \begin{center}
 {\em How much code should a coder code if Claude Code could code code?}
 \end{center}
 
-\subsection{Organization}
-In the rest of the paper, we will flesh out the details of the 
-three-step approach suggested below.
+For those with little patience to slog through the rest, here's the gist
 \be
 \item control the data, the format and inter-relationships
 \item write specifications for new operators and have the LLM write code in a
@@ -81,6 +80,12 @@ three-step approach suggested below.
   delay when you ask for something new
   \ee
 
+Throwing down the gauntlet to the godfather of ``vibe coding'', 
+I wonder why Karpathy chose to write C code (excellent code though it is)
+for Llama 2 instead of just writing a set of math formulas
+\footnote{\url{https://github.com/karpathy/llama2.c}}.
+
+\subsection{Organization}
 In Section~\ref{motivation}, we present the example used to 
 ground the claims made above. 
 In Section~\ref{designing_for_llms}, we describe how 
@@ -92,12 +97,18 @@ delving into the details of the implementation.
 \section{Motivation}
 \label{motivation}
 
-Some years ago, we were developing a system similar to Spark in terms of
-distributing many independent pieces of computation over a network. We needed a
-data format that could be transmitted and operated upon efficiently. 
-Examples of viable data formats were
-BSON \cite{BSON} and AVRO \cite{AVRO}.
-Ultimately, we decided it best to roll our own format based on the
+Earlier, 
+the author had built a column-oriented analytical database called \Q. 
+As with most such databases, greater efficiencies are possible
+when data is created and accessed within the database
+engine itself. 
+However, a database that doesn't share its data with other applications isn't of
+much use. This necessitated the development of \QDF\ (\Q's data format) for data
+exchange, not for bulk import/export.
+
+We considered several other formats, starting with the usual suspects,
+ CSV and JSON. For efficiency reasons, we narrowed our focus to binary formats, like BSON
+ and AVRO. Ultimately, we decided it best to roll our own format based on the
  following requirements and usage patterns
  \be
  \item ease of adding fixed-width custom types
@@ -150,11 +161,19 @@ choices of compiled language and interpreted
 language and document formatting language are likely to work just as well. 
 The reasons for this choice were
 \be
-\item The Ousterhout dichotomy. 
-  This is a principle of software design that I have found very useful. 
-  It argues for the judicious blending of 
- a low-level, statically-typed systems language like C and 
-a  high-level, dynamic scripting language like Lua \cite{Ousterhout}.
+\item The Ousterhout dichotomy. This is a principle of software design that I
+  have found very useful. For those unfamiliar with the idea, 
+``{\em Ousterhout's dichotomy claims that there are two general categories of programming languages:
+\be
+\item low-level, statically-typed systems languages
+\item high-level, dynamic scripting languages
+  \ee
+Systems languages are best for efficiently handling large quantities of data,
+implementing algorithms, and can handle significant internal complexity.
+Scripting languages are best for glueing other programs together, exploring a
+problem, and extending applications.}
+''
+\footnote{\url{https://gist.github.com/nat-418/bdccb2428cde750c9f42bf9bbc1a50d3}}
 
 \item Completeness. 
 It was very much our intent to
@@ -165,7 +184,17 @@ The author is sufficiently conversant in these languages to meet this goal.
 \item Ease of exposition. 
   The simple syntax of C and Lua make the code snippets widely
   readable
-\item Ease of implementation. Lua was designed to inter-operate with C \cite{Lua2019}
+\item Ease of implementation.
+  ``{\em Lua was designed since its inception to interoperate with
+other languages, both by extending --- allowing Lua code to call functions
+written in a foreign language --- and by embedding --- allowing foreign code to call functions written in Lua. Lua is
+thus implemented not as a standalone
+program but as a library with a C API.
+This library exports functions that cre ate a new Lua state, load code into a
+state, call functions loaded into a state,
+access global variables in a state, and
+perform other basic tasks. The stand alone Lua interpreter is a tiny application
+written on top of the library.}'' \cite{Lua2019}
 \item \LaTeX, when combined with {\tt make}, allows us to ``compile''
   documentation from disparate sources. It allows us to create 
   different targets from common sources. 
@@ -243,8 +272,9 @@ functions which broadly fell into these categories
 
 \subsubsection{Test the Accessors}
 Once the accessors were in place, it was necessary to write unit tests which
-would give us confidence in their implementation. Currently, tests are
-hand-written although this is a perfect candidate for handing off to the LLM.
+would give us confidence in their implementation. We started by hand writing
+these tests but quickly transitioned as described in
+Section~\ref{accessor_test}. %% TODO 
 
 \subsubsection{Define the Operators}
 
@@ -256,6 +286,23 @@ to human beings what we want a computer to do.}'' \cite{knuth1984literate}.
 Taking this last sentence to its logical conclusion, we chose to 
 concentrate {\bf entirely} on the human explanation, 
 leaving the job of instructing the computer what to do to the LLM.
+
+In this paper, Knuth argues that the system he proposes, 
+{\em WEB, is 
+itself is chiefly a combination of two other languages: (1) a document formatting language and (2) a
+programming language. My prototype WEB system uses
+\TeX\ as the document formatting language and PASCAL
+as the programming language, but the same prin ciples would apply equally well if other languages were
+substituted. Instead of \TeX, one could use a language
+like Scribe or Troﬀ; instead of PASCAL, one could use
+ADA, ALGOL, LISP, COBOL, FORTRAN, APL, C, etc.,
+or even assembly language. The main point is that WEB
+is {\bf inherently bilingual}, and that such a combination of
+languages proves to be much more powerful than either
+single language by itself. WEB does not make the other
+languages obsolete; on the contrary, it enhances them.
+}
+
 In our case, we chose to use \LaTeX\ for specifications 
 and have the LLM write the code in Lua, C and ISPC \cite{ISPC}
 The author's familiarity with these languages allowed for code review.
@@ -271,20 +318,11 @@ an operator {\tt coalesce}
 We walk the reader through the process, step by step, explaining what the
 developer does and what the system does in response
 
-\be
-\item Text in \textcolor{red}{red} font is what the developer does 
-\item Text in \textcolor{blue}{blue} font is what the LLM does 
-\item Apart from that, most of this section con concentrates on what the system
-  does
-  \ee
-
-
 
 \subsection{Starting Out}
-\begin{verse}
-  {\tt \textcolor{red}{
-  \hspace*{0.5in}  lQDF = require 'lQDF'}}
-\end{verse}
+\begin{verbatim}
+lQDF = require 'lQDF'
+\end{verbatim}
 This informs the system about the data definitions and data accessors.
 To those familiar with LuaJIT \cite{LuaJIT}, we have
 \be
@@ -293,12 +331,10 @@ To those familiar with LuaJIT \cite{LuaJIT}, we have
   \ee
 
   \subsection{Registering an operator}
-\begin{verse}
-  {\tt \textcolor{red}{ 
-  \hspace*{0.5in} local X = require 'coalesce' \\
-  \hspace*{0.5in} lQDF.Q.register('coalesce', X)
-  }}
-\end{verse}
+\begin{verbatim}
+local X = require 'coalesce'
+lQDF.Q.register('coalesce', X)
+\end{verbatim}
 
 In the first line, we define {\tt X}, the specification of the operator, 
 Section~\ref{coalesce_spec}. It consists of the following
@@ -332,13 +368,11 @@ In the second line, the call to {\tt Q.register} causes the following
 \verbatiminput{doc_coalesce.lua}
 
   \subsection{Calling an operator}
-  \begin{verse}
-    {\tt \textcolor{red}{
-      \hspace*{0.5in} \= local x = lQDF({ 1, 2, 3, } \\ 
-    \hspace*{0.5in} \= local y = lQDF({ 4, 5, 6, }) \\ 
-    \hspace*{0.5in} \= local z = lQDF.coalesce(x, y) \\
-    }}
-  \end{verse}
+  \begin{verbatim}
+local x = lQDF({ 1, 2, 3, }
+local y = lQDF({ 4, 5, 6, })
+local z = lQDF.coalesce(x, y)
+  \end{verbatim}
 
 The first two lines create {\tt x, y}, which are objects of type lQDF.
 The third line creates {\tt z}, also an object of type {\tt lQDF}. 
@@ -368,24 +402,20 @@ For now, let's assume it doesn't.
 \item  \verb+qtype.h+ 
 \item  \verb+jtype.h+ 
 \item  \verb+macros.h+ 
-\item function declarations for all helper functions 
   \ee
 We instruct the LLM to return 
-  \textcolor{blue}{
   \be
 \item the function declaration {\tt .h} file 
 \item the function definition {\tt .c} file 
 \item commands needed to create a {\tt .o} file and a {\tt .so} file. 
  The LLM gives us information such as
   \be
-\item 
 \item compiler to be used e..g, {\tt gcc} or {\tt ispc}
 \item include paths
 \item libraries that may need to be linked
 \item compiler/linker flags 
   \ee
   \ee
-}
 \item Execute above commands to create a {\tt .so} file. 
 \item \verb+ffi.cdef+ the {\tt .h} file and \verb+ffi.load+ the {\tt .so} file
   created above
@@ -407,22 +437,16 @@ This is an acceptable tradeoff {\bf if}
 \subsection{Saving and Restoring}
 
 What happens when a session ends? If we wish to save operators created in this
-session for use in subsequent sessions, we execute 
-\begin{verse}
-  {\tt \textcolor{red}{\hspace*{0.5in} lQDF.Q.save()}}
-\end{verse}
-This
-records all necessary artifacts on the file system e.g., \LaTeX\ files, 
-{\tt .pdf} files, \ldots
+session for use in subsequent sessions, we execute \verb+lQDF.Q.save()+. This
+records all necessary artifacts on the file system e.g., \LaTeX\ files, pdf
+files, {\tt .so files, \ldots }
 
 When we start a new session, we do not need to start from a blank slate.
 Instead, we can pick up from where we left off as show below.
-\begin{verse}
-  {\tt \textcolor{red}{
-\hspace*{0.5in} lQDF.Q.restore() \\
-\hspace*{0.5in} local z = lQDF.coalesce(lQDF({1,2,3,}), lQDF({4,5,6,})) \\
-  }}
-\end{verse}
+\begin{verbatim}
+lQDF.Q.restore()
+local z = lQDF.coalesce(lQDF({ 1, 2, 3, }), lQDF({ 4, 5, 6, }))
+\end{verbatim}
 
 \section{Discussion}
 
@@ -439,8 +463,8 @@ The rapid pace of progress in AI makes prognostication difficult.
 Does one ignore it and wait for the bubble to burst? 
 Does one embrace it entirely like a product manager of mine who wondered why it
 took me so long to convert his PowerPoint wireframes into working code?
-This paper represents a measured adoption of the seemingly 
-miraculous powers of AI.
+This paper represents a measured adoption of the seemingly miraculous powers of
+AI which we suspect might be relevant for the next few years.
 
 We agree with Lattner's assessment that
 {\em As writing code is becoming easier, designing software becomes more
@@ -478,8 +502,8 @@ quality software economically? I suspect not.
   (here's looking at you Infosys, TCS, \ldots) will suffer but not because 
   the need for software will disappear. 
   Instead, they have hired, trained and promoted for vocational skills. 
-  I suspect that they are unprepared to pivot to a realm where engineering skills dominate.
-  Similarly, many universities in India are really trade schools masquerading as 
+  They are unprepared to pivot to a realm where engineering skills dominate.
+  Many universities in India are really trade schools masquerading as 
   bastions of higher learning.  I do {\bf not} use the term ``trade school''
   disparagingly.  I think they have a valuable purpose. 
   I do hope that the mechanic who tunes up my car has attended
@@ -498,32 +522,29 @@ So far, the target of human effort has been code for a high-level
 programming language. How would a specification language differ from 
 what we have traditionally thought of as a programming language?
 
+\item Over the years, I've gotten a lot of flak for my unorthodox choice of
+  programming languages --- C and Lua. But if it is the LLM writing the code,
+  not me, does it matter? 
+  If I have time, I'd like to re-implement this project so that a 
+  Python programmer would just have to {\tt import foo} and start using {\tt
+  foo.coalesce()} without caring about the underlying details. This is similar
+  to the fact that most {\tt numpy} users don't care or know that the library is
+  written in C.
+
 \item Many years ago, I graduated in the middle of a painful recession. A friend
   of mine persuaded a hiring manager at Oracle to take a call from me. I picked
   up the handset from the phone in the lab and dialed out. A gruff voice
   acknowledged me. I launched into my rehearsed pitch. ``I've just graduated
   with a PhD in theoretical Computer Science. '' He cut me off. ``We want
   workers, not thinkers.'' and the line went dead. 
-  ``{\em Workers, not thinkers}'' ---
+
+  ``Workers not thinkers'' --
   the phrase has haunted me these many years. Maybe the shoe is finally on the
   other foot?
   \ee
 
 \subsection{Future Work}
-Validating the approach proposed will take more than one example. 
-Among my targets are 
-\be
-\item Karpathy's one C file implementation of Llama 2 
-inferencing \footnote{\url{https://github.com/karpathy/llama2.c}}.
-Starting from a crisp definition of the data structures --- network and weights
---- and a set of math formulas, could the implementation come for free?
-\item A web application testing the applicability of this technique to 
-  languages I am not comfortable with --- HTML and Javascript
-\item Suggestions are welcomed
-  \ee
 
-
-\subsection{Open Questions}
 We are sharing this work before all the rough edges have been smoothed 
 out in the hope of getting feedback. We would especially like suggestions on
 \be
